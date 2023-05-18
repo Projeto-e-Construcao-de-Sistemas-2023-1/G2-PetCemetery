@@ -13,10 +13,17 @@ public class Jazigo {
     private String mensagem;
     private boolean foto;
     private String notas;
-    private String plano; 
+    private PLANO plano; 
     private Pet petEnterrado;
+
+    public enum PLANO{
+        BASIC,
+        SILVER,
+        GOLD
+    }
+
     public Jazigo(String endereco, Cliente proprietario, int idJazigo, String status, boolean disponivel,
-            String plano) {
+            PLANO plano) {
         this.endereco = endereco;
         this.proprietario = proprietario;
         this.idJazigo = idJazigo;
@@ -25,7 +32,7 @@ public class Jazigo {
         this.plano = plano;
     }
     public Jazigo(String endereco, Cliente proprietario, int idJazigo, String status, Date dataUltimaVisita,
-            boolean disponivel, String mensagem, boolean foto, String notas, String plano, Pet petEnterrado) {
+            boolean disponivel, String mensagem, boolean foto, String notas, PLANO plano, Pet petEnterrado) {
         this.endereco = endereco;
         this.proprietario = proprietario;
         this.idJazigo = idJazigo;
@@ -92,19 +99,20 @@ public class Jazigo {
     public void setNotas(String notas) {
         this.notas = notas;
     }
-    public String getPlano() {
-        return plano;
-    }
-    public void setPlano(String plano) {
-        this.plano = plano;
-    }
     public Pet getPetEnterrado() {
         return petEnterrado;
     }
     public void setPetEnterrado(Pet petEnterrado) {
         this.petEnterrado = petEnterrado;
     }
+    public PLANO getPlano() {
+        return plano;
+    }
+    public void setPlano(PLANO plano) {
+        this.plano = plano;
+    }
 
+    
     
 
 }
