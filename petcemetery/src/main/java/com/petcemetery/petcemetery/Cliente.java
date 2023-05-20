@@ -1,12 +1,21 @@
 package com.petcemetery.petcemetery;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity(name = "Cliente")
+@Table(name = "Cliente")
 public class Cliente extends Usuario{
 
+    @Column(name = "pagamento_pendente")
     private boolean pagamentoPendente = false;
+
+    @Column(name = "quant_jazigos")
     private int quantJazigos;
     
     public Cliente(String email, long telefone, String nome, long cpf, boolean admin, int quantJazigos) {
-        super(email, telefone, nome, cpf, admin);
+        super(email, telefone, nome, cpf, false);
         this.quantJazigos = quantJazigos;
     }
     public Cliente(String email, long telefone, String nome, long cpf, String cep, boolean admin, String rua, int numero, String complemento, boolean pagamentoPendente, int quantJazigos) {

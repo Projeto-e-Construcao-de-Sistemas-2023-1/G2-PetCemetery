@@ -1,9 +1,14 @@
 package com.petcemetery.petcemetery;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity(name = "Administrador")
+@Table(name = "Administrador")
 public class Admin extends Usuario{
 
     public Admin(String email, long telefone, String nome, long cpf, boolean admin) {
-        super(email, telefone, nome, cpf, admin);
+        super(email, telefone, nome, cpf, true);
         
     }
 

@@ -1,10 +1,24 @@
 package com.petcemetery.petcemetery;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity(name = "Servico")
+@Table(name = "Servico")
 public class Servico {
     
+    @Id
+    @Column(name = "id_servico")
     private int idServico;
+
+    @Column(name = "servico")
     private String servico;
+
+    @Column(name = "valor")
     private float valor;
+    
     public Servico(int idServico, String servico, float valor) {
         this.idServico = idServico;
         this.servico = servico;

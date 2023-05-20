@@ -2,24 +2,53 @@ package com.petcemetery.petcemetery;
 
 import java.sql.Date;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
+@Entity(name = "Pagamento")
+@Table(name = "Pagamento")
 public class Pagamento {
     
-    private long cpf; //** IMPORTANTE! -> nao acham q aqui devia ser o tipo cliente? e daí temos acesso ao cpf e outros?
+    @ManyToOne
+    @JoinColumn(name = "cpf", referencedColumnName = "cpf")
+    private Cliente cliente; //** IMPORTANTE! -> nao acham q aqui devia ser o tipo cliente? e daí temos acesso ao cpf e outros? 
+
+    @Column(name = "valor")
     private float valor;
+
+    @Column(name = "data_pagamento")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataPagamento;
+
+    @Column(name = "data_vencimento")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataVencimento;
+
+    @Column(name = "isPago")
     private boolean pago;
+
+    @Column(name = "id_servico")
     private int idServico;
+
+    @Column(name = "metodo_pagamento")
+    @Enumerated(EnumType.STRING)
+    private MetodoEnum metodoPagamento;
     
-    private METODOS metodoPagamento;
-    public enum METODOS{
+    public enum MetodoEnum{
         CREDITO,
         DEBITO,
         PAYPAL
     }
-    public Pagamento(long cpf, float valor, Date dataPagamento, Date dataVencimento, boolean pago, int idServico,
-            METODOS metodoPagamento) {
-        this.cpf = cpf;
+    public Pagamento(Cliente cliente, float valor, Date dataPagamento, Date dataVencimento, boolean pago, int idServico,
+            MetodoEnum metodoPagamento) {
+        this.cliente = cliente;
         this.valor = valor;
         this.dataPagamento = dataPagamento;
         this.dataVencimento = dataVencimento;
@@ -27,11 +56,11 @@ public class Pagamento {
         this.idServico = idServico;
         this.metodoPagamento = metodoPagamento;
     }
-    public long getCpf() {
-        return cpf;
+    public Cliente getCliente() {
+        return cliente;
     }
-    public void setCpf(long cpf) {
-        this.cpf = cpf;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
     public float getValor() {
         return valor;
@@ -63,10 +92,10 @@ public class Pagamento {
     public void setIdServico(int idServico) {
         this.idServico = idServico;
     }
-    public METODOS getMetodoPagamento() {
+    public MetodoEnum getMetodoPagamento() {
         return metodoPagamento;
     }
-    public void setMetodoPagamento(METODOS metodoPagamento) {
+    public void setMetodoPagamento(MetodoEnum metodoPagamento) {
         this.metodoPagamento = metodoPagamento;
     }
 

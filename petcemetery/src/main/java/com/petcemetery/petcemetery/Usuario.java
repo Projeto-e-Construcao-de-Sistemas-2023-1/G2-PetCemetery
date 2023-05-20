@@ -1,14 +1,37 @@
 package com.petcemetery.petcemetery;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+
+@MappedSuperclass
 public class Usuario {
-    private String email;
-    private long telefone;
-    private String nome;
+    @Id
+    @Column(name = "cpf")
     private long cpf;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "telefone")
+    private long telefone;
+
+    @Column(name = "nome")
+    private String nome;
+    
+    @Column(name = "cep")
     private String cep;
+
+    @Column(name = "isAdmin")
     private boolean admin;
+
+    @Column(name = "rua")
     private String rua;
+
+    @Column(name = "numero")
     private int numero;
+
+    @Column(name = "complemento")
     private String complemento;
     
     public Usuario(String email, long telefone, String nome, long cpf, boolean admin) {

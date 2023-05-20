@@ -2,11 +2,26 @@ package com.petcemetery.petcemetery;
 
 import java.sql.Date;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity(name = "Relatorio")
+@Table(name = "Relatorio")
 public class Relatorio {
     
+    @Id
+    @Column(name = "id_relatorio")
     private int idRelatorio;
+
+    @Column(name = "tipo")
     private String tipo;
+
+    @Column(name = "data_relatorio")
     private Date dataRelatorio;
+
+    @Column(name = "email")
     private String email;
     
     public Relatorio(int idRelatorio, String tipo, Date dataRelatorio, String email) {
