@@ -1,4 +1,4 @@
-package com.petcemetery.petcemetery;
+package com.petcemetery.petcemetery.model;
 
 import java.sql.Date;
 
@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -16,6 +17,10 @@ import jakarta.persistence.TemporalType;
 @Table(name = "Pagamento")
 public class Pagamento {
     
+    @Id
+    @Column(name = "id_pagamento")
+    private Integer idPagamento;
+
     @ManyToOne
     @JoinColumn(name = "cpf", referencedColumnName = "cpf")
     private Cliente cliente; //** IMPORTANTE! -> nao acham q aqui devia ser o tipo cliente? e daí temos acesso ao cpf e outros? 
@@ -24,11 +29,11 @@ public class Pagamento {
     private float valor;
 
     @Column(name = "data_pagamento")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date dataPagamento;
 
     @Column(name = "data_vencimento")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date dataVencimento;
 
     @Column(name = "isPago")

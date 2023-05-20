@@ -1,9 +1,10 @@
-package com.petcemetery.petcemetery;
+package com.petcemetery.petcemetery.model;
 
 import java.sql.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -13,6 +14,10 @@ import jakarta.persistence.TemporalType;
 @Entity(name = "Visita")
 @Table(name = "Visita")
 public class Visita {
+
+    @Id
+    @Column(name = "id_visita")
+    private Integer idVisita;
     
     @ManyToOne
     @JoinColumn(name = "cpf_cliente", referencedColumnName = "cpf")

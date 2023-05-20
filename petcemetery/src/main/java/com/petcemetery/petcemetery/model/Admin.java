@@ -1,4 +1,4 @@
-package com.petcemetery.petcemetery;
+package com.petcemetery.petcemetery.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
