@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.petcemetery.petcemetery.model.Admin;
 import com.petcemetery.petcemetery.model.Cliente;
+import com.petcemetery.petcemetery.repositorio.AdminRepository;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 
 @Controller
@@ -14,6 +16,9 @@ public class ClienteController {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     @GetMapping("/login")
     public String loginGet() {
@@ -23,10 +28,14 @@ public class ClienteController {
     @PostMapping("/login")
     public String loginPost(@RequestParam("email") String email, @RequestParam("senha") String senha) {
         Cliente cliente = clienteRepository.findByEmailAndSenha(email, senha);
-        if (cliente == null) {
-            return "redirect:/login";
-        } else {
-            return "redirect:/home";
+        Admin admin = adminRepository.findByEmailAndSenha(email, senha);
+        if (cliente != null) {
+            return "redirect:/cliente_home"; //redireciona para home do cliente
+        } else if (admin != null) {
+            return "redirect:/admin_home"; //redireciona para home do admin
+        }
+        else {
+            return "redirect:/login"; //retorna para pagina de login
         }
     }
 
