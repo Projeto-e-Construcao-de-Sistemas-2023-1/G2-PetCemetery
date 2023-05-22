@@ -23,7 +23,7 @@ public class Pagamento {
 
     @ManyToOne
     @JoinColumn(name = "cpf", referencedColumnName = "cpf")
-    private Cliente cliente; //** IMPORTANTE! -> nao acham q aqui devia ser o tipo cliente? e daí temos acesso ao cpf e outros? 
+    private Cliente cliente; 
 
     @Column(name = "valor")
     private float valor;
@@ -38,7 +38,7 @@ public class Pagamento {
 
     @Column(name = "isPago")
     private boolean pago;
-
+    
     @Column(name = "id_servico")
     private int idServico;
 
@@ -51,6 +51,7 @@ public class Pagamento {
         DEBITO,
         PAYPAL
     }
+
     public Pagamento(Cliente cliente, float valor, Date dataPagamento, Date dataVencimento, boolean pago, int idServico,
             MetodoEnum metodoPagamento) {
         this.cliente = cliente;

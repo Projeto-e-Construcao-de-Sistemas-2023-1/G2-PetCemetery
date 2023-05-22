@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-PetcemeteryApplication<petcemetery>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.petcemetery.petcemetery.PetcemeteryApplication",
+            "projectName": "petcemetery",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
