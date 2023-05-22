@@ -7,14 +7,18 @@
     <h2>Login</h2>
     <form action="/login" method="post">
         <div>
-            <label for="username">Usuário:</label>
-            <input type="text" id="username" name="username">
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email">
         </div>
         <div>
-            <label for="password">Senha:</label>
-            <input type="password" id="password" name="password">
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha">
         </div>
         <button type="submit">Entrar</button>
     </form>
+    <!-- Exibir mensagem de erro -->
+    <div th:if="${mensagem}">
+        <p class="erro" th:text="${mensagem}"></p>
+    </div>
 </body>
 </html>

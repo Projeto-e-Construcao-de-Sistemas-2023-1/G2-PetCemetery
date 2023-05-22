@@ -24,6 +24,7 @@ public class Relatorio {
     @Column(name = "email")
     private String email;
     
+    
     public Relatorio(int idRelatorio, String tipo, Date dataRelatorio, String email) {
         this.idRelatorio = idRelatorio;
         this.tipo = tipo;

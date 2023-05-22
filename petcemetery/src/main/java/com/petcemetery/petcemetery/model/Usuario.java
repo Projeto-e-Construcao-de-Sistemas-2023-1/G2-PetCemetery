@@ -3,18 +3,21 @@ package com.petcemetery.petcemetery.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @MappedSuperclass
 public class Usuario {
+
     @Id
     @Column(name = "cpf")
-    private long cpf;
+    private String cpf;
 
     @Column(name = "email")
     private String email;
 
     @Column(name = "telefone")
-    private long telefone;
+    private String telefone;
 
     @Column(name = "nome")
     private String nome;
@@ -33,17 +36,21 @@ public class Usuario {
 
     @Column(name = "complemento")
     private String complemento;
-    
-    public Usuario(String email, long telefone, String nome, long cpf, boolean admin) {
+
+    @Column(name = "senha")
+    private String senha;
+
+    public Usuario(String email, String telefone, String nome, String cpf, boolean admin, String senha) {
         this.email = email;
         this.telefone = telefone;
         this.nome = nome;
         this.cpf = cpf;
         this.admin = admin;
+        this.senha = senha;
     }
 
-    public Usuario(String email, long telefone, String nome, long cpf, String cep, boolean admin, String rua,
-            int numero, String complemento) {
+    public Usuario(String email, String telefone, String nome, String cpf, String cep, boolean admin, String rua,
+            int numero, String complemento, String senha) {
         this.email = email;
         this.telefone = telefone;
         this.nome = nome;
@@ -53,6 +60,7 @@ public class Usuario {
         this.rua = rua;
         this.numero = numero;
         this.complemento = complemento;
+        this.senha = senha;
     }
 
     public String getEmail() {
@@ -63,11 +71,11 @@ public class Usuario {
         this.email = email;
     }
 
-    public long getTelefone() {
+    public String getTelefone() {
         return telefone;
     }
 
-    public void setTelefone(long telefone) {
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
 
@@ -79,11 +87,11 @@ public class Usuario {
         this.nome = nome;
     }
 
-    public long getCpf() {
+    public String getCpf() {
         return cpf;
     }
 
-    public void setCpf(long cpf) {
+    public void setCpf(String cpf) {
         this.cpf = cpf;
     }
 
@@ -127,9 +135,13 @@ public class Usuario {
         this.complemento = complemento;
     }
 
-    
+    public String getSenha() {
+        return senha;
+    }
 
-
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
 
     
 }

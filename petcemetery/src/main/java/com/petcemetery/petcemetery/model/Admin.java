@@ -7,14 +7,14 @@ import jakarta.persistence.Table;
 @Table(name = "Administrador")
 public class Admin extends Usuario{
 
-    public Admin(String email, long telefone, String nome, long cpf, boolean admin) {
-        super(email, telefone, nome, cpf, true);
+    public Admin(String email, String telefone, String nome, String cpf, boolean admin, String senha) {
+        super(email, telefone, nome, cpf, true, senha);
         
     }
 
-    public Admin(String email, long telefone, String nome, long cpf, String cep, boolean admin, String rua, int numero,
-            String complemento) {
-        super(email, telefone, nome, cpf, cep, admin, rua, numero, complemento);
+    public Admin(String email, String telefone, String nome, String cpf, String cep, boolean admin, String rua, int numero,
+            String complemento, String senha) {
+        super(email, telefone, nome, cpf, cep, admin, rua, numero, complemento, senha);
         
     }
     
