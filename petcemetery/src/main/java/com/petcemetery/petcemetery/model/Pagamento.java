@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -21,6 +22,10 @@ public class Pagamento {
     @Column(name = "id_pagamento")
     private Integer idPagamento;
 
+    @OneToOne
+    @JoinColumn(name = "id_jazigo", referencedColumnName = "id_jazigo")
+    private Jazigo jazigo;
+    
     @ManyToOne
     @JoinColumn(name = "cpf", referencedColumnName = "cpf")
     private Cliente cliente; //** IMPORTANTE! -> nao acham q aqui devia ser o tipo cliente? e daí temos acesso ao cpf e outros? 

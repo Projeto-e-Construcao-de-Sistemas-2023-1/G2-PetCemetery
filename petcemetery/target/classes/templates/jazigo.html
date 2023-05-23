@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <h1>Jazigos</h1>
+
+    <div th:each="jazigo : ${jazigos}">
+        <p th:text="'Endereço do Jazigo: ' + ${jazigo.endereco}"></p>
+        <p th:text="'ID do Jazigo: ' + ${jazigo.idJazigo}"></p>
+        <p th:text="'Status: ' + ${jazigo.status}"></p>
+        <div th:if="${jazigo.disponivel}">
+            <a th:href="@{/comprar/{id}(id=${jazigo.idJazigo})}" class="btn btn-primary">Comprar</a>
+            <a th:href="@{/alugar/{id}(id=${jazigo.idJazigo})}" class="btn btn-secondary">Alugar</a>
+
+        </div>
+    </div>
+</body>
+</html>

@@ -7,5 +7,5 @@ import com.petcemetery.petcemetery.model.Cliente;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
-    Cliente findByEmailAndSenha(String email, String senha);
+
 }

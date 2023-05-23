@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Comprar Jazigo</title>
+</head>
+<body>
+<h1>Comprar Jazigo</h1>
+
+<div th:object="${jazigo}">
+    <h2>Jazigo ID: <span th:text="*{idJazigo}"></span></h2>
+    <p>Preço: <span th:text="*{preco}"></span></p>
+
+    <form action="#" th:action="@{/carrinho/adicionar/{id}(id=*{idJazigo})}" method="post">
+        <input type="submit" value="Adicionar ao Carrinho" />
+    </form>
+
+    <a href="/comprarPacoteOrnamentos">Comprar Pacote de Ornamentos</a>
+</div>
+
+</body>
+</html>

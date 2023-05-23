@@ -21,13 +21,9 @@ public class ClienteController {
     }
 
     @PostMapping("/login")
-    public String loginPost(@RequestParam("email") String email, @RequestParam("senha") String senha) {
-        Cliente cliente = clienteRepository.findByEmailAndSenha(email, senha);
-        if (cliente == null) {
-            return "redirect:/login";
-        } else {
-            return "redirect:/home";
-        }
+    public String loginPost() {
+        
+        return "login";
     }
 
     

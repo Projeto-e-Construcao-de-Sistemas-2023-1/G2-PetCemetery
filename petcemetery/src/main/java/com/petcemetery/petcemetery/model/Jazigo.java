@@ -53,9 +53,16 @@ public class Jazigo {
     @Enumerated(EnumType.STRING)
     private PlanoEnum plano; 
 
+    @Column(name = "preco")
+    private static final float PRECO_FIXO = 30000.0f;
+    
+
+    
     @OneToOne
     @JoinColumn(name = "pet_enterrado_id", referencedColumnName = "id_pet")
     private Pet petEnterrado;
+
+    
 
     public enum PlanoEnum {
         BASIC,
@@ -68,6 +75,9 @@ public class Jazigo {
         OCUPADO
     }
 
+    // Construtor sem argumentos
+    public Jazigo() {
+    }
 
     public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, boolean disponivel,
             PlanoEnum plano) {
@@ -78,6 +88,7 @@ public class Jazigo {
         this.disponivel = disponivel;
         this.plano = plano;
     }
+
     public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, Date dataUltimaVisita,
             boolean disponivel, String mensagem, boolean foto, String notas, PlanoEnum plano, Pet petEnterrado) {
         this.endereco = endereco;
@@ -92,6 +103,7 @@ public class Jazigo {
         this.plano = plano;
         this.petEnterrado = petEnterrado;
     }
+
     public String getEndereco() {
         return endereco;
     }
@@ -158,8 +170,9 @@ public class Jazigo {
     public void setPlano(PlanoEnum plano) {
         this.plano = plano;
     }
-
     
-    
+    public static float getPrecoFixo() {
+        return PRECO_FIXO;
+    }
 
 }
