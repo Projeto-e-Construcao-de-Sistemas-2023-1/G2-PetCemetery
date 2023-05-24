@@ -40,19 +40,19 @@ public class AuthController {
 
         if (cliente != null) {
             System.out.println("cliente logado com sucesso");
-            return ResponseEntity.ok("redirect:/clientes/" + cliente.getCpf() + "/home"); //redireciona para home do cliente
+            return ResponseEntity.ok("OK;cliente;" + cliente.getCpf()); // redireciona para home do cliente
         } else if (admin != null) {
-            return ResponseEntity.ok("redirect:/admin/home"); //redireciona para home do admin
-        }
-        else {
+            return ResponseEntity.ok("OK;admin;"); // redireciona para home do admin
+            //formato: STATUS;tipo_cliente;cpf
+        } else {
             System.out.println("informaçoes invalidas");
-            return ResponseEntity.badRequest().body("Informações inválidas."); //Exibe uma mensagem de erro
+            return ResponseEntity.badRequest().body("ERR;informacoes_invalidas;"); // Exibe uma mensagem de erro
         }
     }
 
     @PostMapping(path = "/cadastro", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> cadastro(@RequestBody Map<String, Object> requestBody) {
-        
+
         String email = (String) requestBody.get("email");
         String senha = (String) requestBody.get("senha");
         String senha_repetida = (String) requestBody.get("senharepeat");
@@ -66,32 +66,36 @@ public class AuthController {
 
         System.out.println(requestBody);
 
-        //Checa se algum dos campos não foi preenchido e exibe uma mensagem de erro
-        if(StringUtils.isBlank(nome) || StringUtils.isBlank(email)  || StringUtils.isBlank(senha) || StringUtils.isBlank(senha_repetida) 
-        || StringUtils.isBlank(cep) || StringUtils.isBlank(rua) || numero <= 0 || StringUtils.isBlank(cpf) || StringUtils.isBlank(telefone)) {
+        // Checa se algum dos campos não foi preenchido e exibe uma mensagem de erro
+        if (StringUtils.isBlank(nome) || StringUtils.isBlank(email) || StringUtils.isBlank(senha)
+                || StringUtils.isBlank(senha_repetida)
+                || StringUtils.isBlank(cep) || StringUtils.isBlank(rua) || numero <= 0 || StringUtils.isBlank(cpf)
+                || StringUtils.isBlank(telefone)) {
             System.out.println("Preencha todos os campos");
-            return ResponseEntity.badRequest().body("Preencha todos os campos obrigatórios.");
+            return ResponseEntity.badRequest().body("ERR;campo_vazio");
+            // Formato: STATUS;dados
 
-        //Checa se a senha é igual a senha repetida e exibe uma mensagem de erro
+            // Checa se a senha é igual a senha repetida e exibe uma mensagem de erro
         } else if (!senha.equals(senha_repetida)) {
             System.out.println(senha + senha_repetida);
             System.out.println("Senhas devem ser iguais");
-            return ResponseEntity.badRequest().body("As senhas devem ser iguais.");
+            return ResponseEntity.badRequest().body("ERR;senhas_diferentes");
 
-        //Checa se o email é válido através de regex e exibe uma mensagem de erro
+            // Checa se o email é válido através de regex e exibe uma mensagem de erro
         } else if (!EmailValidator.isValid(email)) {
             System.out.println("Email deve ser valido");
-            return ResponseEntity.badRequest().body("Digite um e-mail válido.");
-        //Checa se já existe um cliente cadastrado com o email fornecido e exibe uma mensagem de erro
+            return ResponseEntity.badRequest().body("ERR;email_invalido");
+            // Checa se já existe um cliente cadastrado com o email fornecido e exibe uma
+            // mensagem de erro
         } else if (clienteRepository.findByEmail(email) != null) {
             System.out.println("Email ja cadastrado");
-            return ResponseEntity.badRequest().body("Esse e-mail já está cadastrado.");
+            return ResponseEntity.badRequest().body("ERR;email_ja_cadastrado");
 
-        //Adiciona o cliente no banco de dados
+            // Adiciona o cliente no banco de dados
         } else {
             clienteRepository.save(new Cliente(email, telefone, nome, cpf, cep, rua, numero, complemento, senha));
             System.out.println("Cliente adicionado no banco com sucesso.");
-            return ResponseEntity.ok("redirect:/login");
+            return ResponseEntity.ok("OK;" + cpf);
         }
     }
 }
