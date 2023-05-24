@@ -8,8 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class JazigoViewController {
 
     private final JazigoService jazigoService;
@@ -20,9 +21,9 @@ public class JazigoViewController {
     }
 
     @GetMapping("/jazigo/{id}")
-    public String getJazigoById(@PathVariable("id") Long id, Model model) {
+    public Jazigo getJazigoById(@PathVariable("id") Long id, Model model) {
         Jazigo jazigo = jazigoService.getJazigoById(id);
         model.addAttribute("jazigo", jazigo);
-        return "jazigoview"; // Nome do template HTML para exibir as informações do jazigo
+        return jazigo; // Nome do template HTML para exibir as informações do jazigo
     }
 }

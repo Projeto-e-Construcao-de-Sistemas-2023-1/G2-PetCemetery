@@ -44,7 +44,7 @@ public class Jazigo {
     private String mensagem;
 
     @Column(name = "foto")
-    private boolean foto;
+    private String foto;
 
     @Column(name = "notas")
     private String notas;
@@ -90,7 +90,7 @@ public class Jazigo {
     }
 
     public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, Date dataUltimaVisita,
-            boolean disponivel, String mensagem, boolean foto, String notas, PlanoEnum plano, Pet petEnterrado) {
+            boolean disponivel, String mensagem, String foto, String notas, PlanoEnum plano, Pet petEnterrado) {
         this.endereco = endereco;
         this.proprietario = proprietario;
         this.idJazigo = idJazigo;
@@ -146,10 +146,10 @@ public class Jazigo {
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
     }
-    public boolean isFoto() {
+    public String isFoto() {
         return foto;
     }
-    public void setFoto(boolean foto) {
+    public void setFoto(String foto) {
         this.foto = foto;
     }
     public String getNotas() {
