@@ -36,6 +36,8 @@ public class AuthController {
         Cliente cliente = clienteRepository.findByEmailAndSenha(email, senha);
         Admin admin = adminRepository.findByEmailAndSenha(email, senha);
 
+        System.out.println(loginRequest);
+
         if (cliente != null) {
             System.out.println("cliente logado com sucesso");
             return ResponseEntity.ok("redirect:/clientes/" + cliente.getCpf() + "/home"); //redireciona para home do cliente
@@ -53,17 +55,15 @@ public class AuthController {
         
         String email = (String) requestBody.get("email");
         String senha = (String) requestBody.get("senha");
-        String senha_repetida = (String) requestBody.get("senha_repetida");
+        String senha_repetida = (String) requestBody.get("senharepeat");
         String cpf = (String) requestBody.get("cpf");
         String cep = (String) requestBody.get("cep");
         String rua = (String) requestBody.get("rua");
-        Integer numero = (int) requestBody.get("numero");
+        Integer numero = Integer.parseInt((String) requestBody.get("numero"));
         String complemento = (String) requestBody.get("complemento");
         String nome = (String) requestBody.get("nome");
         String telefone = (String) requestBody.get("telefone");
 
-        System.out.println(senha_repetida);
-        System.out.println(numero);
         System.out.println(requestBody);
 
         //Checa se algum dos campos não foi preenchido e exibe uma mensagem de erro
