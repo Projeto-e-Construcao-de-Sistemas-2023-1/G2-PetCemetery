@@ -43,10 +43,18 @@ public class AuthController {
             return ResponseEntity.ok("OK;cliente;" + cliente.getCpf()); // redireciona para home do cliente
         } else if (admin != null) {
             return ResponseEntity.ok("OK;admin;"); // redireciona para home do admin
-            //formato: STATUS;tipo_cliente;cpf
+            // formato: STATUS;tipo_cliente;cpf
         } else {
-            System.out.println("informaçoes invalidas");
-            return ResponseEntity.badRequest().body("ERR;informacoes_invalidas;"); // Exibe uma mensagem de erro
+            cliente = clienteRepository.findByEmail(email);
+            admin = adminRepository.findByEmail(email);
+
+            if (cliente == null && admin == null) {
+                System.out.println("Email inválido");
+                return ResponseEntity.ok("ERR;email_invalido;"); // Exibe uma mensagem de email errado
+            } else {
+                System.out.println("Senha inválida");
+                return ResponseEntity.ok("ERR;senha_invalida;"); // Exibe uma mensagem de senha errada
+            }
         }
     }
 
@@ -59,7 +67,10 @@ public class AuthController {
         String cpf = (String) requestBody.get("cpf");
         String cep = (String) requestBody.get("cep");
         String rua = (String) requestBody.get("rua");
-        Integer numero = Integer.parseInt((String) requestBody.get("numero"));
+        Integer numero = 0;
+        if (!StringUtils.isBlank((String) requestBody.get("numero"))) {
+            numero = Integer.parseInt((String) requestBody.get("numero"));
+        }
         String complemento = (String) requestBody.get("complemento");
         String nome = (String) requestBody.get("nome");
         String telefone = (String) requestBody.get("telefone");
@@ -72,24 +83,24 @@ public class AuthController {
                 || StringUtils.isBlank(cep) || StringUtils.isBlank(rua) || numero <= 0 || StringUtils.isBlank(cpf)
                 || StringUtils.isBlank(telefone)) {
             System.out.println("Preencha todos os campos");
-            return ResponseEntity.badRequest().body("ERR;campo_vazio");
+            return ResponseEntity.ok("ERR;campo_vazio");
             // Formato: STATUS;dados
 
             // Checa se a senha é igual a senha repetida e exibe uma mensagem de erro
         } else if (!senha.equals(senha_repetida)) {
             System.out.println(senha + senha_repetida);
             System.out.println("Senhas devem ser iguais");
-            return ResponseEntity.badRequest().body("ERR;senhas_diferentes");
+            return ResponseEntity.ok("ERR;senhas_diferentes");
 
             // Checa se o email é válido através de regex e exibe uma mensagem de erro
         } else if (!EmailValidator.isValid(email)) {
             System.out.println("Email deve ser valido");
-            return ResponseEntity.badRequest().body("ERR;email_invalido");
+            return ResponseEntity.ok("ERR;email_invalido");
             // Checa se já existe um cliente cadastrado com o email fornecido e exibe uma
             // mensagem de erro
         } else if (clienteRepository.findByEmail(email) != null) {
             System.out.println("Email ja cadastrado");
-            return ResponseEntity.badRequest().body("ERR;email_ja_cadastrado");
+            return ResponseEntity.ok("ERR;email_ja_cadastrado");
 
             // Adiciona o cliente no banco de dados
         } else {

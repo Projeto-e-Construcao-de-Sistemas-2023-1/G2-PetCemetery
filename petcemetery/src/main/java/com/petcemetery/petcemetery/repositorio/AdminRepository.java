@@ -8,4 +8,6 @@ import com.petcemetery.petcemetery.model.Admin;
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Long> {
     Admin findByEmailAndSenha(String email, String senha);
+    Admin findByEmail(String email);
+
 }
