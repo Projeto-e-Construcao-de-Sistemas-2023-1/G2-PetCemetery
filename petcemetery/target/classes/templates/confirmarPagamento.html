@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar Pagamento</title>
+</head>
+<body>
+    <h1>Confirmar Pagamento</h1>
+    
+    <h2>Jazigo Selecionado:</h2>
+    <p>Endereço: <span th:text="${jazigo.endereco}"></span></p>
+    
+    <h2>Planos Disponíveis:</h2>
+    <form th:action="@{/comprar/{id}/plano/finalizar(id=${jazigo.idJazigo})}" method="post">
+        <select name="plano">
+            <option th:each="plano : ${planos}" th:value="${plano}" th:text="${plano}"></option>
+        </select>
+        
+        <h2>Total do Carrinho:</h2>
+        <p>R$ <span th:text="${totalCarrinho}"></span></p>
+        
+        <!-- Botão para finalizar o pagamento -->
+        <button type="submit">Finalizar Pagamento</button>
+    </form>
+</body>
+</html>
