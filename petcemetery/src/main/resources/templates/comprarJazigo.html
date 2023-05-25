@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprar Jazigo - Pet Cemetery</title>
+    <style>
+        /* Aqui você pode adicionar seu CSS */
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Comprar Jazigo</h1>
+    </header>
+
+    <main>
+        <form action="/comprar_jazigo" method="POST">
+            <label for="cpf_cliente">CPF do Cliente:</label>
+            <input type="text" id="cpf_cliente" name="cpf_cliente" required>
+            <p th:text="'ID do Jazigo: ' + ${jazigo.idJazigo}"></p>
+            <p th:text="'Preco Jazigo: ' + ${jazigo.precoJazigo}"></p>
+            
+            <!-- Link para a página de seleção de plano -->
+            <a th:href="@{/comprar/{id}/plano(id=${jazigo.idJazigo})}" class="btn btn-primary">Selecionar Plano de Ornamentação</a>
+        </form>
+    </main>
+
+    <footer>
+        <!-- Aqui você pode adicionar seu rodapé -->
+    </footer>
+</body>
+</html>

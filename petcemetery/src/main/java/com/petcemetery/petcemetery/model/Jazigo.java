@@ -13,6 +13,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 @Entity(name = "Jazigo")
 @Table(name = "Jazigo")
@@ -29,6 +30,9 @@ public class Jazigo {
     @Column(name = "id_jazigo")
     private long idJazigo;
 
+    @Transient
+    public static final double precoJazigo = 30000;
+    
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
@@ -53,29 +57,33 @@ public class Jazigo {
     @Enumerated(EnumType.STRING)
     private PlanoEnum plano; 
 
-    @Column(name = "preco")
-    private static final float PRECO_FIXO = 30000.0f;
-    
-
-    
     @OneToOne
     @JoinColumn(name = "pet_enterrado_id", referencedColumnName = "id_pet")
     private Pet petEnterrado;
 
-    
-
     public enum PlanoEnum {
         BASIC,
         SILVER,
-        GOLD
+        GOLD;
+    
+        public double getPreco() {
+            switch (this) {
+                case BASIC:
+                    return 1.0;
+                case SILVER:
+                    return 50.0;
+                case GOLD:
+                    return 80.0;
+                default:
+                    return 0.0;
+            }
+        }
     }
 
     public enum StatusEnum {
         DISPONÍVEL,
         OCUPADO
     }
-
-    // Construtor sem argumentos
     public Jazigo() {
     }
 
@@ -88,7 +96,6 @@ public class Jazigo {
         this.disponivel = disponivel;
         this.plano = plano;
     }
-
     public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, Date dataUltimaVisita,
             boolean disponivel, String mensagem, String foto, String notas, PlanoEnum plano, Pet petEnterrado) {
         this.endereco = endereco;
@@ -103,7 +110,6 @@ public class Jazigo {
         this.plano = plano;
         this.petEnterrado = petEnterrado;
     }
-
     public String getEndereco() {
         return endereco;
     }
@@ -170,9 +176,8 @@ public class Jazigo {
     public void setPlano(PlanoEnum plano) {
         this.plano = plano;
     }
+
     
-    public static float getPrecoFixo() {
-        return PRECO_FIXO;
-    }
+    
 
 }

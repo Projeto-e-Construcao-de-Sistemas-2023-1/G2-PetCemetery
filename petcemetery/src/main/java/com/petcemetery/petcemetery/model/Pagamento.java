@@ -56,7 +56,8 @@ public class Pagamento {
         DEBITO,
         PAYPAL
     }
-
+    public Pagamento() {
+    }
     public Pagamento(Cliente cliente, float valor, Date dataPagamento, Date dataVencimento, boolean pago, int idServico,
             MetodoEnum metodoPagamento) {
         this.cliente = cliente;
