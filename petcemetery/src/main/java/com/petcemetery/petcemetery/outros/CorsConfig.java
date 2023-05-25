@@ -14,9 +14,11 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Especifica o padrão de URL ao qual as configurações de CORS se aplicam.
-                        .allowedOrigins("http://localhost:3000") // Define os domínios permitidos para fazer solicitações ao backend.
-                        .allowedMethods("GET", "POST") // Especifica os métodos HTTP que são permitidos nas solicitações CORS.
-                        .allowedHeaders("*"); // Define quais cabeçalhos HTTP são permitidos nas solicitações CORS.
+                        .allowedOrigins("http://localhost:3000") // Allow requests from any origin
+                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Allow specific HTTP methods
+                        .allowedHeaders("*") // Allow all headers
+                        .allowCredentials(true) // Allow sending cookies
+                        .maxAge(3600);
             }
         };
     }
