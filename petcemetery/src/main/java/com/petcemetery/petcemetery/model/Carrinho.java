@@ -1,32 +1,50 @@
 package com.petcemetery.petcemetery.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
 @Component
 public class Carrinho {
     
-    private List<Jazigo> itens;
+    @Id
+    @Column(name = "cpf_cliente")
+    private String cpfCliente;
+
+    @Column(name = "jazigo")
+    private Jazigo jazigo;
+
+    @Column(name = "total_carrinho")
     private double totalCarrinho;
 
-    public Carrinho() {
-        this.itens = new ArrayList<>();
+    public Carrinho() {}
+
+    // Construtor de carrinho que deve ser chamado na criação de um cliente.
+    public Carrinho(String cpfCliente) {
+        this.cpfCliente = cpfCliente;
+        this.jazigo = null;
         this.totalCarrinho = 0.0;
     }
 
-    public void adicionarItem(Jazigo jazigo, Jazigo.PlanoEnum plano) {
-        double valorItem = Jazigo.precoJazigo + plano.getPreco();
-        this.itens.add(jazigo);
-        this.totalCarrinho += valorItem;
+    public void adicionarItem(Jazigo jazigo) {
+        double valorTotal = Jazigo.precoJazigo + jazigo.getPlano().getPreco();
+        this.jazigo = jazigo;
     }
+
+    public void setJazigo(Jazigo jazigo) {
+        this.jazigo = jazigo;
+    }
+
     public void limparCarrinho() {
-        this.itens.clear();
+        this.jazigo = null;
         this.totalCarrinho = 0.0;
     }
-    public void removerItem(Jazigo jazigo) {
-        this.itens.remove(jazigo);
+
+    public void removerItem() {
+        this.jazigo = null;
         double valorItem = Jazigo.precoJazigo + jazigo.getPlano().getPreco();
         this.totalCarrinho -= valorItem;
     }
@@ -35,7 +53,15 @@ public class Carrinho {
         return this.totalCarrinho;
     }
 
-    public List<Jazigo> getItens() {
-        return this.itens;
+    public Jazigo getJazigo() {
+        return this.jazigo;
+    }
+
+    public String getCpfCliente() {
+        return cpfCliente;
+    }
+
+    public void setTotalCarrinho(double valor) {
+        this.totalCarrinho = valor;
     }
 }

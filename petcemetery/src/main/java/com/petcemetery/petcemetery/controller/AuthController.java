@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.petcemetery.petcemetery.model.Admin;
 import com.petcemetery.petcemetery.model.Cliente;
+import com.petcemetery.petcemetery.model.Carrinho;
 import com.petcemetery.petcemetery.outros.EmailValidator;
 import com.petcemetery.petcemetery.repositorio.AdminRepository;
+import com.petcemetery.petcemetery.repositorio.CarrinhoRepository;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 
 import io.micrometer.common.util.StringUtils;
@@ -24,6 +26,9 @@ public class AuthController {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private CarrinhoRepository carrinhoRepository;
 
     @Autowired
     private AdminRepository adminRepository;
@@ -105,6 +110,7 @@ public class AuthController {
             // Adiciona o cliente no banco de dados
         } else {
             clienteRepository.save(new Cliente(email, telefone, nome, cpf, cep, rua, numero, complemento, senha));
+            carrinhoRepository.save(new Carrinho(cpf));
             System.out.println("Cliente adicionado no banco com sucesso.");
             return ResponseEntity.ok("OK;" + cpf);
         }

@@ -31,7 +31,10 @@ public class Jazigo {
     private long idJazigo;
 
     @Transient
-    public static final double precoJazigo = 30000;
+    public static double precoJazigo = 30000;
+
+    @Transient
+    public static double aluguelJazigo = 555.99;
     
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -42,7 +45,7 @@ public class Jazigo {
     private Date dataUltimaVisita;
 
     @Column(name = "disponivel")
-    private boolean disponivel;
+    private Boolean disponivel;
 
     @Column(name = "mensagem")
     private String mensagem;
@@ -87,7 +90,7 @@ public class Jazigo {
     public Jazigo() {
     }
 
-    public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, boolean disponivel,
+    public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, Boolean disponivel,
             PlanoEnum plano) {
         this.endereco = endereco;
         this.proprietario = proprietario;
@@ -96,6 +99,7 @@ public class Jazigo {
         this.disponivel = disponivel;
         this.plano = plano;
     }
+
     public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, Date dataUltimaVisita,
             boolean disponivel, String mensagem, String foto, String notas, PlanoEnum plano, Pet petEnterrado) {
         this.endereco = endereco;
@@ -140,10 +144,10 @@ public class Jazigo {
     public void setDataUltimaVisita(Date dataUltimaVisita) {
         this.dataUltimaVisita = dataUltimaVisita;
     }
-    public boolean isDisponivel() {
+    public Boolean isDisponivel() {
         return disponivel;
     }
-    public void setDisponivel(boolean disponivel) {
+    public void setDisponivel(Boolean disponivel) {
         this.disponivel = disponivel;
     }
     public String getMensagem() {
@@ -176,8 +180,4 @@ public class Jazigo {
     public void setPlano(PlanoEnum plano) {
         this.plano = plano;
     }
-
-    
-    
-
 }

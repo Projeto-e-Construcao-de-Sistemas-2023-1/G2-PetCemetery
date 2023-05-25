@@ -30,6 +30,7 @@ public class Cliente extends Usuario{
     public int getQuantJazigos() {
         return quantJazigos;
     }
+    
     public void setQuantJazigos(int quantJazigos) {
         this.quantJazigos = quantJazigos;
     }
@@ -41,7 +42,4 @@ public class Cliente extends Usuario{
     public void setDesativado(Boolean desativado) {
         this.desativado = desativado;
     }
-     
-
-    
 }
