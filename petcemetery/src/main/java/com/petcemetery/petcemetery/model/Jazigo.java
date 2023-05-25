@@ -84,7 +84,7 @@ public class Jazigo {
     }
 
     public enum StatusEnum {
-        DISPONÍVEL,
+        DISPONIVEL,
         OCUPADO
     }
     public Jazigo() {
@@ -144,7 +144,7 @@ public class Jazigo {
     public void setDataUltimaVisita(Date dataUltimaVisita) {
         this.dataUltimaVisita = dataUltimaVisita;
     }
-    public Boolean isDisponivel() {
+    public Boolean getDisponivel() {
         return disponivel;
     }
     public void setDisponivel(Boolean disponivel) {

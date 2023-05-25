@@ -7,5 +7,5 @@ import com.petcemetery.petcemetery.model.Servico;
 
 @Repository
 public interface ServicoRepository extends JpaRepository<Servico, Long> {
-    Servico findByText(String text);
+
 }

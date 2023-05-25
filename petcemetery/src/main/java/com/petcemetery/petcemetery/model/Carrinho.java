@@ -1,20 +1,20 @@
 package com.petcemetery.petcemetery.model;
 
-import org.springframework.stereotype.Component;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 
 @Entity
-@Component
 public class Carrinho {
     
     @Id
     @Column(name = "cpf_cliente")
     private String cpfCliente;
 
-    @Column(name = "jazigo")
+    @OneToOne
+    @JoinColumn(name = "jazigo", referencedColumnName="id_jazigo")
     private Jazigo jazigo;
 
     @Column(name = "total_carrinho")
@@ -29,11 +29,6 @@ public class Carrinho {
         this.totalCarrinho = 0.0;
     }
 
-    public void adicionarItem(Jazigo jazigo) {
-        double valorTotal = Jazigo.precoJazigo + jazigo.getPlano().getPreco();
-        this.jazigo = jazigo;
-    }
-
     public void setJazigo(Jazigo jazigo) {
         this.jazigo = jazigo;
     }
@@ -45,8 +40,7 @@ public class Carrinho {
 
     public void removerItem() {
         this.jazigo = null;
-        double valorItem = Jazigo.precoJazigo + jazigo.getPlano().getPreco();
-        this.totalCarrinho -= valorItem;
+        this.totalCarrinho = 0.0;
     }
 
     public double getTotalCarrinho() {
