@@ -14,7 +14,7 @@ public class Cliente extends Usuario{
     private int quantJazigos;
 
     @Column(name = "desativado")
-    private boolean desativado;
+    private Boolean desativado;
 
     public Cliente(String email, String telefone, String nome, String cpf, String senha) {
         super(email, telefone, nome, cpf, false, senha);
@@ -34,11 +34,11 @@ public class Cliente extends Usuario{
         this.quantJazigos = quantJazigos;
     }
 
-    public boolean getDesativado() {
+    public Boolean getDesativado() {
         return this.desativado;
     }
 
-    public void setDesativado(boolean desativado) {
+    public void setDesativado(Boolean desativado) {
         this.desativado = desativado;
     }
      

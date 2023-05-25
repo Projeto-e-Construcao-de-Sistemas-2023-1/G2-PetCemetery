@@ -26,7 +26,7 @@ public class Usuario {
     private String cep;
 
     @Column(name = "isAdmin")
-    private boolean admin;
+    private Boolean admin;
 
     @Column(name = "rua")
     private String rua;
@@ -40,7 +40,7 @@ public class Usuario {
     @Column(name = "senha")
     private String senha;
 
-    public Usuario(String email, String telefone, String nome, String cpf, boolean admin, String senha) {
+    public Usuario(String email, String telefone, String nome, String cpf, Boolean admin, String senha) {
         this.email = email;
         this.telefone = telefone;
         this.nome = nome;
@@ -49,7 +49,7 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public Usuario(String email, String telefone, String nome, String cpf, String cep, boolean admin, String rua,
+    public Usuario(String email, String telefone, String nome, String cpf, String cep, Boolean admin, String rua,
             int numero, String complemento, String senha) {
         this.email = email;
         this.telefone = telefone;
@@ -103,11 +103,11 @@ public class Usuario {
         this.cep = cep;
     }
 
-    public boolean isAdmin() {
+    public Boolean isAdmin() {
         return admin;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setAdmin(Boolean admin) {
         this.admin = admin;
     }
 

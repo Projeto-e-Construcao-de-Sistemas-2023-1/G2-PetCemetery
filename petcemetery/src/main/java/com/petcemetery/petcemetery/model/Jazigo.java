@@ -27,7 +27,7 @@ public class Jazigo {
 
     @Id
     @Column(name = "id_jazigo")
-    private int idJazigo;
+    private long idJazigo;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -116,10 +116,10 @@ public class Jazigo {
     public void setProprietario(Cliente proprietario) {
         this.proprietario = proprietario;
     }
-    public int getIdJazigo() {
+    public long getIdJazigo() {
         return idJazigo;
     }
-    public void setIdJazigo(int idJazigo) {
+    public void setIdJazigo(long idJazigo) {
         this.idJazigo = idJazigo;
     }
     public StatusEnum getStatus() {
