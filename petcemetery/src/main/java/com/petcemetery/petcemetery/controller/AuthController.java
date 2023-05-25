@@ -57,7 +57,9 @@ public class AuthController {
         String cpf = (String) requestBody.get("cpf");
         String cep = (String) requestBody.get("cep");
         String rua = (String) requestBody.get("rua");
-        Integer numero = (int) requestBody.get("numero");
+        if(!StringUtils.isBlank((String) requestBody.get("numero"))) {
+            Integer numero = Integer.parseInt((String) requestBody.get("numero"));
+        }
         String complemento = (String) requestBody.get("complemento");
         String nome = (String) requestBody.get("nome");
         String telefone = (String) requestBody.get("telefone");
