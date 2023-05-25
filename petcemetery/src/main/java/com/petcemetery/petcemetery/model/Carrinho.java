@@ -21,7 +21,10 @@ public class Carrinho {
         this.itens.add(jazigo);
         this.totalCarrinho += valorItem;
     }
-
+    public void limparCarrinho() {
+        this.itens.clear();
+        this.totalCarrinho = 0.0;
+    }
     public void removerItem(Jazigo jazigo) {
         this.itens.remove(jazigo);
         double valorItem = Jazigo.precoJazigo + jazigo.getPlano().getPreco();

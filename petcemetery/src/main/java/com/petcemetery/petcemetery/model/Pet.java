@@ -27,6 +27,9 @@ public class Pet {
     @Column(name = "especie")
     private String especie;
     
+    public Pet() {
+        // Construtor padrão sem argumentos
+    }
     public Pet(long id, String nomePet, String especie) {
         this.id = id;
         this.nomePet = nomePet;
