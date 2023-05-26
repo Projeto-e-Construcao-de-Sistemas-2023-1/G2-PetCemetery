@@ -29,7 +29,6 @@ public class ClienteController {
             @PathVariable("cpf") String cpf) {
 
         Cliente cliente = clienteRepository.findByCpf(cpf);
-        System.out.println("CHEGOU NO EDITAR PERFIL");
 
         // Vai passar por todos os valores do forms de editar perfil, para verificar
         // quais foram preenchidos e quais não foram
@@ -86,21 +85,18 @@ public class ClienteController {
     }
 
     @PostMapping("/desativar-perfil")
-    public ResponseEntity<?> desativarPerfil(@PathVariable("cpf") String cpf) {
+    public ResponseEntity<?> desativarPerfil(@PathVariable("cpfInput") String cpf) {
 
+        System.out.println(cpf);
         Cliente cliente = clienteRepository.findByCpf(cpf);
 
-        if (cliente.getDesativado()) {
-            System.out.println("A conta desse cliente já está desativada.");
-            return ResponseEntity.badRequest().body("A conta desse cliente já está desativada.");
+        if(cliente.getDesativado()) {
+            return ResponseEntity.ok("ERR;conta_desativada");
         }
 
-        System.out.println(cliente.getDesativado());
         cliente.setDesativado(true);
-        System.out.println(cliente.getDesativado());
-        System.out.println("Conta desativada com sucesso.");
 
         clienteRepository.save(cliente);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("OK;" + cpf);
     }
 }
