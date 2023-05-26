@@ -17,7 +17,6 @@ import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 
 import io.micrometer.common.util.StringUtils;
 
-
 @RestController
 @RequestMapping("/api/cliente/{cpf}")
 public class ClienteController {
@@ -26,15 +25,18 @@ public class ClienteController {
     private ClienteRepository clienteRepository;
 
     @PostMapping(path = "/editar-perfil", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> editarPerfil(@RequestBody Map<String, Object> requestBody, @PathVariable("cpf") String cpf) {
+    public ResponseEntity<?> editarPerfil(@RequestBody Map<String, Object> requestBody,
+            @PathVariable("cpf") String cpf) {
 
         Cliente cliente = clienteRepository.findByCpf(cpf);
+        System.out.println("CHEGOU NO EDITAR PERFIL");
 
-        // Vai passar por todos os valores do forms de editar perfil, para verificar quais foram preenchidos e quais não foram
+        // Vai passar por todos os valores do forms de editar perfil, para verificar
+        // quais foram preenchidos e quais não foram
         for (Map.Entry<String, Object> entry : requestBody.entrySet()) {
             String campo = entry.getKey();
             Object valor = entry.getValue();
-    
+
             if (!StringUtils.isBlank((String) valor)) {
                 // Atualizar o campo correspondente no cliente
                 switch (campo) {
@@ -42,9 +44,9 @@ public class ClienteController {
                         cliente.setNome((String) valor);
                         break;
                     case "email":
-                        if (!EmailValidator.isValid((String)valor)) {
-                            System.out.println("Formado do email inválido");
-                            return ResponseEntity.badRequest().body("O formato do email não é valido.");
+                        if (!EmailValidator.isValid((String) valor)) {
+                            System.out.println("Formato do email inválido");
+                            return ResponseEntity.ok("ERR;email_invalido");
                         }
                         cliente.setEmail((String) valor);
                         break;
@@ -67,8 +69,8 @@ public class ClienteController {
                         String senha_repetida = (String) requestBody.get("senharepeat");
                         if (!valor.equals(senha_repetida)) {
                             System.out.println("Senhas nao coincidem");
-                            return ResponseEntity.badRequest().body("As senhas não coincidem.");
-                        } 
+                            return ResponseEntity.ok("ERR;senhas_nao_coincidem");
+                        }
                         cliente.setSenha((String) valor);
                         break;
                 }
@@ -78,8 +80,9 @@ public class ClienteController {
         clienteRepository.save(cliente);
 
         System.out.println("Informaçoes alteradas com sucesso.");
-        // Se tudo ocorrer certo (validações) o cliente é redirecionado para uma página de confirmação.
-        return ResponseEntity.ok("redirect:/confirmacao");
+        // Se tudo ocorrer certo (validações) o cliente é redirecionado para uma página
+        // de confirmação.
+        return ResponseEntity.ok("OK;informacoes_alteradas_com_sucesso");
     }
 
     @PostMapping("/desativar-perfil")
@@ -87,7 +90,7 @@ public class ClienteController {
 
         Cliente cliente = clienteRepository.findByCpf(cpf);
 
-        if(cliente.getDesativado()) {
+        if (cliente.getDesativado()) {
             System.out.println("A conta desse cliente já está desativada.");
             return ResponseEntity.badRequest().body("A conta desse cliente já está desativada.");
         }
