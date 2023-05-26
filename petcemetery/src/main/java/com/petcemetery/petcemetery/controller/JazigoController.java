@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -31,7 +30,7 @@ public class JazigoController {
     private CarrinhoRepository carrinhoRepository;
 
     // Envia para o front quais jazigos estão disponíveis, para exibir o mapa de visualização de jazigos - FUNCIONANDO
-    @GetMapping("/jazigos_disponiveis")
+    @GetMapping("/{cpf}/jazigos_disponiveis")
     public ResponseEntity<?> jazigoDisponivel() {
         String str = "";
 
@@ -41,7 +40,7 @@ public class JazigoController {
         }
     
         System.out.println(str);
-        return ResponseEntity.ok(str);  // Retorne a String de jazigos disponiveis 
+        return ResponseEntity.ok("OK;" + str);  // Retorne a String de jazigos disponiveis 
     }
 
     // Envia para o front todos os jazigos do proprietário, para ser exibido na home do cliente - FUNCIONANDO
