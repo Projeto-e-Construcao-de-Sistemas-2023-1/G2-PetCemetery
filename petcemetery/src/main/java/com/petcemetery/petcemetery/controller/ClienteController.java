@@ -90,7 +90,7 @@ public class ClienteController {
         System.out.println(cpf);
         Cliente cliente = clienteRepository.findByCpf(cpf);
 
-        if(cliente.getDesativado()) {
+        if (cliente.getDesativado()) {
             return ResponseEntity.ok("ERR;conta_desativada");
         }
 
@@ -98,5 +98,18 @@ public class ClienteController {
 
         clienteRepository.save(cliente);
         return ResponseEntity.ok("OK;" + cpf);
+    }
+
+    @PostMapping("/exibir-perfil")
+    public ResponseEntity<?> exibirPerfil(@PathVariable("cpf") String cpf) {
+        System.out.println(cpf);
+        Cliente cliente = clienteRepository.findByCpf(cpf);
+
+        if (cliente.getDesativado()) {
+            return ResponseEntity.ok("ERR;conta_desativada");
+        }
+
+        clienteRepository.save(cliente);
+        return ResponseEntity.ok("OK;" + cliente.getNome() + ";" + cliente.getEmail());
     }
 }
