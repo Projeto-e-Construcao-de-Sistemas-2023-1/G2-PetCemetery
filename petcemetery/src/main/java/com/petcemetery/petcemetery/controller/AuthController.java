@@ -72,10 +72,7 @@ public class AuthController {
         String cpf = (String) requestBody.get("cpf");
         String cep = (String) requestBody.get("cep");
         String rua = (String) requestBody.get("rua");
-        Integer numero = 0;
-        if (!StringUtils.isBlank((String) requestBody.get("numero"))) {
-            numero = Integer.parseInt((String) requestBody.get("numero"));
-        }
+        String numero = (String) requestBody.get("numero");
         String complemento = "";
         if (!StringUtils.isBlank((String) requestBody.get("complemento"))) {
             complemento = (String) requestBody.get("complemento");
@@ -88,7 +85,7 @@ public class AuthController {
         // Checa se algum dos campos não foi preenchido e exibe uma mensagem de erro
         if (StringUtils.isBlank(nome) || StringUtils.isBlank(email) || StringUtils.isBlank(senha)
                 || StringUtils.isBlank(senha_repetida)
-                || StringUtils.isBlank(cep) || StringUtils.isBlank(rua) || numero <= 0 || StringUtils.isBlank(cpf)
+                || StringUtils.isBlank(cep) || StringUtils.isBlank(rua) || StringUtils.isBlank(numero) || StringUtils.isBlank(cpf)
                 || StringUtils.isBlank(telefone)) {
             System.out.println("Preencha todos os campos");
             return ResponseEntity.ok("ERR;campo_vazio");
