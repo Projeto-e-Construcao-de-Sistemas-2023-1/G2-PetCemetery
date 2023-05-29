@@ -85,7 +85,7 @@ public class ClienteController {
     }
 
     @PostMapping("/desativar-perfil")
-    public ResponseEntity<?> desativarPerfil(@PathVariable("cpfInput") String cpf) {
+    public ResponseEntity<?> desativarPerfil(@PathVariable("cpf") String cpf) {
 
         System.out.println(cpf);
         Cliente cliente = clienteRepository.findByCpf(cpf);
