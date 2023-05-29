@@ -100,7 +100,7 @@ public class ClienteController {
         return ResponseEntity.ok("OK;" + cpf);
     }
 
-    @PostMapping("/get-alterar-perfil")
+    @PostMapping("/get-alterar-perfil") // Retorna os dados do cliente, menos a senha, para serem exibidos no editar perfil. Isso evita o cliente ter que escrever tudo de novo.
     public ResponseEntity<?> getAlterarPerfil(@PathVariable("cpf") String cpf) {
 
         System.out.println(cpf);

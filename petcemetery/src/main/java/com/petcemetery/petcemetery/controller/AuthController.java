@@ -76,7 +76,10 @@ public class AuthController {
         if (!StringUtils.isBlank((String) requestBody.get("numero"))) {
             numero = Integer.parseInt((String) requestBody.get("numero"));
         }
-        String complemento = (String) requestBody.get("complemento");
+        String complemento = "";
+        if (!StringUtils.isBlank((String) requestBody.get("complemento"))) {
+            complemento = (String) requestBody.get("complemento");
+        } //complemento eh opcional
         String nome = (String) requestBody.get("nome");
         String telefone = (String) requestBody.get("telefone");
 
