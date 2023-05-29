@@ -100,6 +100,21 @@ public class ClienteController {
         return ResponseEntity.ok("OK;" + cpf);
     }
 
+    @PostMapping("/get-alterar-perfil")
+    public ResponseEntity<?> getAlterarPerfil(@PathVariable("cpf") String cpf) {
+
+        System.out.println(cpf);
+        Cliente cliente = clienteRepository.findByCpf(cpf);
+
+        if (cliente.getDesativado()) {
+            return ResponseEntity.ok("ERR;conta_desativada;;;;;;");
+        }
+
+        clienteRepository.save(cliente);
+        return ResponseEntity.ok("OK;" + cliente.getEmail() + ";" + cliente.getNome() + ";" + cliente.getTelefone() + ";" + cliente.getRua() + ";" + cliente.getNumero() + ";" + cliente.getComplemento() + ";" + cliente.getCep());
+    }
+
+
     @PostMapping("/exibir-perfil")
     public ResponseEntity<?> exibirPerfil(@PathVariable("cpf") String cpf) {
         System.out.println(cpf);
