@@ -21,7 +21,7 @@ public class Cliente extends Usuario{
         this.quantJazigos = 0;
         this.desativado = false;
     }
-    public Cliente(String email, String telefone, String nome, String cpf, String cep, String rua, int numero, String complemento, String senha) {
+    public Cliente(String email, String telefone, String nome, String cpf, String cep, String rua, String numero, String complemento, String senha) {
         super(email, telefone, nome, cpf, cep, false, rua, numero, complemento, senha);
         this.quantJazigos = 0;
         this.desativado = false;

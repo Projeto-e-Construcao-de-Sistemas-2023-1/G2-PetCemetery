@@ -32,7 +32,7 @@ public class Usuario {
     private String rua;
 
     @Column(name = "numero")
-    private int numero;
+    private String numero;
 
     @Column(name = "complemento")
     private String complemento;
@@ -50,7 +50,7 @@ public class Usuario {
     }
 
     public Usuario(String email, String telefone, String nome, String cpf, String cep, Boolean admin, String rua,
-            int numero, String complemento, String senha) {
+            String numero, String complemento, String senha) {
         this.email = email;
         this.telefone = telefone;
         this.nome = nome;
@@ -119,11 +119,11 @@ public class Usuario {
         this.rua = rua;
     }
 
-    public int getNumero() {
+    public String getNumero() {
         return numero;
     }
 
-    public void setNumero(int numero) {
+    public void setNumero(String numero) {
         this.numero = numero;
     }
 

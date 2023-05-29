@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,8 @@ public class ClienteController {
     @Autowired
     private ClienteRepository clienteRepository;
 
+
+    // Recebe as informações que o cliente deseja mudar, em JSON, e altera no banco de dados
     @PostMapping(path = "/editar-perfil", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> editarPerfil(@RequestBody Map<String, Object> requestBody,
             @PathVariable("cpf") String cpf) {
@@ -56,7 +59,7 @@ public class ClienteController {
                         cliente.setRua((String) valor);
                         break;
                     case "numero":
-                        cliente.setNumero(Integer.parseInt((String) valor));
+                        cliente.setNumero((String) valor);
                         break;
                     case "complemento":
                         cliente.setComplemento((String) valor);
@@ -84,6 +87,7 @@ public class ClienteController {
         return ResponseEntity.ok("OK;informacoes_alteradas_com_sucesso");
     }
 
+    // Desativa o perfil do Cliente quando solicitado
     @PostMapping("/desativar-perfil")
     public ResponseEntity<?> desativarPerfil(@PathVariable("cpf") String cpf) {
 
@@ -97,17 +101,18 @@ public class ClienteController {
         cliente.setDesativado(true);
 
         clienteRepository.save(cliente);
-        return ResponseEntity.ok("OK;" + cpf);
+        return ResponseEntity.ok("OK;");
     }
 
-    @PostMapping("/get-alterar-perfil") // Retorna os dados do cliente, menos a senha, para serem exibidos no editar perfil. Isso evita o cliente ter que escrever tudo de novo.
+    // Retorna os dados do cliente, menos a senha e CPF, na tela AlterarPerfil.js, para serem exibidos no editar perfil. Isso evita o cliente ter que escrever tudo de novo.
+    @GetMapping("/get-alterar-perfil") 
     public ResponseEntity<?> getAlterarPerfil(@PathVariable("cpf") String cpf) {
 
         System.out.println(cpf);
         Cliente cliente = clienteRepository.findByCpf(cpf);
 
         if (cliente.getDesativado()) {
-            return ResponseEntity.ok("ERR;conta_desativada;;;;;;");
+            return ResponseEntity.ok("ERR;conta_desativada");
         }
 
         clienteRepository.save(cliente);
@@ -115,7 +120,8 @@ public class ClienteController {
     }
 
 
-    @PostMapping("/exibir-perfil")
+    // Exibe o nome e o email do perfil do Cliente na página EditarPerfil.js
+    @GetMapping("/exibir-perfil")
     public ResponseEntity<?> exibirPerfil(@PathVariable("cpf") String cpf) {
         System.out.println(cpf);
         Cliente cliente = clienteRepository.findByCpf(cpf);
