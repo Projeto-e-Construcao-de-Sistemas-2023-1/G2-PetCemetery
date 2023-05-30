@@ -57,9 +57,23 @@ public class JazigoController {
         return ResponseEntity.ok("OK;" + cpf + ";" + id + ";" + jazigo.getEndereco() + ";" + String.valueOf(Jazigo.precoJazigo)); // Retorna o cpf do cliente, endereco do jazigo, id do jazigo e o seu preço
     }
 
+    //todo Envia para o front o endereco do jazigo selecionado, o id dele e o preço de aluguel, para ser exibido na tela antes da compra do ornamento - TESTAR!
+    @GetMapping("/{cpf}/alugar_jazigo/{id}")
+    public ResponseEntity<?> alugarJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
+        Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
+
+        return ResponseEntity.ok("OK;" + cpf + ";" + id + ";" + jazigo.getEndereco() + ";" + String.valueOf(Jazigo.aluguelJazigo)); // Retorna o cpf do cliente, endereco do jazigo, id do jazigo e o seu preço de aluguel
+    }
+
     // Envia para o front os precos dos planos atuais do sistema, para ser exibido na tela de seleção de planos - FUNCIONANDO
     @GetMapping("/{cpf}/comprar_jazigo/{id}/listar_planos")
     public ResponseEntity<?> listarPlanos(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
+        return ResponseEntity.ok("OK;" +  cpf + ";" + String.valueOf(id) + ";" + String.valueOf(Servico.basic) + ";" + String.valueOf(Servico.silver) + ";" + String.valueOf(Servico.gold));
+    }
+
+    //todo Envia para o front os precos dos planos atuais do sistema, para ser exibido na tela de seleção de planos para o jazigo alugado - TESTAR!
+    @GetMapping("/{cpf}/alugar_jazigo/{id}/listar_planos")
+    public ResponseEntity<?> listarPlanosAlugar(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
         return ResponseEntity.ok("OK;" +  cpf + ";" + String.valueOf(id) + ";" + String.valueOf(Servico.basic) + ";" + String.valueOf(Servico.silver) + ";" + String.valueOf(Servico.gold));
     }
 
@@ -88,6 +102,32 @@ public class JazigoController {
 
     }
 
+    //todo Recebe os valores do plano que o cliente selecionou, e então adiciona tanto o jazigo quanto o plano ao carrinho e salva no banco - TESTAR!
+    @PostMapping("/{cpf}/alugar_jazigo/{id}/listar_planos/plano")
+    public ResponseEntity<?> finalizarAluguel(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado) {
+        
+        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
+
+        if (optionalJazigo.isPresent()) {
+            // Pegando o plano selecionado 
+            PlanoEnum plano = PlanoEnum.valueOf(planoSelecionado.toUpperCase());
+
+            Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+            Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
+
+            // Setando e salvando o carrinho no banco de dados.
+            jazigo.setPlano(plano);    
+            carrinho.setJazigo(jazigo);
+            carrinho.setTotalCarrinho(carrinho.getTotalCarrinho() + plano.getPreco() + Jazigo.aluguelJazigo);
+            carrinhoRepository.save(carrinho);
+
+            return ResponseEntity.ok("OK;" + cpf + ";" + String.valueOf(id));
+        } else {
+            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
+        }
+
+    }
+
     // Retorna todas as informações do carrinho para o front, na hora de finalizar a compra - FUNCIONANDO
     @GetMapping("/{cpf}/comprar_jazigo/{id}/informacoes_carrinho")
     public ResponseEntity<?> informacoesCarrinho(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
@@ -99,11 +139,49 @@ public class JazigoController {
                                 String.valueOf(jazigo.getPlano().getPreco()) + ";" + "Total:" + ";" + String.valueOf(jazigo.getPlano().getPreco() + Jazigo.precoJazigo));
     }
 
+    //todo Retorna todas as informações do carrinho para o front, na hora de finalizar o aluguel - TESTAR!
+    @GetMapping("/{cpf}/alugar_jazigo/{id}/informacoes_carrinho")
+    public ResponseEntity<?> informacoesCarrinhoAluguel(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
+        
+        Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
+
+        // Retorna todas as informações do carrinho para o front
+        return ResponseEntity.ok("OK;" + cpf + ";" + String.valueOf(id) + ";" + jazigo.getEndereco() + ";Aluguel Mensal;" + 
+                                String.valueOf(Jazigo.aluguelJazigo) + ";" + String.valueOf(jazigo.getPlano()) + ";Personalização;" + 
+                                String.valueOf(jazigo.getPlano().getPreco()) + ";" + "Total:" + ";" + String.valueOf(jazigo.getPlano().getPreco() + Jazigo.aluguelJazigo));
+    }
+
     // Quando o cliente finaliza a compra, o carrinho do cliente é limpado - FUNCIONANDO
     @PostMapping("/{cpf}/comprar_jazigo/{id}/informacoes_carrinho/finalizar")
     public ResponseEntity<?> realizarPagamento(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
         Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+        if (optionalJazigo.isPresent()) {
+            Jazigo jazigo = optionalJazigo.get();
+
+            // Atualiza o jazigo
+            jazigo.setDisponivel(false);
+            
+            // Salva as alterações no banco de dados
+            jazigoRepository.save(jazigo);
+
+            // Limpa o carrinho
+            carrinho.limparCarrinho();
+            carrinhoRepository.save(carrinho);
+
+            return ResponseEntity.ok("OK;");
+        } else {
+            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
+        }
+    }
+
+    //todo Quando o cliente finaliza o pedido de aluguel, o carrinho do cliente é limpado - TESTAR!
+    @PostMapping("/{cpf}/alugar_jazigo/{id}/informacoes_carrinho/finalizar")
+    public ResponseEntity<?> realizarPagamentoAluguel(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
+        
+        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
+        Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+        
         if (optionalJazigo.isPresent()) {
             Jazigo jazigo = optionalJazigo.get();
 
