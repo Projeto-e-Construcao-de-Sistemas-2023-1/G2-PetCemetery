@@ -200,4 +200,23 @@ public class JazigoController {
             return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
         }
     }
+
+    //todo falta implementar no front - FUNCIONANDO
+    @PostMapping("/{cpf}/editar_jazigo/{id}")
+    public ResponseEntity<?> editarMensagemJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem) {
+        
+        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
+        
+        if (optionalJazigo.isPresent()) {
+            Jazigo jazigo = optionalJazigo.get();
+
+            jazigo.setMensagem(mensagem);
+            jazigoRepository.save(jazigo);
+
+            return ResponseEntity.ok("OK;Mensagem_editada");
+        } else {
+            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
+        }
+    }
+
 }
