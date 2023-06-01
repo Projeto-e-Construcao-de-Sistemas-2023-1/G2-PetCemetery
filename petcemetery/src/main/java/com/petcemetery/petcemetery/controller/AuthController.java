@@ -47,8 +47,7 @@ public class AuthController {
             System.out.println("cliente logado com sucesso");
             return ResponseEntity.ok("OK;cliente;" + cliente.getCpf()); // redireciona para home do cliente
         } else if (admin != null) {
-            return ResponseEntity.ok("OK;admin;"); // redireciona para home do admin
-            // formato: STATUS;tipo_cliente;cpf
+            return ResponseEntity.ok("OK;admin;" + admin.getCpf()); // redireciona para home do admin
         } else {
             cliente = clienteRepository.findByEmail(email);
             admin = adminRepository.findByEmail(email);
