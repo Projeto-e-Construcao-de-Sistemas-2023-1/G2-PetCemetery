@@ -24,12 +24,12 @@ public class Servico {
     @Column(name = "id_servico")
     private int idServico;
 
-    @Enumerated(EnumType.STRING)
-    private ServicoEnum servico;
-
     @ManyToOne
-    @JoinColumn(name = "carrinho_cpf_cliente")
+    @JoinColumn(name = "cpf_cliente")
     private Carrinho carrinho;
+
+    @Enumerated(EnumType.STRING)
+    private ServicoEnum tipoServico;
 
     @OneToOne
     @JoinColumn(name = "jazigo_id_jazigo")
@@ -92,9 +92,8 @@ public class Servico {
         }
     }
     
-
-    public Servico(ServicoEnum servico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano) {
-        this.servico = servico;
+    public Servico(ServicoEnum tipoSservico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano) {
+        this.tipoServico = tipoSservico;
         this.valor = valor + plano.getPreco(); //* O valor do servico vai englobar o valor do jazigo + o valor do seu plano (caso seja compra ou aluguel, senão esses valores serão null) */
         this.cliente = cliente;
         this.jazigo = jazigo;
@@ -109,20 +108,12 @@ public class Servico {
         return idServico;
     }
 
-    public ServicoEnum getServico() {
-        return servico;
+    public ServicoEnum getTipoServico() {
+        return tipoServico;
     }
 
-    public void setServico(ServicoEnum servico) {
-        this.servico = servico;
-    }
-
-    public Carrinho getCarrinho() {
-        return carrinho;
-    }
-
-    public void setCarrinho(Carrinho carrinho) {
-        this.carrinho = carrinho;
+    public void setTipoServico(ServicoEnum servico) {
+        this.tipoServico = servico;
     }
 
     public Jazigo getJazigo() {
