@@ -187,7 +187,7 @@ public class JazigoController {
         if (carrinho != null) {
             
             for (Servico servico : carrinho.getServicos()) {
-                if(servico.getServico().equals(ServicoEnum.COMPRA) || servico.getServico().equals(ServicoEnum.ALUGUEL)){
+                if(servico.getTipoServico().equals(ServicoEnum.COMPRA) || servico.getTipoServico().equals(ServicoEnum.ALUGUEL)){
                     Jazigo jazigo = servico.getJazigo();
                     Cliente cliente = clienteRepository.findByCpf(cpf);
 
