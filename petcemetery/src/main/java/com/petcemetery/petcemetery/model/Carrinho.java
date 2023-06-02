@@ -31,21 +31,16 @@ public class Carrinho {
     }
 
     public void adicionarServico(Servico servico) {
-        servico.setCarrinho(this);
         this.servicos.add(servico);
         this.totalCarrinho += servico.getValor();
     }
 
     public void removerServico(Servico servico) {
-        servico.setCarrinho(null);
         this.servicos.remove(servico);
         this.totalCarrinho -= servico.getValor();
     }
 
     public void limparCarrinho() {
-        for (Servico servico : servicos) {
-            servico.setCarrinho(null);
-        }
         this.servicos.clear();
         this.totalCarrinho = 0.0;
     }
