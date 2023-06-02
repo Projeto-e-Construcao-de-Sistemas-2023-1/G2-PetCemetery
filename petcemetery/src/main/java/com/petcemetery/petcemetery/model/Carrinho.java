@@ -3,19 +3,20 @@ package com.petcemetery.petcemetery.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Carrinho {
-    
+
     @Id
     @Column(name = "cpf_cliente")
     private String cpfCliente;
 
-    @OneToOne
-    @JoinColumn(name = "jazigo", referencedColumnName="id_jazigo")
-    private Jazigo jazigo;
+    @OneToMany(mappedBy = "carrinho")
+    private List<Servico> servicos;
 
     @Column(name = "total_carrinho")
     private double totalCarrinho;
@@ -25,34 +26,40 @@ public class Carrinho {
     // Construtor de carrinho que deve ser chamado na criação de um cliente.
     public Carrinho(String cpfCliente) {
         this.cpfCliente = cpfCliente;
-        this.jazigo = null;
+        this.servicos = new ArrayList<>();
         this.totalCarrinho = 0.0;
     }
 
-    public void setJazigo(Jazigo jazigo) {
-        this.jazigo = jazigo;
+    public void adicionarServico(Servico servico) {
+        servico.setCarrinho(this);
+        this.servicos.add(servico);
+        this.totalCarrinho += servico.getValor();
+    }
+
+    public void removerServico(Servico servico) {
+        servico.setCarrinho(null);
+        this.servicos.remove(servico);
+        this.totalCarrinho -= servico.getValor();
     }
 
     public void limparCarrinho() {
-        this.jazigo = null;
-        this.totalCarrinho = 0.0;
-    }
-
-    public void removerItem() {
-        this.jazigo = null;
+        for (Servico servico : servicos) {
+            servico.setCarrinho(null);
+        }
+        this.servicos.clear();
         this.totalCarrinho = 0.0;
     }
 
     public double getTotalCarrinho() {
-        return this.totalCarrinho;
-    }
-
-    public Jazigo getJazigo() {
-        return this.jazigo;
+        return totalCarrinho;
     }
 
     public String getCpfCliente() {
         return cpfCliente;
+    }
+
+    public List<Servico> getServicos() {
+        return servicos;
     }
 
     public void setTotalCarrinho(double valor) {

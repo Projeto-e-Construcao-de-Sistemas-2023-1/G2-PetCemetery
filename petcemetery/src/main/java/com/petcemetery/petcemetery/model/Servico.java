@@ -5,22 +5,44 @@ import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Transient;
 
 @Entity(name = "Servico")
 @Table(name = "Servico")
 public class Servico {
-    
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Adicionado para permitir auto incremento do id
     @Column(name = "id_servico")
     private int idServico;
 
-    @Column(name = "servico")
     @Enumerated(EnumType.STRING)
     private ServicoEnum servico;
+
+    @ManyToOne
+    @JoinColumn(name = "carrinho_cpf_cliente")
+    private Carrinho carrinho;
+
+    @OneToOne
+    @JoinColumn(name = "jazigo_id_jazigo")
+    private Jazigo jazigo;
+
+    @Column(name = "valor")
+    private double valor;
+
+    @Column(name = "cliente")
+    private Cliente cliente;
+
+    @Column(name = "plano")
+    private PlanoEnum plano;
 
     @Transient
     private static double manutencao = 1300.0; 
@@ -30,18 +52,6 @@ public class Servico {
 
     @Transient 
     private static double enterro = 400.0;
-
-    @Transient 
-    public static double basic = 1.0;
-
-    @Transient 
-    public static double silver = 50.0;
-
-    @Transient 
-    public static double gold = 80.0;
-
-    @Column(name = "valor")
-    private float valor;
 
     public enum ServicoEnum {
         COMPRA,
@@ -82,29 +92,52 @@ public class Servico {
         }
     }
     
-    public Servico(int idServico, ServicoEnum servico, float valor) {
-        this.idServico = idServico;
+
+    public Servico(ServicoEnum servico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano) {
         this.servico = servico;
-        this.valor = valor;
+        this.valor = valor + plano.getPreco(); //* O valor do servico vai englobar o valor do jazigo + o valor do seu plano (caso seja compra ou aluguel, senão esses valores serão null) */
+        this.cliente = cliente;
+        this.jazigo = jazigo;
+        this.plano = plano;
     }
+
+    public PlanoEnum getPlano(){
+        return plano;
+    }
+
     public int getIdServico() {
         return idServico;
     }
-    public void setIdServico(int idServico) {
-        this.idServico = idServico;
-    }
+
     public ServicoEnum getServico() {
         return servico;
     }
+
     public void setServico(ServicoEnum servico) {
         this.servico = servico;
     }
-    public float getValor() {
+
+    public Carrinho getCarrinho() {
+        return carrinho;
+    }
+
+    public void setCarrinho(Carrinho carrinho) {
+        this.carrinho = carrinho;
+    }
+
+    public Jazigo getJazigo() {
+        return jazigo;
+    }
+
+    public void setJazigo(Jazigo jazigo) {
+        this.jazigo = jazigo;
+    }
+
+    public double getValor() {
         return valor;
     }
+
     public void setValor(float valor) {
         this.valor = valor;
     }
-
-    
 }
