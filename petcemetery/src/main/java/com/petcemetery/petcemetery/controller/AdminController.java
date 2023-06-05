@@ -33,7 +33,7 @@ public class AdminController {
         return ResponseEntity.ok(jazigo); 
     }
 
-    // Igual ao do cliente, porém o admin não vai conseguir selecionar um jazigo (Isso tem que ser mudado no front).
+    // Igual ao do cliente, porém o admin não vai conseguir selecionar um jazigo (Isso tem que ser mudado no front?).
     @GetMapping("/mapa-jazigos")
     public ResponseEntity<?> mapaJazigos() {
         String str = "";
