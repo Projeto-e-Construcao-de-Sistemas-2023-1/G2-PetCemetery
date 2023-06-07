@@ -24,23 +24,22 @@ public class Servico {
     @Column(name = "id_servico")
     private int idServico;
 
-    @ManyToOne
-    @JoinColumn(name = "cpf_cliente")
-    private Carrinho carrinho;
-
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_servico")
     private ServicoEnum tipoServico;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "jazigo_id_jazigo")
     private Jazigo jazigo;
 
     @Column(name = "valor")
     private double valor;
 
-    @Column(name = "cliente")
+    @ManyToOne
+    @JoinColumn(name = "cliente_cpf")
     private Cliente cliente;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "plano")
     private PlanoEnum plano;
 
@@ -91,6 +90,8 @@ public class Servico {
             }
         }
     }
+
+    public Servico(){}
     
     public Servico(ServicoEnum tipoSservico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano) {
         this.tipoServico = tipoSservico;

@@ -156,7 +156,7 @@ public class Jazigo {
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
     }
-    public String isFoto() {
+    public String getFoto() {
         return foto;
     }
     public void setFoto(String foto) {

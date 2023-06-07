@@ -11,6 +11,7 @@ import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.CarrinhoRepository;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
+import com.petcemetery.petcemetery.repositorio.ServicoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -35,6 +36,9 @@ public class JazigoController {
 
     @Autowired
     private CarrinhoRepository carrinhoRepository;
+
+    @Autowired
+    private ServicoRepository servicoRepository;
 
     @Autowired
     private ClienteRepository clienteRepository;
@@ -95,12 +99,11 @@ public class JazigoController {
         return ResponseEntity.ok("OK;" + String.valueOf(PlanoEnum.BASIC) + ";" + String.valueOf(PlanoEnum.SILVER) + ";" + String.valueOf(PlanoEnum.GOLD));
     }
 
-
-    //todo Envia para o front os precos dos planos atuais do sistema, para ser exibido na tela de seleção de planos para o jazigo alugado - TESTAR!
-    // @GetMapping("/{cpf}/alugar_jazigo/{id}/listar_planos")
-    // public ResponseEntity<?> listarPlanosAlugar(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
-    //     return ResponseEntity.ok("OK;" + String.valueOf(Servico.basic) + ";" + String.valueOf(Servico.silver) + ";" + String.valueOf(Servico.gold));
-    // }
+    // Envia para o front os precos dos planos atuais do sistema, para ser exibido na tela de seleção de planos para o jazigo alugado - FUNCIONANDO
+     @GetMapping("/{cpf}/alugar_jazigo/{id}/listar_planos")
+     public ResponseEntity<?> listarPlanosAlugar(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
+        return ResponseEntity.ok("OK;" + String.valueOf(PlanoEnum.BASIC) + ";" + String.valueOf(PlanoEnum.SILVER) + ";" + String.valueOf(PlanoEnum.GOLD));
+     }
 
     //TODO METODO CRIADO NO REFATORAMENTO DE CARRINHO
     @PostMapping("/{cpf}/comprar_jazigo/{id}/listar_planos/plano")
@@ -110,7 +113,6 @@ public class JazigoController {
         if (optionalJazigo.isPresent()) {
             // Pegando o plano selecionado 
             PlanoEnum plano = PlanoEnum.valueOf(planoSelecionado.toUpperCase());
-
             Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
             Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
             Cliente cliente = clienteRepository.findByCpf(cpf);
@@ -119,6 +121,33 @@ public class JazigoController {
             Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano);
 
             //adiciona e seta no carrinho do cliente o servico
+            servicoRepository.save(servico);
+            carrinho.adicionarServico(servico);
+            carrinhoRepository.save(carrinho);
+
+            return ResponseEntity.ok("OK;");
+        } else {
+            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
+        }
+    }
+
+    //todo Recebe os valores do plano que o cliente selecionou, e então adiciona tanto o jazigo quanto o plano ao carrinho e salva no banco - TESTAR!
+    @PostMapping("/{cpf}/alugar_jazigo/{id}/listar_planos/plano")
+    public ResponseEntity<?> finalizarAluguel(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado) {
+        
+        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
+        if (optionalJazigo.isPresent()) {
+            // Pegando o plano selecionado 
+            PlanoEnum plano = PlanoEnum.valueOf(planoSelecionado.toUpperCase());
+            Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+            Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
+            Cliente cliente = clienteRepository.findByCpf(cpf);
+
+            //criando o servico
+            Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano);
+
+            //adiciona e seta no carrinho do cliente o servico
+            servicoRepository.save(servico);
             carrinho.adicionarServico(servico);
             carrinhoRepository.save(carrinho);
 
@@ -129,56 +158,20 @@ public class JazigoController {
 
     }
 
-    //todo Recebe os valores do plano que o cliente selecionou, e então adiciona tanto o jazigo quanto o plano ao carrinho e salva no banco - TESTAR!
-    @PostMapping("/{cpf}/alugar_jazigo/{id}/listar_planos/plano")
-    public ResponseEntity<?> finalizarAluguel(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado) {
-        
-        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
-
-        if (optionalJazigo.isPresent()) {
-            // Pegando o plano selecionado 
-            PlanoEnum plano = PlanoEnum.valueOf(planoSelecionado.toUpperCase());
-
-            Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
-            Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
-
-            // Setando e salvando o carrinho no banco de dados.
-            jazigo.setPlano(plano);    
-            //carrinho.setJazigo(jazigo);
-            carrinho.setTotalCarrinho(carrinho.getTotalCarrinho() + plano.getPreco() + Jazigo.aluguelJazigo);
-            carrinhoRepository.save(carrinho);
-
-            return ResponseEntity.ok("OK;");
-        } else {
-            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
-        }
-
-    }
-
-    //TODO METODO CRIADO NO REFATORAMENTO DE CARRINHO
+    //Retorna array de servicos em json do cliente passado - FUNCIONANDO
     @GetMapping("/{cpf}/informacoes_carrinho")
     public ResponseEntity<?> informacoesCarrinho(@PathVariable("cpf") String cpf) {
         
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
 
-        //retorna ok;servicos;valortotal
-        return ResponseEntity.ok("OK;" + carrinho.getServicos().toString() + ";" + carrinho.getTotalCarrinho());
+        //retorna um json com array de servicos
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(carrinho.getServicos()); //TODO IMPLEMENTAR O DTO SERVICO
 
     }
 
-    //todo Retorna todas as informações do carrinho para o front, na hora de finalizar o aluguel - TESTAR!
-    @GetMapping("/{cpf}/alugar_jazigo/{id}/informacoes_carrinho")
-    public ResponseEntity<?> informacoesCarrinhoAluguel(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
-        
-        Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
-
-        // Retorna todas as informações do carrinho para o front
-        return ResponseEntity.ok("OK;" + jazigo.getEndereco() + ";Aluguel Mensal;" + 
-                                String.valueOf(Jazigo.aluguelJazigo) + ";" + String.valueOf(jazigo.getPlano()) + ";Personalização;" + 
-                                String.valueOf(jazigo.getPlano().getPreco()) + ";" + "Total:" + ";" + String.valueOf(jazigo.getPlano().getPreco() + Jazigo.aluguelJazigo));
-    }
-
-    //TODO METODO CRIADO NO REFATORAMENTO DE CARRINHO
+    
+    //Ao finalizar e comprar tudo do carrinho, se algum servico for alguel ou compra, seta o jazigo no banco.
+    //limpa o carrinho e salva no banco
     @PostMapping("/{cpf}/informacoes_carrinho/finalizar")
     public ResponseEntity<?> realizarPagamento(@PathVariable("cpf") String cpf) {
         
@@ -196,11 +189,11 @@ public class JazigoController {
                     jazigo.setProprietario(cliente);
                     jazigo.setStatus(StatusEnum.DISPONIVEL);
                     jazigoRepository.save(jazigo);
-
-                    carrinho.limparCarrinho();
-                    carrinhoRepository.save(carrinho);
                 }
             }
+
+            carrinho.limparCarrinho();
+            carrinhoRepository.save(carrinho);
 
             return ResponseEntity.ok("OK;");
         } else {
@@ -208,34 +201,8 @@ public class JazigoController {
         }
     }
 
-    //todo Quando o cliente finaliza o pedido de aluguel, o carrinho do cliente é limpado - TESTAR!
-    @PostMapping("/{cpf}/alugar_jazigo/{id}/informacoes_carrinho/finalizar")
-    public ResponseEntity<?> realizarPagamentoAluguel(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
-        
-        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
-        Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
-        
-        if (optionalJazigo.isPresent()) {
-            Jazigo jazigo = optionalJazigo.get();
-
-            // Atualiza o jazigo
-            jazigo.setDisponivel(false);
-            jazigo.setProprietario(clienteRepository.findByCpf(cpf));
-            
-            // Salva as alterações no banco de dados
-            jazigoRepository.save(jazigo);
-
-            // Limpa o carrinho
-            carrinho.limparCarrinho();
-            carrinhoRepository.save(carrinho);
-
-            return ResponseEntity.ok("OK;");
-        } else {
-            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
-        }
-    }
-
     //todo falta implementar no front - FUNCIONANDO
+    //edita só a mensagem do jazigo, nao sei a situação da foto ainda
     @PostMapping("/{cpf}/editar_jazigo/{id}")
     public ResponseEntity<?> editarMensagemJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem) {
         
@@ -252,7 +219,5 @@ public class JazigoController {
             return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
         }
     }
-
-    
 
 }

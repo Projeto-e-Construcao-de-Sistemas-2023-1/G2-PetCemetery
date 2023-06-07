@@ -3,19 +3,23 @@ package com.petcemetery.petcemetery.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Entity(name = "carrinho")
+@Table(name = "carrinho")
 public class Carrinho {
 
     @Id
     @Column(name = "cpf_cliente")
     private String cpfCliente;
 
-    @OneToMany(mappedBy = "carrinho")
+    @OneToMany
+    @JoinColumn(name = "carrinho_cpf_cliente")
     private List<Servico> servicos;
 
     @Column(name = "total_carrinho")
