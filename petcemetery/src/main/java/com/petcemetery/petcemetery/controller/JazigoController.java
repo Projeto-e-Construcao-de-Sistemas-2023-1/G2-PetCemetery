@@ -50,12 +50,12 @@ public class JazigoController {
         String str = "";
 
         // Busque todos os jazigos do banco de dados e adicione sua disponibilidade à lista.
-        for (Jazigo i : jazigoRepository.findAll()) {
-            str = str + String.valueOf(i.getDisponivel()) + ";";
-        }
+        for (Jazigo i : jazigoRepository.findAllOrderByIdAsc()) {
+            str = str + String.valueOf(i.getDisponivel()) + (i == jazigoRepository.findAllOrderByIdAsc().get(jazigoRepository.findAllOrderByIdAsc().size() - 1) ? "" : ";");
+        }        
     
-        System.out.println(str);
-        return ResponseEntity.ok("OK;" + str);  // Retorne a String de jazigos disponiveis 
+        System.out.println(str); //nota do lucas: tirei o OK antes da resposta e o ; do ultimo elemento
+        return ResponseEntity.ok(str);  // Retorne a String de jazigos disponiveis 
     }
 
     // Envia para o front uma lista dos jazigos do proprietário, contendo o nome do pet e a data do enterro, ou "Vazio" caso não tenha pet enterrado.
