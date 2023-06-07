@@ -1,6 +1,7 @@
 package com.petcemetery.petcemetery.controller;
 
 import com.petcemetery.petcemetery.DTO.JazigoDTO;
+import com.petcemetery.petcemetery.DTO.ServicoDTO;
 import com.petcemetery.petcemetery.model.Carrinho;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.model.Jazigo;
@@ -158,17 +159,46 @@ public class JazigoController {
 
     }
 
+    //todo falta implementar no front - FUNCIONANDO
+    //edita só a mensagem do jazigo, nao sei a situação da foto ainda
+    @PostMapping("/{cpf}/editar_jazigo/{id}")
+    public ResponseEntity<?> editarMensagemJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem) {
+        
+        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
+        
+        if (optionalJazigo.isPresent()) {
+            Jazigo jazigo = optionalJazigo.get();
+
+            jazigo.setMensagem(mensagem);
+            jazigoRepository.save(jazigo);
+
+            return ResponseEntity.ok("OK;Mensagem_editada");
+        } else {
+            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
+        }
+    }
+
     //Retorna array de servicos em json do cliente passado - FUNCIONANDO
     @GetMapping("/{cpf}/informacoes_carrinho")
     public ResponseEntity<?> informacoesCarrinho(@PathVariable("cpf") String cpf) {
         
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
 
-        //retorna um json com array de servicos
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(carrinho.getServicos()); //TODO IMPLEMENTAR O DTO SERVICO
+        List<Servico> listaServicos = carrinho.getServicos();
+
+        List<ServicoDTO> listaServicosDTO = new ArrayList<>();
+
+        for (Servico servico : listaServicos) {
+            
+            ServicoDTO servicoDTO = new ServicoDTO(servico.getValor(), servico.getTipoServico(), cpf, servico.getPlano());
+
+            listaServicosDTO.add(servicoDTO);
+        }
+
+        //retorna um json com array de DTO servicos
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaServicosDTO); //TODO IMPLEMENTAR O DTO SERVICO
 
     }
-
     
     //Ao finalizar e comprar tudo do carrinho, se algum servico for alguel ou compra, seta o jazigo no banco.
     //limpa o carrinho e salva no banco
@@ -200,24 +230,4 @@ public class JazigoController {
             return ResponseEntity.ok("ERR;carrinho_nao_encontrado");
         }
     }
-
-    //todo falta implementar no front - FUNCIONANDO
-    //edita só a mensagem do jazigo, nao sei a situação da foto ainda
-    @PostMapping("/{cpf}/editar_jazigo/{id}")
-    public ResponseEntity<?> editarMensagemJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem) {
-        
-        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
-        
-        if (optionalJazigo.isPresent()) {
-            Jazigo jazigo = optionalJazigo.get();
-
-            jazigo.setMensagem(mensagem);
-            jazigoRepository.save(jazigo);
-
-            return ResponseEntity.ok("OK;Mensagem_editada");
-        } else {
-            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
-        }
-    }
-
 }
