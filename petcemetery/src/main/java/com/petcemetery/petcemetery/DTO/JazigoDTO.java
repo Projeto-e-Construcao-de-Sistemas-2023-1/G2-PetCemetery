@@ -6,11 +6,13 @@ import java.util.Date;
 public class JazigoDTO {
     String nomePet;
     private Date dataEnterro;
+    private String endereco;
     
 
-    public JazigoDTO(String nomePet, Date dataEnterro) {
+    public JazigoDTO(String nomePet, Date dataEnterro, String endereco) {
         this.nomePet = nomePet;
         this.dataEnterro = dataEnterro;
+        this.endereco = endereco;
     }
 
     public JazigoDTO() {
@@ -30,6 +32,14 @@ public class JazigoDTO {
 
     public void setDataEnterro(Date dataEnterro) {
         this.dataEnterro = dataEnterro;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
     }
 
 
