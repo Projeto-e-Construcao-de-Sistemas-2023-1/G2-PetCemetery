@@ -195,6 +195,10 @@ public class JazigoController {
             listaServicosDTO.add(servicoDTO);
         }
 
+        if(listaServicos.isEmpty()){
+            carrinho.limparCarrinho();
+        }
+
         //retorna um json com array de DTO servicos
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaServicosDTO); //TODO IMPLEMENTAR O DTO SERVICO
 
