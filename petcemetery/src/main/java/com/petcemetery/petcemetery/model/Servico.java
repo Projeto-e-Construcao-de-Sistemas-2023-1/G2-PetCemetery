@@ -22,7 +22,7 @@ public class Servico {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Adicionado para permitir auto incremento do id
     @Column(name = "id_servico")
-    private int idServico;
+    private Long idServico;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_servico")
@@ -105,7 +105,7 @@ public class Servico {
         return plano;
     }
 
-    public int getIdServico() {
+    public Long getIdServico() {
         return idServico;
     }
 

@@ -190,7 +190,7 @@ public class JazigoController {
 
         for (Servico servico : listaServicos) {
             
-            ServicoDTO servicoDTO = new ServicoDTO(servico.getValor(), servico.getTipoServico(), cpf, servico.getPlano());
+            ServicoDTO servicoDTO = new ServicoDTO(servico.getValor(), servico.getTipoServico(), servico.getJazigo().getEndereco(), servico.getPlano(), servico.getIdServico());
 
             listaServicosDTO.add(servicoDTO);
         }
@@ -228,6 +228,25 @@ public class JazigoController {
             return ResponseEntity.ok("OK;");
         } else {
             return ResponseEntity.ok("ERR;carrinho_nao_encontrado");
+        }
+    }
+
+    @PostMapping("/{cpf}/informacoes_carrinho/remover_servico")
+    public ResponseEntity<?> removerServico(@PathVariable("cpf") String cpf, @RequestParam("idServico") Long idServico) {
+        
+        Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+        Optional<Servico> optionalServico = servicoRepository.findById(idServico);
+
+        if(optionalServico.isPresent()){
+            Servico servico = optionalServico.get();
+
+            carrinho.removerServico(servico);
+            carrinhoRepository.save(carrinho);
+            servicoRepository.delete(servico);
+        
+            return ResponseEntity.ok("OK;");
+        } else {
+            return ResponseEntity.ok("ERR;servico_not_found");
         }
     }
 }

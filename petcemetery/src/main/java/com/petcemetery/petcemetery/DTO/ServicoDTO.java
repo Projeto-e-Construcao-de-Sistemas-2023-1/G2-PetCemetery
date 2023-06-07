@@ -9,14 +9,16 @@ public class ServicoDTO {
     ServicoEnum tipoServico;
     String enderecoJazigo;
     PlanoEnum plano;
+    Long idServico;
     
     public ServicoDTO() {}
 
-    public ServicoDTO(double valor, ServicoEnum tipoServico, String enderecoJazigo, PlanoEnum plano) {
+    public ServicoDTO(double valor, ServicoEnum tipoServico, String enderecoJazigo, PlanoEnum plano, Long idServico) {
         this.valor = valor;
         this.tipoServico = tipoServico;
         this.enderecoJazigo = enderecoJazigo;
         this.plano = plano;
+        this.idServico = idServico;
     }
 
     public double getValor() {
@@ -42,6 +44,14 @@ public class ServicoDTO {
     }
     public void setPlano(PlanoEnum plano) {
         this.plano = plano;
+    }
+
+    public Long getIdServico() {
+        return idServico;
+    }
+
+    public void setIdServico(Long idServico) {
+        this.idServico = idServico;
     }
 
     
