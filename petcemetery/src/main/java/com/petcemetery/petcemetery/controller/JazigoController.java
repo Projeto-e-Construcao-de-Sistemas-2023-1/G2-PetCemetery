@@ -135,7 +135,7 @@ public class JazigoController {
     //todo Recebe os valores do plano que o cliente selecionou, e então adiciona tanto o jazigo quanto o plano ao carrinho e salva no banco - TESTAR!
     @PostMapping("/{cpf}/alugar_jazigo/{id}/listar_planos/plano")
     public ResponseEntity<?> finalizarAluguel(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado) {
-        
+
         Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
         if (optionalJazigo.isPresent()) {
             // Pegando o plano selecionado 
@@ -195,10 +195,6 @@ public class JazigoController {
             listaServicosDTO.add(servicoDTO);
         }
 
-        if(listaServicos.isEmpty()){
-            carrinho.limparCarrinho();
-        }
-
         //retorna um json com array de DTO servicos
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaServicosDTO); //TODO IMPLEMENTAR O DTO SERVICO
 
@@ -223,6 +219,7 @@ public class JazigoController {
                     jazigo.setProprietario(cliente);
                     jazigo.setStatus(StatusEnum.DISPONIVEL);
                     jazigoRepository.save(jazigo);
+                    cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
                 }
             }
 
