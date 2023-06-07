@@ -1,6 +1,6 @@
 package com.petcemetery.petcemetery.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,7 +42,7 @@ public class Jazigo {
 
     @Column(name = "data_ultima_visita")
     @Temporal(TemporalType.DATE)
-    private Date dataUltimaVisita;
+    private LocalDate dataUltimaVisita;
 
     @Column(name = "disponivel")
     private Boolean disponivel;
@@ -87,6 +87,7 @@ public class Jazigo {
         DISPONIVEL,
         OCUPADO
     }
+    
     public Jazigo() {
     }
 
@@ -100,7 +101,7 @@ public class Jazigo {
         this.plano = plano;
     }
 
-    public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, Date dataUltimaVisita,
+    public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, LocalDate dataUltimaVisita,
             boolean disponivel, String mensagem, String foto, String notas, PlanoEnum plano, Pet petEnterrado) {
         this.endereco = endereco;
         this.proprietario = proprietario;
@@ -114,6 +115,7 @@ public class Jazigo {
         this.plano = plano;
         this.petEnterrado = petEnterrado;
     }
+
     public String getEndereco() {
         return endereco;
     }
@@ -138,10 +140,10 @@ public class Jazigo {
     public void setStatus(StatusEnum status) {
         this.status = status;
     }
-    public Date getDataUltimaVisita() {
+    public LocalDate getDataUltimaVisita() {
         return dataUltimaVisita;
     }
-    public void setDataUltimaVisita(Date dataUltimaVisita) {
+    public void setDataUltimaVisita(LocalDate dataUltimaVisita) {
         this.dataUltimaVisita = dataUltimaVisita;
     }
     public Boolean getDisponivel() {
