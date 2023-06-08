@@ -1,6 +1,7 @@
 package com.petcemetery.petcemetery.controller;
 
 import com.petcemetery.petcemetery.DTO.JazigoDTO;
+import com.petcemetery.petcemetery.DTO.PetDTO;
 import com.petcemetery.petcemetery.DTO.ServicoDTO;
 import com.petcemetery.petcemetery.model.Carrinho;
 import com.petcemetery.petcemetery.model.Cliente;
@@ -14,6 +15,7 @@ import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
 import com.petcemetery.petcemetery.repositorio.ServicoRepository;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +23,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +63,7 @@ public class JazigoController {
         return ResponseEntity.ok(str);  // Retorne a String de jazigos disponiveis 
     }
 
-    // Envia para o front uma lista dos jazigos do proprietário, contendo o nome do pet e a data do enterro, ou "Vazio" caso não tenha pet enterrado.
+    // Envia para o front uma lista dos jazigos do proprietário, contendo o nome do pet e a data do enterro, ou "Vazio" e null caso não tenha pet enterrado.
     @GetMapping("/{cpf_proprietario}/meus_jazigos")
     public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietario") String cpf_proprietario) {
         List<Jazigo> listaJazigos = jazigoRepository.findByProprietarioCpf(cpf_proprietario); 
@@ -158,12 +163,32 @@ public class JazigoController {
         }
 
     }
+    
+    // Retorna a mensagem e a foto atual para serem exibidas no front quando o usuário quiser alterar as informações do jazigo
+    // Tem que ver a foto ainda
+    @GetMapping("/{cpf}/editar_jazigo/{id}")
+    public ResponseEntity<?> exibirMensagemFotoJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
+        
+        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
+        
+        if (optionalJazigo.isPresent()) {
+            Jazigo jazigo = optionalJazigo.get();
+
+            return ResponseEntity.ok("OK;" + jazigo.getMensagem() + ";" + jazigo.getFoto());
+        } else {
+            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
+        }
+    }
 
     //todo falta implementar no front - FUNCIONANDO
     //edita só a mensagem do jazigo, nao sei a situação da foto ainda
     @PostMapping("/{cpf}/editar_jazigo/{id}")
-    public ResponseEntity<?> editarMensagemJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem) {
+    public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem) {
         
+        if (mensagem.length() > 80) {
+            return ResponseEntity.ok("ERR;mensagem_maior_que_80_caracteres");
+        }
+
         Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
         
         if (optionalJazigo.isPresent()) {
@@ -249,5 +274,51 @@ public class JazigoController {
         } else {
             return ResponseEntity.ok("ERR;servico_not_found");
         }
+    }
+
+    // Recebe os parâmetros data e hora do enterro, no formato correto, e salva no banco
+    @PostMapping("/{cpf}/meus_jazigos/{id}/agendar_enterro")
+    public ResponseEntity<?> agendarEnterro(@PathVariable("id") Long id, @RequestParam("data") LocalDate data, @RequestParam("hora") LocalTime hora) {
+        Jazigo jazigo = jazigoRepository.findById(id).get();
+        
+        jazigo.getPetEnterrado().setDataEnterro(data);
+        jazigo.getPetEnterrado().setHoraEnterro(hora);
+        jazigoRepository.save(jazigo);
+
+        // Aqui deveria adicionar o pet no histórico do jazigo, porém ainda não temos essa funcionalidade
+
+        return ResponseEntity.ok("OK;");
+    }
+
+    // Retorna o valor atual do preço de enterro para ser exibido na tela de pagamento
+    @GetMapping("/{cpf}/meus_jazigos/{id}/agendar_enterro/preco")
+    public ResponseEntity<?> precoEnterro() {
+        return ResponseEntity.ok("OK;" + Servico.ServicoEnum.ENTERRO.getPreco());
+    }
+
+    // Salva as notas do pet no jazigo, através de um JSON que deve ser enviado do front com os campos "nome", "especie" e "dataNascimento", 
+    // sendo a data no formato yyyy-mm-dd
+    @PostMapping("/{cpf}/meus_jazigos/{id}/agendar_enterro/adicionar_notas")
+    public ResponseEntity<?> adicionarNotasAnimal(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestBody PetDTO pet) {
+
+        // Adiciona nome, especie e data de nascimento do pet no jazigo
+        Jazigo jazigo = jazigoRepository.findById(id).get();
+
+        jazigo.getPetEnterrado().setNomePet(pet.getNome());
+        jazigo.getPetEnterrado().setEspecie(pet.getEspecie());
+        jazigo.getPetEnterrado().setDataNascimento(pet.getDataNascimento());
+
+        jazigoRepository.save(jazigo);
+
+
+        // Adiciona o serviço de enterro no carrinho
+        Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+
+        carrinho.adicionarServico(new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), null, null));
+        
+        carrinhoRepository.save(carrinho);
+
+        // Depois disso, o usuário deve ser redirecionado para a tela de pagamento
+        return ResponseEntity.ok("OK;");
     }
 }

@@ -8,15 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.petcemetery.petcemetery.model.Jazigo;
-import com.petcemetery.petcemetery.repositorio.AdminRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
 
 @RestController
 @RequestMapping("/api/admin/{cpf}")
 public class AdminController {
-
-    @Autowired
-    private AdminRepository adminRepository;
 
     @Autowired
     private JazigoRepository jazigoRepository;
