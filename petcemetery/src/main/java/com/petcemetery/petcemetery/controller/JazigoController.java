@@ -192,7 +192,7 @@ public class JazigoController {
     //todo falta implementar no front - FUNCIONANDO
     //edita só a mensagem do jazigo, nao sei a situação da foto ainda
     @PostMapping("/{cpf}/editar_jazigo/{id}")
-    public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem, @RequestParam("urlFoto") urlFoto) {
+    public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem, @RequestParam("urlFoto") String urlFoto) {
         
         if (mensagem.length() > 80) {
             return ResponseEntity.ok("ERR;mensagem_maior_que_80_caracteres");
