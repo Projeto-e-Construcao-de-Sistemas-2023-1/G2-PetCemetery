@@ -21,10 +21,6 @@ public class Pagamento {
     @Id
     @Column(name = "id_pagamento")
     private Integer idPagamento;
-
-    @OneToOne
-    @JoinColumn(name = "id_jazigo", referencedColumnName = "id_jazigo")
-    private Jazigo jazigo;
     
     @ManyToOne
     @JoinColumn(name = "cpf", referencedColumnName = "cpf")
@@ -44,7 +40,8 @@ public class Pagamento {
     @Column(name = "isPago")
     private boolean pago;
     
-    @Column(name = "id_servico")
+    @OneToOne
+    @JoinColumn(name = "id_servico", referencedColumnName = "id_servico")
     private int idServico;
 
     @Column(name = "metodo_pagamento")
@@ -56,8 +53,9 @@ public class Pagamento {
         DEBITO,
         PAYPAL
     }
-    public Pagamento() {
-    }
+    
+    public Pagamento() {}
+
     public Pagamento(Cliente cliente, float valor, Date dataPagamento, Date dataVencimento, boolean pago, int idServico,
             MetodoEnum metodoPagamento) {
         this.cliente = cliente;
@@ -109,6 +107,12 @@ public class Pagamento {
     }
     public void setMetodoPagamento(MetodoEnum metodoPagamento) {
         this.metodoPagamento = metodoPagamento;
+    }
+    public Integer getIdPagamento() {
+        return idPagamento;
+    }
+    public void setIdPagamento(Integer idPagamento) {
+        this.idPagamento = idPagamento;
     }
 
     

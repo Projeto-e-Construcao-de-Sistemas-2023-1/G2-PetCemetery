@@ -183,7 +183,7 @@ public class JazigoController {
     //todo falta implementar no front - FUNCIONANDO
     //edita só a mensagem do jazigo, nao sei a situação da foto ainda
     @PostMapping("/{cpf}/editar_jazigo/{id}")
-    public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem) {
+    public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem, @RequestParam("urlFoto") urlFoto) {
         
         if (mensagem.length() > 80) {
             return ResponseEntity.ok("ERR;mensagem_maior_que_80_caracteres");
@@ -194,8 +194,14 @@ public class JazigoController {
         if (optionalJazigo.isPresent()) {
             Jazigo jazigo = optionalJazigo.get();
 
-            jazigo.setMensagem(mensagem);
-            jazigoRepository.save(jazigo);
+            if(jazigo.getProprietario().equals(clienteRepository.findByCpf(cpf))){
+                
+                jazigo.setFoto(urlFoto);
+                jazigo.setMensagem(mensagem);
+                jazigoRepository.save(jazigo);
+            } else {
+                return ResponseEntity.ok("ERR;jazigo_nao_pertence_usuario");
+            }
 
             return ResponseEntity.ok("OK;Mensagem_editada");
         } else {
