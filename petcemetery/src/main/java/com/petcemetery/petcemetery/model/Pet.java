@@ -45,6 +45,10 @@ public class Pet {
         this.dataNascimento = dataNascimento;
         this.especie = especie;
     }
+    public Pet(LocalDate data, LocalTime hora) {
+        this.dataEnterro = data;
+        this.horaEnterro = hora;
+    }
     public Pet(long id, String nomePet, LocalDate dataEnterro, LocalDate dataNascimento, String especie, LocalTime hora_enterro) {
         this.id = id;
         this.nomePet = nomePet;

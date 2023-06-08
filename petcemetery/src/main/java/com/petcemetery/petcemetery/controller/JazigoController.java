@@ -1,11 +1,13 @@
 package com.petcemetery.petcemetery.controller;
 
+import com.petcemetery.petcemetery.DTO.DetalharJazigoDTO;
 import com.petcemetery.petcemetery.DTO.JazigoDTO;
 import com.petcemetery.petcemetery.DTO.PetDTO;
 import com.petcemetery.petcemetery.DTO.ServicoDTO;
 import com.petcemetery.petcemetery.model.Carrinho;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.model.Jazigo;
+import com.petcemetery.petcemetery.model.Pet;
 import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
 import com.petcemetery.petcemetery.model.Jazigo.StatusEnum;
@@ -13,9 +15,9 @@ import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.CarrinhoRepository;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
+import com.petcemetery.petcemetery.repositorio.PetRepository;
 import com.petcemetery.petcemetery.repositorio.ServicoRepository;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +50,9 @@ public class JazigoController {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private PetRepository petRepository;
 
     // Envia para o front quais jazigos estão disponíveis, para exibir o mapa de visualização de jazigos - FUNCIONANDO
     @GetMapping("/{cpf}/jazigos_disponiveis")
@@ -102,16 +107,20 @@ public class JazigoController {
     // Envia para o front os precos dos planos atuais do sistema, para ser exibido na tela de seleção de planos - FUNCIONANDO
     @GetMapping("/{cpf}/comprar_jazigo/{id}/listar_planos")
     public ResponseEntity<?> listarPlanos(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
-        return ResponseEntity.ok("OK;" + String.valueOf(PlanoEnum.BASIC) + ";" + String.valueOf(PlanoEnum.SILVER) + ";" + String.valueOf(PlanoEnum.GOLD));
+        return ResponseEntity.ok("OK;" + String.valueOf(PlanoEnum.BASIC) + ";" + PlanoEnum.BASIC.getPreco() + ";" 
+                                       + String.valueOf(PlanoEnum.SILVER) + ";" + PlanoEnum.SILVER.getPreco() + ";"
+                                       + String.valueOf(PlanoEnum.GOLD) + ";" + PlanoEnum.GOLD.getPreco());
     }
 
     // Envia para o front os precos dos planos atuais do sistema, para ser exibido na tela de seleção de planos para o jazigo alugado - FUNCIONANDO
      @GetMapping("/{cpf}/alugar_jazigo/{id}/listar_planos")
      public ResponseEntity<?> listarPlanosAlugar(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
-        return ResponseEntity.ok("OK;" + String.valueOf(PlanoEnum.BASIC) + ";" + String.valueOf(PlanoEnum.SILVER) + ";" + String.valueOf(PlanoEnum.GOLD));
+        return ResponseEntity.ok("OK;" + String.valueOf(PlanoEnum.BASIC) + ";" + PlanoEnum.BASIC.getPreco() + ";" 
+                                       + String.valueOf(PlanoEnum.SILVER) + ";" + PlanoEnum.SILVER.getPreco() + ";"
+                                       + String.valueOf(PlanoEnum.GOLD) + ";" + PlanoEnum.GOLD.getPreco());
      }
 
-    //TODO METODO CRIADO NO REFATORAMENTO DE CARRINHO
+    // TODO METODO CRIADO NO REFATORAMENTO DE CARRINHO
     @PostMapping("/{cpf}/comprar_jazigo/{id}/listar_planos/plano")
     public ResponseEntity<?> finalizarCompra(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado) {
         
@@ -276,17 +285,30 @@ public class JazigoController {
         }
     }
 
-    // Recebe os parâmetros data e hora do enterro, no formato correto, e salva no banco
+    // Recebe os parâmetros data (yyyy-mm-dd) e hora (hh-mm) do enterro, no formato correto, e salva no banco
     @PostMapping("/{cpf}/meus_jazigos/{id}/agendar_enterro")
-    public ResponseEntity<?> agendarEnterro(@PathVariable("id") Long id, @RequestParam("data") LocalDate data, @RequestParam("hora") LocalTime hora) {
+    public ResponseEntity<?> agendarEnterro(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("data") String data, @RequestParam("hora") String hora) {
         Jazigo jazigo = jazigoRepository.findById(id).get();
+
+        if (jazigo.getProprietario() == null) {
+            return ResponseEntity.ok("ERR;jazigo_nao_pertence_ao_cliente");
+        }
         
-        jazigo.getPetEnterrado().setDataEnterro(data);
-        jazigo.getPetEnterrado().setHoraEnterro(hora);
+        Pet pet = new Pet(LocalDate.parse(data), LocalTime.parse(hora));
+        petRepository.save(pet);
+
+        jazigo.setPetEnterrado(pet);
         jazigoRepository.save(jazigo);
 
         // Aqui deveria adicionar o pet no histórico do jazigo, porém ainda não temos essa funcionalidade
 
+        return ResponseEntity.ok("OK;");
+    }
+
+    // Recebe os parâmetros data (yyyy-mm-dd) e hora (hh-mm) da exumacao, no formato CUrreto
+    @PostMapping("/{cpf}/meus_jazigos/{id}/agendar_exumacao")
+    public ResponseEntity<?> agendarExumacao(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("data") String data, @RequestParam("hora") String hora) {
+        //implementar
         return ResponseEntity.ok("OK;");
     }
 
@@ -310,7 +332,6 @@ public class JazigoController {
 
         jazigoRepository.save(jazigo);
 
-
         // Adiciona o serviço de enterro no carrinho
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
 
@@ -321,4 +342,18 @@ public class JazigoController {
         // Depois disso, o usuário deve ser redirecionado para a tela de pagamento
         return ResponseEntity.ok("OK;");
     }
+
+    @GetMapping("/{cpf}/meus_jazigos/{id}/detalhar_jazigo")
+    public ResponseEntity<?> detalharJazigo(@PathVariable("id") Long id){
+        Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
+
+        if(jazigo.getPetEnterrado() == null) {
+            return ResponseEntity.ok("OK;vazio");
+        }
+
+        DetalharJazigoDTO detalharJazigoDTO = new DetalharJazigoDTO(jazigo.getPetEnterrado(), jazigo);
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(detalharJazigoDTO);
+    }
+    
 }

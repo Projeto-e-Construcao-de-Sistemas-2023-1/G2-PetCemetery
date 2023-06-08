@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9a599cf9-035d-4d46-b90c-52f6ce09afbf" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/petcemetery/src/main/java/com/petcemetery/petcemetery/controller/JazigoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/petcemetery/src/main/java/com/petcemetery/petcemetery/controller/JazigoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/petcemetery/src/main/java/com/petcemetery/petcemetery/model/Pet.java" beforeDir="false" afterPath="$PROJECT_DIR$/petcemetery/src/main/java/com/petcemetery/petcemetery/model/Pet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/petcemetery/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/petcemetery/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/petcemetery/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/petcemetery/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/petcemetery/target/classes/com/petcemetery/petcemetery/controller/JazigoController.class" beforeDir="false" afterPath="$PROJECT_DIR$/petcemetery/target/classes/com/petcemetery/petcemetery/controller/JazigoController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/petcemetery/target/classes/com/petcemetery/petcemetery/model/Pet.class" beforeDir="false" afterPath="$PROJECT_DIR$/petcemetery/target/classes/com/petcemetery/petcemetery/model/Pet.class" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2QvtXqskslBi2PiYebEOpA5EW08" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "E:/Projetos VSCode/Java/pet-cemetery"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9a599cf9-035d-4d46-b90c-52f6ce09afbf" name="Changes" comment="" />
+      <created>1686245926550</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1686245926550</updated>
+    </task>
+    <servers />
+  </component>
+</project>
