@@ -20,9 +20,9 @@ public class Cliente extends Usuario{
     @Column(name = "desativado")
     private Boolean desativado;
 
-    @OneToMany
-    @JoinColumn(name = "cliente_cpf_pagamento")
-    private List<Pagamento> pagamentos;
+     @OneToMany
+     @JoinColumn(name = "cpf_cliente")
+     private List<Pagamento> pagamentos;
 
     public Cliente(String email, String telefone, String nome, String cpf, String senha) {
         super(email, telefone, nome, cpf, false, senha);
@@ -50,4 +50,18 @@ public class Cliente extends Usuario{
     public void setDesativado(Boolean desativado) {
         this.desativado = desativado;
     }
+    public List<Pagamento> getPagamentos() {
+        return pagamentos;
+    }
+    public void setPagamentos(List<Pagamento> pagamentos) {
+        this.pagamentos = pagamentos;
+    }
+    public void addPagamento(Pagamento pagamento) {
+        this.pagamentos.add(pagamento);
+    }
+    public void removePagamento(Pagamento pagamento) {
+        this.pagamentos.remove(pagamento);
+    }
+
+    
 }

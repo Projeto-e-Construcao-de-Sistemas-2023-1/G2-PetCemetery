@@ -6,6 +6,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,12 +21,13 @@ import jakarta.persistence.TemporalType;
 public class Pagamento {
     
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Adicionado para permitir auto incremento do id
     @Column(name = "id_pagamento")
-    private Integer idPagamento;
+    private Long idPagamento;
     
-    @ManyToOne
-    @JoinColumn(name = "cpf", referencedColumnName = "cpf")
-    private Cliente cliente; 
+     @ManyToOne
+     @JoinColumn(name = "cpf_cliente")
+     private Cliente cliente; 
 
     @Column(name = "valor")
     private float valor;
@@ -41,8 +44,8 @@ public class Pagamento {
     private boolean pago;
     
     @OneToOne
-    @JoinColumn(name = "id_servico", referencedColumnName = "id_servico")
-    private int idServico;
+    @JoinColumn(name = "id_servico")
+    private Servico servico;
 
     @Column(name = "metodo_pagamento")
     @Enumerated(EnumType.STRING)
@@ -56,22 +59,22 @@ public class Pagamento {
     
     public Pagamento() {}
 
-    public Pagamento(Cliente cliente, float valor, Date dataPagamento, Date dataVencimento, boolean pago, int idServico,
+    public Pagamento(Cliente cliente, float valor, Date dataPagamento, Date dataVencimento, boolean pago, Servico servico,
             MetodoEnum metodoPagamento) {
         this.cliente = cliente;
         this.valor = valor;
         this.dataPagamento = dataPagamento;
         this.dataVencimento = dataVencimento;
         this.pago = pago;
-        this.idServico = idServico;
+        this.servico = servico;
         this.metodoPagamento = metodoPagamento;
     }
-    public Cliente getCliente() {
-        return cliente;
-    }
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
+     public Cliente getCliente() {
+         return cliente;
+     }
+     public void setCliente(Cliente cliente) {
+         this.cliente = cliente;
+     }
     public float getValor() {
         return valor;
     }
@@ -96,11 +99,11 @@ public class Pagamento {
     public void setPago(boolean pago) {
         this.pago = pago;
     }
-    public int getIdServico() {
-        return idServico;
+    public Servico getServico() {
+        return servico;
     }
-    public void setIdServico(int idServico) {
-        this.idServico = idServico;
+    public void setServico(Servico servico) {
+        this.servico = servico;
     }
     public MetodoEnum getMetodoPagamento() {
         return metodoPagamento;
@@ -108,10 +111,10 @@ public class Pagamento {
     public void setMetodoPagamento(MetodoEnum metodoPagamento) {
         this.metodoPagamento = metodoPagamento;
     }
-    public Integer getIdPagamento() {
+    public Long getIdPagamento() {
         return idPagamento;
     }
-    public void setIdPagamento(Integer idPagamento) {
+    public void setIdPagamento(Long idPagamento) {
         this.idPagamento = idPagamento;
     }
 
