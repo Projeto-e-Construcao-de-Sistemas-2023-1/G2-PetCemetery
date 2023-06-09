@@ -2,7 +2,6 @@ package com.petcemetery.petcemetery.DTO;
 
 import java.util.Date;
 
-
 public class JazigoDTO {
     String nomePet;
     private Date dataEnterro;
@@ -41,6 +40,4 @@ public class JazigoDTO {
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
-
-
 }

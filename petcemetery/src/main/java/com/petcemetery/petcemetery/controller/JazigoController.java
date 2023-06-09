@@ -223,6 +223,7 @@ public class JazigoController {
                     jazigo.setProprietario(cliente);
                     jazigo.setStatus(StatusEnum.DISPONIVEL);
                     jazigoRepository.save(jazigo);
+                    cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
                 }
             }
 
