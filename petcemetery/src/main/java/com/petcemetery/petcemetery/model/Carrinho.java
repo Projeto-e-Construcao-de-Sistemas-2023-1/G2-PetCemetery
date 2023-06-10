@@ -46,7 +46,8 @@ public class Carrinho {
 
     public void limparCarrinho() {
         this.servicos.clear();
-        this.totalCarrinho = 0.0;
+        this.totalCarrinho -= this.totalCarrinho; 
+        assert totalCarrinho >= 0;
     }
 
     public double getTotalCarrinho() {

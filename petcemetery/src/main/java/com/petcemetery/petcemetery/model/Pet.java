@@ -1,6 +1,7 @@
 package com.petcemetery.petcemetery.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,10 +20,13 @@ public class Pet {
     private String nomePet;
     
     @Column(name = "data_enterro")
-    private Date dataEnterro;
+    private LocalDate dataEnterro;
+
+    @Column(name = "hora_enterro")
+    private LocalTime horaEnterro;
     
     @Column(name = "data_nascimento")
-    private Date dataNascimento;
+    private LocalDate dataNascimento;
     
     @Column(name = "especie")
     private String especie;
@@ -35,18 +39,23 @@ public class Pet {
         this.nomePet = nomePet;
         this.especie = especie;
     }
-    public Pet(long id, String nomePet, Date dataNascimento, String especie) {
+    public Pet(long id, String nomePet, LocalDate dataNascimento, String especie) {
         this.id = id;
         this.nomePet = nomePet;
         this.dataNascimento = dataNascimento;
         this.especie = especie;
     }
-    public Pet(long id, String nomePet, Date dataEnterro, Date dataNascimento, String especie) {
+    public Pet(LocalDate data, LocalTime hora) {
+        this.dataEnterro = data;
+        this.horaEnterro = hora;
+    }
+    public Pet(long id, String nomePet, LocalDate dataEnterro, LocalDate dataNascimento, String especie, LocalTime hora_enterro) {
         this.id = id;
         this.nomePet = nomePet;
         this.dataEnterro = dataEnterro;
         this.dataNascimento = dataNascimento;
         this.especie = especie;
+        this.horaEnterro = hora_enterro;
     }
     public long getId() {
         return id;
@@ -60,16 +69,16 @@ public class Pet {
     public void setNomePet(String nomePet) {
         this.nomePet = nomePet;
     }
-    public Date getDataEnterro() {
+    public LocalDate getDataEnterro() {
         return dataEnterro;
     }
-    public void setDataEnterro(Date dataEnterro) {
+    public void setDataEnterro(LocalDate dataEnterro) {
         this.dataEnterro = dataEnterro;
     }
-    public Date getDataNascimento() {
+    public LocalDate getDataNascimento() {
         return dataNascimento;
     }
-    public void setDataNascimento(Date dataNascimento) {
+    public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
     public String getEspecie() {
@@ -77,6 +86,12 @@ public class Pet {
     }
     public void setEspecie(String especie) {
         this.especie = especie;
+    }
+    public LocalTime getHoraEnterro() {
+        return horaEnterro;
+    }
+    public void setHoraEnterro(LocalTime horaEnterro) {
+        this.horaEnterro = horaEnterro;
     }
 
     

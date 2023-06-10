@@ -64,22 +64,32 @@ public class Jazigo {
     @JoinColumn(name = "pet_enterrado_id", referencedColumnName = "id_pet")
     private Pet petEnterrado;
 
+    @Transient
+    public static double precoBasico = 1.0;
+
+    @Transient
+    public static double precoSilver = 50.0;
+
+    @Transient
+    public static double precoGold = 80.0;
+
     public enum PlanoEnum {
-        BASIC,
-        SILVER,
-        GOLD;
+        BASIC(precoBasico),
+        SILVER(precoSilver),
+        GOLD(precoGold);
+    
+        private double preco;
+    
+        PlanoEnum(double preco) {
+            this.preco = preco;
+        }
     
         public double getPreco() {
-            switch (this) {
-                case BASIC:
-                    return 1.0;
-                case SILVER:
-                    return 50.0;
-                case GOLD:
-                    return 80.0;
-                default:
-                    return 0.0;
-            }
+            return preco;
+        }
+    
+        public void setPreco(double preco) {
+            this.preco = preco;
         }
     }
 

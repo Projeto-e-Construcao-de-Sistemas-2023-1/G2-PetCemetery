@@ -1,14 +1,14 @@
 package com.petcemetery.petcemetery.DTO;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class JazigoDTO {
     String nomePet;
-    private Date dataEnterro;
+    private LocalDate dataEnterro;
     private String endereco;
     
 
-    public JazigoDTO(String nomePet, Date dataEnterro, String endereco) {
+    public JazigoDTO(String nomePet, LocalDate dataEnterro, String endereco) {
         this.nomePet = nomePet;
         this.dataEnterro = dataEnterro;
         this.endereco = endereco;
@@ -25,11 +25,11 @@ public class JazigoDTO {
         this.nomePet = nomePet;
     }
 
-    public Date getDataEnterro() {
+    public LocalDate getDataEnterro() {
         return this.dataEnterro;
     }
 
-    public void setDataEnterro(Date dataEnterro) {
+    public void setDataEnterro(LocalDate dataEnterro) {
         this.dataEnterro = dataEnterro;
     }
 

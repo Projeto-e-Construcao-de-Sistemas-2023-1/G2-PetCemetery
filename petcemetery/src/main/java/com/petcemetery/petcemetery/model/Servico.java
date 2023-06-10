@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -88,6 +87,36 @@ public class Servico {
                 default:
                     return 0.0;
             }
+        }
+
+        public void setPreco(Double valor) {
+            switch (this) {
+                case COMPRA:
+                    Jazigo.precoJazigo = valor;
+                case ALUGUEL:
+                    Jazigo.aluguelJazigo = valor;
+                case PERSONALIZACAO:
+                    PlanoEnum[] valores = PlanoEnum.values();
+                    
+                    for (PlanoEnum tipo : valores) {
+                        switch(tipo) {
+                            case BASIC:
+                                PlanoEnum.BASIC.setPreco(valor);
+                            case SILVER:
+                                PlanoEnum.SILVER.setPreco(valor);
+                            case GOLD:
+                                PlanoEnum.GOLD.setPreco(valor);
+                        }
+                    }
+                 
+                case MANUTENCAO:
+                    manutencao = valor;
+                case EXUMACAO:
+                    exumacao = valor;
+                case ENTERRO:
+                    enterro = valor;
+            }
+
         }
     }
 

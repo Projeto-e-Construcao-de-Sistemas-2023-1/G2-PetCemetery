@@ -1,7 +1,11 @@
 package com.petcemetery.petcemetery.model;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +19,10 @@ public class Cliente extends Usuario{
 
     @Column(name = "desativado")
     private Boolean desativado;
+
+     @OneToMany
+     @JoinColumn(name = "cpf_cliente")
+     private List<Pagamento> pagamentos;
 
     public Cliente(String email, String telefone, String nome, String cpf, String senha) {
         super(email, telefone, nome, cpf, false, senha);
@@ -42,4 +50,18 @@ public class Cliente extends Usuario{
     public void setDesativado(Boolean desativado) {
         this.desativado = desativado;
     }
+    public List<Pagamento> getPagamentos() {
+        return pagamentos;
+    }
+    public void setPagamentos(List<Pagamento> pagamentos) {
+        this.pagamentos = pagamentos;
+    }
+    public void addPagamento(Pagamento pagamento) {
+        this.pagamentos.add(pagamento);
+    }
+    public void removePagamento(Pagamento pagamento) {
+        this.pagamentos.remove(pagamento);
+    }
+
+    
 }
