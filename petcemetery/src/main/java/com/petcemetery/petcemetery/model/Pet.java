@@ -7,7 +7,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 
+@Data
 @Entity(name = "Pet")
 @Table(name = "Pet")
 public class Pet {
@@ -24,6 +26,12 @@ public class Pet {
 
     @Column(name = "hora_enterro")
     private LocalTime horaEnterro;
+
+    @Column(name = "data_exumacao")
+    private LocalDate dataExumacao;
+
+    @Column(name = "hora_exumacao")
+    private LocalTime horaExumacao;
     
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
