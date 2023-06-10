@@ -320,10 +320,17 @@ public class JazigoController {
         return ResponseEntity.ok("OK;");
     }
 
-    // Recebe os parâmetros data (yyyy-mm-dd) e hora (hh-mm) da exumacao, no formato CUrreto
+    // Recebe os parâmetros data (yyyy-mm-dd) e hora (hh-mm) da exumacao, no formato correto, e salva no banco
+    // Não estamos utilizando o cpf pra nada :D
     @PostMapping("/{cpf}/meus_jazigos/{id}/agendar_exumacao")
     public ResponseEntity<?> agendarExumacao(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("data") String data, @RequestParam("hora") String hora) {
-        //implementar
+        Jazigo jazigo = jazigoRepository.findById(id).get();
+        Pet pet = jazigo.getPetEnterrado();
+
+        pet.setDataExumacao(LocalDate.parse(data));
+        pet.setHoraExumacao(LocalTime.parse(hora));
+        petRepository.save(pet);
+
         return ResponseEntity.ok("OK;");
     }
 

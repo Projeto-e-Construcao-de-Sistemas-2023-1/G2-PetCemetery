@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.petcemetery.petcemetery.DTO.ExibirServicoDTO;
 import com.petcemetery.petcemetery.model.Jazigo;
-import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;

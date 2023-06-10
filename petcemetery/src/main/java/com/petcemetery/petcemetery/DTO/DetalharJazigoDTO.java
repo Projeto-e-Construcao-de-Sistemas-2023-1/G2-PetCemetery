@@ -13,7 +13,6 @@ public class DetalharJazigoDTO{
     String especiePet;
     String nomeProrietario;
     String endereçoJazigo;
-    String dataUltimaVisita;
     String dataEnterro;
     String ornamentacao;
     String mensagemLapide;
@@ -21,7 +20,6 @@ public class DetalharJazigoDTO{
 
 
     public DetalharJazigoDTO(Pet pet, Jazigo jazigo){
- 
         this.nomePet = pet.getNomePet();
 
         if(pet.getDataNascimento() != null) {
@@ -33,12 +31,6 @@ public class DetalharJazigoDTO{
         this.especiePet = pet.getEspecie();
         this.nomeProrietario = jazigo.getProprietario().getNome();
         this.endereçoJazigo = jazigo.getEndereco();
-        
-        if(jazigo.getDataUltimaVisita() != null) {
-            this.dataUltimaVisita = jazigo.getDataUltimaVisita().toString();
-        } else {
-            this.dataUltimaVisita = null;
-        }
         
         if(pet.getDataEnterro() != null) { 
             this.dataEnterro = pet.getDataEnterro().toString();

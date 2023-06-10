@@ -13,8 +13,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 @Entity(name = "Jazigo")
@@ -41,10 +39,6 @@ public class Jazigo {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
-
-    @Column(name = "data_ultima_visita")
-    @Temporal(TemporalType.DATE)
-    private LocalDate dataUltimaVisita;
 
     @Column(name = "disponivel")
     private Boolean disponivel;
@@ -116,13 +110,12 @@ public class Jazigo {
         this.plano = plano;
     }
 
-    public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, LocalDate dataUltimaVisita,
-            boolean disponivel, String mensagem, String foto, String notas, PlanoEnum plano, Pet petEnterrado) {
+    public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, boolean disponivel, 
+                String mensagem, String foto, String notas, PlanoEnum plano, Pet petEnterrado) {
         this.endereco = endereco;
         this.proprietario = proprietario;
         this.idJazigo = idJazigo;
         this.status = status;
-        this.dataUltimaVisita = dataUltimaVisita;
         this.disponivel = disponivel;
         this.mensagem = mensagem;
         this.foto = foto;
@@ -154,12 +147,6 @@ public class Jazigo {
     }
     public void setStatus(StatusEnum status) {
         this.status = status;
-    }
-    public LocalDate getDataUltimaVisita() {
-        return dataUltimaVisita;
-    }
-    public void setDataUltimaVisita(LocalDate dataUltimaVisita) {
-        this.dataUltimaVisita = dataUltimaVisita;
     }
     public Boolean getDisponivel() {
         return disponivel;
