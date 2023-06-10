@@ -133,7 +133,7 @@ public class JazigoController {
             Cliente cliente = clienteRepository.findByCpf(cpf);
 
             //criando o servico
-            Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano);
+            Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null);
 
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
@@ -159,7 +159,7 @@ public class JazigoController {
             Cliente cliente = clienteRepository.findByCpf(cpf);
 
             //criando o servico
-            Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano);
+            Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null);
 
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
@@ -246,20 +246,27 @@ public class JazigoController {
     public ResponseEntity<?> realizarPagamento(@PathVariable("cpf") String cpf) {
         
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+        Cliente cliente = clienteRepository.findByCpf(cpf);
         
         if (carrinho != null) {
             
             for (Servico servico : carrinho.getServicos()) {
-                if(servico.getTipoServico().equals(ServicoEnum.COMPRA) || servico.getTipoServico().equals(ServicoEnum.ALUGUEL)){
-                    Jazigo jazigo = servico.getJazigo();
-                    Cliente cliente = clienteRepository.findByCpf(cpf);
+                Jazigo jazigo = servico.getJazigo();
 
-                    jazigo.setDisponivel(false);
-                    jazigo.setPlano(servico.getPlano());
-                    jazigo.setProprietario(cliente);
-                    jazigo.setStatus(StatusEnum.DISPONIVEL);
-                    jazigoRepository.save(jazigo);
-                    cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
+                switch(servico.getTipoServico()){
+                    case COMPRA:
+                    case ALUGUEL:
+                        jazigo.setDisponivel(false);
+                        jazigo.setPlano(servico.getPlano());
+                        jazigo.setProprietario(cliente);
+                        jazigo.setStatus(StatusEnum.DISPONIVEL);
+                        jazigoRepository.save(jazigo);
+                        cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
+                        clienteRepository.save(cliente);
+                        break;
+                    
+                    //implementar outros tipos de servico que caibam aqui
+
                 }
             }
 
@@ -300,13 +307,15 @@ public class JazigoController {
             return ResponseEntity.ok("ERR;jazigo_nao_pertence_ao_cliente");
         }
         
-        Pet pet = new Pet(LocalDate.parse(data), LocalTime.parse(hora));
+        Pet pet = new Pet(LocalDate.parse(data), LocalTime.parse(hora)); //TODO acho q deveria passar aqui os parametros de nome especie e tals p poder setar no NEW PET
         petRepository.save(pet);
 
         jazigo.setPetEnterrado(pet);
-        jazigoRepository.save(jazigo);
 
-        // Aqui deveria adicionar o pet no histórico do jazigo, porém ainda não temos essa funcionalidade
+        // Aqui deveria adicionar o pet no histórico do jazigo, porém ainda não temos essa funcionalidade - adicionei
+        jazigo.addPetHistorico(pet);
+
+        jazigoRepository.save(jazigo);
 
         return ResponseEntity.ok("OK;");
     }
@@ -341,7 +350,7 @@ public class JazigoController {
         // Adiciona o serviço de enterro no carrinho
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
 
-        carrinho.adicionarServico(new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), null, null));
+        carrinho.adicionarServico(new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), null, null, null));
         
         carrinhoRepository.save(carrinho);
 

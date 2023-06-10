@@ -1,6 +1,8 @@
 package com.petcemetery.petcemetery.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -63,6 +65,9 @@ public class Jazigo {
     @OneToOne
     @JoinColumn(name = "pet_enterrado_id", referencedColumnName = "id_pet")
     private Pet petEnterrado;
+
+    @ManyToOne
+    private List<Pet> historicoPets = new ArrayList<>();
 
     @Transient
     public static double precoBasico = 1.0;
@@ -191,5 +196,17 @@ public class Jazigo {
     }
     public void setPlano(PlanoEnum plano) {
         this.plano = plano;
+    }
+    public List<Pet> getHistoricoPets() {
+        return historicoPets;
+    }
+    public void setHistoricoPets(List<Pet> historicoPets) {
+        this.historicoPets = historicoPets;
+    }
+    public void addPetHistorico(Pet pet) {
+        this.historicoPets.add(pet);
+    }
+    public void removePetHistorico(Pet pet) {
+        this.historicoPets.remove(pet);
     }
 }

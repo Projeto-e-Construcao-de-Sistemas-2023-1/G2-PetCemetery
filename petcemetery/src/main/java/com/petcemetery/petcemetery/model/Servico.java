@@ -34,6 +34,10 @@ public class Servico {
     @Column(name = "valor")
     private double valor;
 
+    @Column(name = "id_pet")
+    @JoinColumn(name = "id_pet")
+    private Pet pet;
+
     @ManyToOne
     @JoinColumn(name = "cliente_cpf")
     private Cliente cliente;
@@ -122,12 +126,13 @@ public class Servico {
 
     public Servico(){}
     
-    public Servico(ServicoEnum tipoSservico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano) {
+    public Servico(ServicoEnum tipoSservico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano, Pet pet) {
         this.tipoServico = tipoSservico;
         this.valor = valor + plano.getPreco(); //* O valor do servico vai englobar o valor do jazigo + o valor do seu plano (caso seja compra ou aluguel, senão esses valores serão null) */
         this.cliente = cliente;
         this.jazigo = jazigo;
         this.plano = plano;
+        this.pet = pet;
     }
 
     public PlanoEnum getPlano(){
@@ -160,5 +165,13 @@ public class Servico {
 
     public void setValor(float valor) {
         this.valor = valor;
+    }
+    
+    public void setPet(Pet pet){
+        this.pet = pet;
+    }
+
+    public Pet getPet(){
+        return pet;
     }
 }
