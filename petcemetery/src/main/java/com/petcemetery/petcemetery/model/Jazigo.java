@@ -11,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -25,6 +26,10 @@ public class Jazigo {
     @ManyToOne
     @JoinColumn(name = "cpf_proprietario", referencedColumnName = "cpf")
     private Cliente proprietario;
+
+    @OneToMany
+    @Column(name = "historico_pets")
+    private List<Pet> historicoPets;
 
     @Id
     @Column(name = "id_jazigo")
@@ -59,9 +64,6 @@ public class Jazigo {
     @OneToOne
     @JoinColumn(name = "pet_enterrado_id", referencedColumnName = "id_pet")
     private Pet petEnterrado;
-
-    @ManyToOne
-    private List<Pet> historicoPets = new ArrayList<>();
 
     @Transient
     public static double precoBasico = 1.0;
@@ -108,6 +110,7 @@ public class Jazigo {
         this.status = status;
         this.disponivel = disponivel;
         this.plano = plano;
+        this.historicoPets = new ArrayList<>();
     }
 
     public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, boolean disponivel, 
@@ -122,6 +125,7 @@ public class Jazigo {
         this.notas = notas;
         this.plano = plano;
         this.petEnterrado = petEnterrado;
+        this.historicoPets = new ArrayList<>();
     }
 
     public String getEndereco() {
@@ -184,6 +188,7 @@ public class Jazigo {
     public void setPlano(PlanoEnum plano) {
         this.plano = plano;
     }
+
     public List<Pet> getHistoricoPets() {
         return historicoPets;
     }

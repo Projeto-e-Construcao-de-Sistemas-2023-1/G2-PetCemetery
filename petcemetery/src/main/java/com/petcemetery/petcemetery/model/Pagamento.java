@@ -25,9 +25,9 @@ public class Pagamento {
     @Column(name = "id_pagamento")
     private Long idPagamento;
     
-     @ManyToOne
-     @JoinColumn(name = "cpf_cliente")
-     private Cliente cliente; 
+    @ManyToOne
+    @JoinColumn(name = "cliente_cpf", referencedColumnName = "cpf")
+    private Cliente cliente; 
 
     @Column(name = "valor")
     private float valor;

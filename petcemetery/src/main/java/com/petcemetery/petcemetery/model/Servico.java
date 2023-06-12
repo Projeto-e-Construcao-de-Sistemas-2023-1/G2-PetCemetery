@@ -1,5 +1,8 @@
 package com.petcemetery.petcemetery.model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
 
 import jakarta.persistence.Column;
@@ -7,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,7 +38,13 @@ public class Servico {
     @Column(name = "valor")
     private double valor;
 
-    @Column(name = "id_pet")
+    @Column(name = "data_servico")
+    private LocalDate dataServico;
+
+    @Column(name = "hora_servico")
+    private LocalTime horaServico;
+
+    @OneToOne
     @JoinColumn(name = "id_pet")
     private Pet pet;
 
@@ -126,13 +136,19 @@ public class Servico {
 
     public Servico(){}
     
-    public Servico(ServicoEnum tipoSservico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano, Pet pet) {
-        this.tipoServico = tipoSservico;
-        this.valor = valor + plano.getPreco(); //* O valor do servico vai englobar o valor do jazigo + o valor do seu plano (caso seja compra ou aluguel, senão esses valores serão null) */
+    public Servico(ServicoEnum tipoServico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano, Pet pet, LocalDate dataServico, LocalTime horaServico) {
+        this.tipoServico = tipoServico;
+        if(plano != null){
+            this.valor = valor + plano.getPreco(); //* O valor do servico vai englobar o valor do jazigo + o valor do seu plano (caso seja compra ou aluguel, senão esses valores serão null) */
+        } else {
+            this.valor = valor;
+        }
         this.cliente = cliente;
         this.jazigo = jazigo;
         this.plano = plano;
         this.pet = pet;
+        this.dataServico = dataServico;
+        this.horaServico = horaServico;
     }
 
     public PlanoEnum getPlano(){
@@ -173,5 +189,21 @@ public class Servico {
 
     public Pet getPet(){
         return pet;
+    }
+
+    public LocalDate getDataServico() {
+        return dataServico;
+    }
+
+    public void setDataServico(LocalDate dataServico) {
+        this.dataServico = dataServico;
+    }
+
+    public LocalTime getHoraServico() {
+        return horaServico;
+    }
+
+    public void setHoraServico(LocalTime horaServico) {
+        this.horaServico = horaServico;
     }
 }
