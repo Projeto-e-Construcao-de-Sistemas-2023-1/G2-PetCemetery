@@ -20,30 +20,28 @@ public class DetalharJazigoDTO{
 
 
     public DetalharJazigoDTO(Pet pet, Jazigo jazigo){
-        this.nomePet = pet.getNomePet();
-
-        if(pet.getDataNascimento() != null) {
-            this.dataNascimento = pet.getDataNascimento().toString();
-        } else {
-            this.dataNascimento = null;
-        }
-
-        this.especiePet = pet.getEspecie();
-        this.nomeProrietario = jazigo.getProprietario().getNome();
-        this.endereçoJazigo = jazigo.getEndereco();
-        
-        if(pet.getDataEnterro() != null) { 
-            this.dataEnterro = pet.getDataEnterro().toString();
-        } else {
+        if ( pet == null){
+            this.nomePet = null;
             this.dataEnterro = null;
+            this.dataNascimento = null;
+            this.especiePet = null;
+        }
+        else{
+            this.nomePet = pet.getNomePet();
+            this.dataNascimento = pet.getDataNascimento().toString();
+            this.dataNascimento = pet.getDataNascimento().toString();
+            this.especiePet = pet.getEspecie();
         }
 
-        if(jazigo.getPlano() != null) {
-            this.ornamentacao = jazigo.getPlano().toString();
-        }else {
+        if (jazigo.getPlano() == null){
             this.ornamentacao = null;
         }
-        
+        else{
+            this.ornamentacao = jazigo.getPlano().toString();
+        }
+
+        this.nomeProrietario = jazigo.getProprietario().getNome();
+        this.endereçoJazigo = jazigo.getEndereco();
         this.mensagemLapide = jazigo.getMensagem();
         this.urlImagem = jazigo.getFoto();
     }

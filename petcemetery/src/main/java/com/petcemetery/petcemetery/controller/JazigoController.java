@@ -380,9 +380,9 @@ public class JazigoController {
     public ResponseEntity<?> detalharJazigo(@PathVariable("id") Long id){
         Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
 
-        if(jazigo.getPetEnterrado() == null) {
-            return ResponseEntity.ok("OK;vazio");
-        }
+        // if(jazigo.getPetEnterrado() == null) {
+        //     return ResponseEntity.ok("OK;vazio");
+        // }
 
         DetalharJazigoDTO detalharJazigoDTO = new DetalharJazigoDTO(jazigo.getPetEnterrado(), jazigo);
 

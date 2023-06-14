@@ -22,14 +22,8 @@ public class Cliente extends Usuario{
     @Column(name = "desativado")
     private Boolean desativado;
 
-<<<<<<< HEAD
-    // @OneToMany
-    // @JoinColumn(name = "cliente_cpf_pagamento")
-    // private List<Pagamento> pagamentos;
-=======
      @OneToMany(mappedBy = "cliente")
      private List<Pagamento> pagamentos; 
->>>>>>> cdab197fd388a66184f3adef7611c92681fdedec
 
     public Cliente(String email, String telefone, String nome, String cpf, String senha) {
         super(email, telefone, nome, cpf, false, senha);
