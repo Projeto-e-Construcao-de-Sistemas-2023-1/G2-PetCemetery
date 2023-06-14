@@ -134,6 +134,9 @@ public class JazigoController {
             //criando o servico
             Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, LocalDate.now(), LocalTime.now(), LocalDate.now());
 
+            System.out.println(servico.toString());
+
+
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
             carrinho.adicionarServico(servico);
@@ -225,10 +228,6 @@ public class JazigoController {
     public ResponseEntity<?> informacoesCarrinho(@PathVariable("cpf") String cpf) {
         
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
-
-        if(carrinho == null) {
-            return ResponseEntity.ok("ERR;carrinho_nulo");
-        }
 
         List<Servico> listaServicos = carrinho.getServicos();
 
@@ -369,7 +368,6 @@ public class JazigoController {
 
         carrinho.adicionarServico(exumacao);
         carrinhoRepository.save(carrinho);
-
         return ResponseEntity.ok("OK;");
     }
 

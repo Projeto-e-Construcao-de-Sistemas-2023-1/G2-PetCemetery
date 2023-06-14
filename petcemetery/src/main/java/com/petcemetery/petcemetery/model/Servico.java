@@ -139,7 +139,7 @@ public class Servico {
         }
     }
 
-    //public Servico(){}
+    public Servico(){}
     
     public Servico(ServicoEnum tipoServico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano, Pet pet, LocalDate dataServico, LocalTime horaServico, LocalDate primeiroPagamento) {
         this.tipoServico = tipoServico;
