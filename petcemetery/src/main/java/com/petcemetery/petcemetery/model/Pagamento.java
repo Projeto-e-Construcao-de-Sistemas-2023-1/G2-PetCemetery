@@ -44,6 +44,7 @@ public class Pagamento {
     @JoinColumn(name = "id_servico", referencedColumnName = "id_servico")
     private int idServico;
 
+
     @Column(name = "metodo_pagamento")
     @Enumerated(EnumType.STRING)
     private MetodoEnum metodoPagamento;
