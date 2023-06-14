@@ -1,4 +1,4 @@
-package com.petcemetery.petcemetery.controller;
+ package com.petcemetery.petcemetery.controller;
 
 import com.petcemetery.petcemetery.DTO.DetalharJazigoDTO;
 import com.petcemetery.petcemetery.DTO.JazigoDTO;
@@ -223,6 +223,10 @@ public class JazigoController {
         
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
 
+        if(carrinho == null) {
+            return ResponseEntity.ok("ERR;carrinho_nulo");
+        }
+
         List<Servico> listaServicos = carrinho.getServicos();
 
         List<ServicoDTO> listaServicosDTO = new ArrayList<>();
@@ -380,9 +384,9 @@ public class JazigoController {
     public ResponseEntity<?> detalharJazigo(@PathVariable("id") Long id){
         Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
 
-        // if(jazigo.getPetEnterrado() == null) {
-        //     return ResponseEntity.ok("OK;vazio");
-        // }
+        if(jazigo.getPetEnterrado() == null) {
+            return ResponseEntity.ok("OK;vazio");
+        }
 
         DetalharJazigoDTO detalharJazigoDTO = new DetalharJazigoDTO(jazigo.getPetEnterrado(), jazigo);
 

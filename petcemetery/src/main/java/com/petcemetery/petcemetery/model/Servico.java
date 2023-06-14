@@ -17,7 +17,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Transient;
+import lombok.Data;
 
+@Data
 @Entity(name = "Servico")
 @Table(name = "Servico")
 public class Servico {
@@ -134,7 +136,7 @@ public class Servico {
         }
     }
 
-    public Servico(){}
+    //public Servico(){}
     
     public Servico(ServicoEnum tipoServico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano, Pet pet, LocalDate dataServico, LocalTime horaServico) {
         this.tipoServico = tipoServico;
