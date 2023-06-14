@@ -3,18 +3,30 @@ package com.petcemetery.petcemetery.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Data;
 
+@Data
 @Entity(name = "Pet")
 @Table(name = "Pet")
 public class Pet {
     
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pet")
-    private long id;
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "proprietario_cpf", referencedColumnName = "cpf")
+    private Cliente proprietario;
     
     @Column(name = "nome_pet")
     private String nomePet;
@@ -24,6 +36,12 @@ public class Pet {
 
     @Column(name = "hora_enterro")
     private LocalTime horaEnterro;
+
+    @Column(name = "data_exumacao")
+    private LocalDate dataExumacao;
+
+    @Column(name = "hora_exumacao")
+    private LocalTime horaExumacao;
     
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
@@ -34,33 +52,34 @@ public class Pet {
     public Pet() {
         // Construtor padrão sem argumentos
     }
-    public Pet(long id, String nomePet, String especie) {
-        this.id = id;
+    public Pet(String nomePet, String especie, Cliente proprietario) {
         this.nomePet = nomePet;
         this.especie = especie;
+        this.proprietario = proprietario;
     }
-    public Pet(long id, String nomePet, LocalDate dataNascimento, String especie) {
-        this.id = id;
+    public Pet(String nomePet, LocalDate dataNascimento, String especie, Cliente proprietario) {
         this.nomePet = nomePet;
         this.dataNascimento = dataNascimento;
         this.especie = especie;
+        this.proprietario = proprietario;
     }
-    public Pet(LocalDate data, LocalTime hora) {
+    public Pet(LocalDate data, LocalTime hora, Cliente proprietario) {
         this.dataEnterro = data;
         this.horaEnterro = hora;
+        this.proprietario = proprietario;
     }
-    public Pet(long id, String nomePet, LocalDate dataEnterro, LocalDate dataNascimento, String especie, LocalTime hora_enterro) {
-        this.id = id;
+    public Pet(String nomePet, LocalDate dataEnterro, LocalTime horaEnterro, LocalDate dataNascimento, String especie, Cliente proprietario) {
         this.nomePet = nomePet;
         this.dataEnterro = dataEnterro;
         this.dataNascimento = dataNascimento;
         this.especie = especie;
-        this.horaEnterro = hora_enterro;
+        this.horaEnterro = horaEnterro;
+        this.proprietario = proprietario;
     }
-    public long getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getNomePet() {
@@ -92,6 +111,12 @@ public class Pet {
     }
     public void setHoraEnterro(LocalTime horaEnterro) {
         this.horaEnterro = horaEnterro;
+    }
+    public Cliente getProprietario() {
+        return proprietario;
+    }
+    public void setProprietario(Cliente proprietario) {
+        this.proprietario = proprietario;
     }
 
     

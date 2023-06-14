@@ -10,9 +10,12 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 @Entity(name = "carrinho")
 @Table(name = "carrinho")
 public class Carrinho {
+
 
     @Id
     @Column(name = "cpf_cliente")

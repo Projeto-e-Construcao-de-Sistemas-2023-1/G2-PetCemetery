@@ -1,6 +1,8 @@
 package com.petcemetery.petcemetery.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,10 +11,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 @Entity(name = "Jazigo")
@@ -25,6 +26,10 @@ public class Jazigo {
     @ManyToOne
     @JoinColumn(name = "cpf_proprietario", referencedColumnName = "cpf")
     private Cliente proprietario;
+
+    @OneToMany
+    @Column(name = "historico_pets")
+    private List<Pet> historicoPets;
 
     @Id
     @Column(name = "id_jazigo")
@@ -39,10 +44,6 @@ public class Jazigo {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
-
-    @Column(name = "data_ultima_visita")
-    @Temporal(TemporalType.DATE)
-    private LocalDate dataUltimaVisita;
 
     @Column(name = "disponivel")
     private Boolean disponivel;
@@ -109,21 +110,22 @@ public class Jazigo {
         this.status = status;
         this.disponivel = disponivel;
         this.plano = plano;
+        this.historicoPets = new ArrayList<>();
     }
 
-    public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, LocalDate dataUltimaVisita,
-            boolean disponivel, String mensagem, String foto, String notas, PlanoEnum plano, Pet petEnterrado) {
+    public Jazigo(String endereco, Cliente proprietario, int idJazigo, StatusEnum status, boolean disponivel, 
+                String mensagem, String foto, String notas, PlanoEnum plano, Pet petEnterrado) {
         this.endereco = endereco;
         this.proprietario = proprietario;
         this.idJazigo = idJazigo;
         this.status = status;
-        this.dataUltimaVisita = dataUltimaVisita;
         this.disponivel = disponivel;
         this.mensagem = mensagem;
         this.foto = foto;
         this.notas = notas;
         this.plano = plano;
         this.petEnterrado = petEnterrado;
+        this.historicoPets = new ArrayList<>();
     }
 
     public String getEndereco() {
@@ -149,12 +151,6 @@ public class Jazigo {
     }
     public void setStatus(StatusEnum status) {
         this.status = status;
-    }
-    public LocalDate getDataUltimaVisita() {
-        return dataUltimaVisita;
-    }
-    public void setDataUltimaVisita(LocalDate dataUltimaVisita) {
-        this.dataUltimaVisita = dataUltimaVisita;
     }
     public Boolean getDisponivel() {
         return disponivel;
@@ -191,5 +187,18 @@ public class Jazigo {
     }
     public void setPlano(PlanoEnum plano) {
         this.plano = plano;
+    }
+
+    public List<Pet> getHistoricoPets() {
+        return historicoPets;
+    }
+    public void setHistoricoPets(List<Pet> historicoPets) {
+        this.historicoPets = historicoPets;
+    }
+    public void addPetHistorico(Pet pet) {
+        this.historicoPets.add(pet);
+    }
+    public void removePetHistorico(Pet pet) {
+        this.historicoPets.remove(pet);
     }
 }
