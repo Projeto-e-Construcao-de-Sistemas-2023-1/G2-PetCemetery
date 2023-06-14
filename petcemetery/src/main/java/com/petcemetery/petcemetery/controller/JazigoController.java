@@ -132,7 +132,7 @@ public class JazigoController {
             Cliente cliente = clienteRepository.findByCpf(cpf);
 
             //criando o servico
-            Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, LocalDate.now(), LocalTime.now());
+            Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, LocalDate.now(), LocalTime.now(), LocalDate.now());
 
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
@@ -158,7 +158,7 @@ public class JazigoController {
             Cliente cliente = clienteRepository.findByCpf(cpf);
 
             //criando o servico
-            Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null, LocalDate.now(), LocalTime.now());
+            Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null, LocalDate.now(), LocalTime.now(), LocalDate.now());
 
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
@@ -174,15 +174,18 @@ public class JazigoController {
     
     // Retorna a mensagem e a foto atual para serem exibidas no front quando o usuário quiser alterar as informações do jazigo
     // Tem que ver a foto ainda
-    @GetMapping("/{cpf}/editar_jazigo/{id}")
+    @GetMapping("/{cpf}/informacoes_jazigo/{id}")
     public ResponseEntity<?> exibirMensagemFotoJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
         
         Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
         
         if (optionalJazigo.isPresent()) {
             Jazigo jazigo = optionalJazigo.get();
-
-            return ResponseEntity.ok("OK;" + jazigo.getMensagem() + ";" + jazigo.getFoto());
+            if(jazigo.getProprietario().equals(clienteRepository.findByCpf(cpf))){
+                return ResponseEntity.ok("OK;" + jazigo.getMensagem() + ";" + jazigo.getFoto());
+            } else {
+                return ResponseEntity.ok("ERR;cliente_nao_proprietario");
+            }
         } else {
             return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
         }
@@ -190,7 +193,7 @@ public class JazigoController {
 
     //todo falta implementar no front - FUNCIONANDO
     //edita só a mensagem do jazigo, nao sei a situação da foto ainda
-    @PostMapping("/{cpf}/editar_jazigo/{id}")
+    @PostMapping("/{cpf}/informacoes_jazigo/{id}/editar_jazigo")
     public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem, @RequestParam("urlFoto") String urlFoto) {
         
         if (mensagem.length() > 80) {
@@ -294,6 +297,8 @@ public class JazigoController {
 
             //TODO daqui deve levar pros métodos de pagamento onde é criado e setado o pagamento no banco
 
+
+
             return ResponseEntity.ok("OK;");
         } else {
             return ResponseEntity.ok("ERR;carrinho_nao_encontrado");
@@ -335,7 +340,7 @@ public class JazigoController {
 
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
 
-        Servico enterroServico = new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora));
+        Servico enterroServico = new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora), LocalDate.now());
         servicoRepository.save(enterroServico);
 
         carrinho.adicionarServico(enterroServico);
@@ -359,7 +364,7 @@ public class JazigoController {
             return ResponseEntity.ok("ERR;jazigo_nao_tem_pet");
         }
 
-        Servico exumacao = new Servico(ServicoEnum.EXUMACAO, ServicoEnum.EXUMACAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora));
+        Servico exumacao = new Servico(ServicoEnum.EXUMACAO, ServicoEnum.EXUMACAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora), LocalDate.now());
         servicoRepository.save(exumacao);
 
         carrinho.adicionarServico(exumacao);
