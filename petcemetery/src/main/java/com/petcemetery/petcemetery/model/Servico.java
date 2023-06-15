@@ -17,7 +17,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Transient;
+import lombok.Data;
 
+@Data
 @Entity(name = "Servico")
 @Table(name = "Servico")
 public class Servico {
