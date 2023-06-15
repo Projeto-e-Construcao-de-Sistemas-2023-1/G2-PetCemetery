@@ -78,9 +78,9 @@ public class JazigoController {
         for (Jazigo jazigo : listaJazigos) {
             JazigoDTO jazigoDTO;
             if(jazigo.getPetEnterrado() == null) {
-                jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco());
+                jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco(), jazigo.getIdJazigo());
             } else {
-                jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco());
+                jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo());
             }
             listaJazigosDTO.add(jazigoDTO);
         }
@@ -132,7 +132,7 @@ public class JazigoController {
             Cliente cliente = clienteRepository.findByCpf(cpf);
 
             //criando o servico
-            Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, LocalDate.now(), LocalTime.now(), LocalDate.now());
+            Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, null, null);
 
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
@@ -158,7 +158,7 @@ public class JazigoController {
             Cliente cliente = clienteRepository.findByCpf(cpf);
 
             //criando o servico
-            Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null, LocalDate.now(), LocalTime.now(), LocalDate.now());
+            Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null, null ,null);
 
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
@@ -266,6 +266,8 @@ public class JazigoController {
                         jazigoRepository.save(jazigo);
                         cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
                         clienteRepository.save(cliente);
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
                         break;
                     
                     case ENTERRO:
@@ -276,20 +278,28 @@ public class JazigoController {
                         pet.setDataEnterro(servico.getDataServico());
                         pet.setHoraEnterro(servico.getHoraServico());
                         petRepository.save(pet);
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
                         break;
                     
                     case EXUMACAO:
                         pet.setDataExumacao(servico.getDataServico());
                         pet.setHoraExumacao(servico.getHoraServico());
                         petRepository.save(pet);
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
                         break;
 
                     case PERSONALIZACAO:
                         jazigo.setPlano(servico.getPlano());
                         jazigoRepository.save(jazigo);
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
                         break;
 
                     case MANUTENCAO:
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
                     break;
 
                 }
@@ -343,7 +353,7 @@ public class JazigoController {
 
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
 
-        Servico enterroServico = new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora), LocalDate.now());
+        Servico enterroServico = new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora));
         servicoRepository.save(enterroServico);
 
         carrinho.adicionarServico(enterroServico);
@@ -367,7 +377,7 @@ public class JazigoController {
             return ResponseEntity.ok("ERR;jazigo_nao_tem_pet");
         }
 
-        Servico exumacao = new Servico(ServicoEnum.EXUMACAO, ServicoEnum.EXUMACAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora), LocalDate.now());
+        Servico exumacao = new Servico(ServicoEnum.EXUMACAO, ServicoEnum.EXUMACAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora));
         servicoRepository.save(exumacao);
 
         carrinho.adicionarServico(exumacao);
@@ -399,6 +409,32 @@ public class JazigoController {
         DetalharJazigoDTO detalharJazigoDTO = new DetalharJazigoDTO(jazigo.getPetEnterrado(), jazigo);
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(detalharJazigoDTO);
+    }
+
+    @GetMapping("/{cpf}/meus_jazigos/{id}/agendar_manutencao/preco")
+    public ResponseEntity<?> precoManutencao() {
+        return ResponseEntity.ok("OK;" + Servico.ServicoEnum.MANUTENCAO.getPreco());
+    }
+
+    @PostMapping("/{cpf}/meus_jazigos/{id}/agendar_manutencao")
+    public ResponseEntity<?> agendarManutencao(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("data") String data) {
+
+        Jazigo jazigo = jazigoRepository.findById(id).get();
+        Pet pet = jazigo.getPetEnterrado();
+
+        if (!jazigo.getProprietario().equals(clienteRepository.findByCpf(cpf)) ) {
+            return ResponseEntity.ok("ERR;jazigo_nao_pertence_ao_cliente");
+        }
+
+        Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+
+        Servico manutencaoServico = new Servico(ServicoEnum.MANUTENCAO, ServicoEnum.MANUTENCAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), null);
+        servicoRepository.save(manutencaoServico);
+
+        carrinho.adicionarServico(manutencaoServico);
+        carrinhoRepository.save(carrinho);
+
+        return ResponseEntity.ok("OK;manutencao_agendada");
     }
     
 }

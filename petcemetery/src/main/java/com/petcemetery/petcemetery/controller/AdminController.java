@@ -88,7 +88,7 @@ public class AdminController {
             }
         }
 
-        return ResponseEntity.ok("OK;servico_alterado;"); // Exibe uma mensagem de servico alterado
+        return ResponseEntity.ok("OK;preco_servico_alterado;"); // Exibe uma mensagem de servico alterado
     }
     
 }
