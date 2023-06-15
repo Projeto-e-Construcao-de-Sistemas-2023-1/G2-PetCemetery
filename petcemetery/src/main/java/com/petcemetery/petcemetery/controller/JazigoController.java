@@ -4,6 +4,7 @@ import com.petcemetery.petcemetery.DTO.DetalharJazigoDTO;
 import com.petcemetery.petcemetery.DTO.JazigoDTO;
 import com.petcemetery.petcemetery.DTO.PetDTO;
 import com.petcemetery.petcemetery.DTO.ServicoDTO;
+import com.petcemetery.petcemetery.DTO.VisualizarDespesasDTO;
 import com.petcemetery.petcemetery.model.Carrinho;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.model.Jazigo;
@@ -383,6 +384,7 @@ public class JazigoController {
         return ResponseEntity.ok("OK;" + Servico.ServicoEnum.EXUMACAO.getPreco());
     }
 
+    //retorna os detalhes do jazigo especificado para ser exibido na tela de visualizar detalhes de jazifo
     @GetMapping("/{cpf}/meus_jazigos/{id}/detalhar_jazigo")
     public ResponseEntity<?> detalharJazigo(@PathVariable("id") Long id){
         Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
@@ -394,6 +396,20 @@ public class JazigoController {
         DetalharJazigoDTO detalharJazigoDTO = new DetalharJazigoDTO(jazigo.getPetEnterrado(), jazigo);
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(detalharJazigoDTO);
+    }
+
+    //retorna as informaçoes necessárias para visualizar as despesas de cada cpf na tela visualizar despesas
+    //talvez seja melhor mover para o cliente contorller e modificar a url prefixada??
+    @GetMapping("/{cpf}/visualizar_despesas")
+    public ResponseEntity<?>visualizarDespesas(@PathVariable("cpf") String cpf){
+        List<Servico> servicos = servicoRepository.findBycliente_cpf(cpf);
+        List <VisualizarDespesasDTO> despesasDTO = new ArrayList<>();
+    
+        for (Servico s : servicos){
+            VisualizarDespesasDTO despesaDTO = new VisualizarDespesasDTO(s);
+            despesasDTO.add(despesaDTO);
+        }
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(despesasDTO);
     }
     
 }
