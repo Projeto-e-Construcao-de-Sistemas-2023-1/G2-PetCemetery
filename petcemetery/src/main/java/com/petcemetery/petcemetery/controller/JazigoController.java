@@ -282,8 +282,15 @@ public class JazigoController {
                         pet.setDataExumacao(servico.getDataServico());
                         pet.setHoraExumacao(servico.getHoraServico());
                         petRepository.save(pet);
-                        
                         break;
+
+                    case PERSONALIZACAO:
+                        jazigo.setPlano(servico.getPlano());
+                        jazigoRepository.save(jazigo);
+                        break;
+
+                    case MANUTENCAO:
+                    break;
 
                 }
             }
