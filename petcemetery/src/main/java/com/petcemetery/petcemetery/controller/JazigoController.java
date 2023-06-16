@@ -2,7 +2,6 @@
 
 import com.petcemetery.petcemetery.DTO.DetalharJazigoDTO;
 import com.petcemetery.petcemetery.DTO.JazigoDTO;
-import com.petcemetery.petcemetery.DTO.PetDTO;
 import com.petcemetery.petcemetery.DTO.ServicoDTO;
 import com.petcemetery.petcemetery.DTO.VisualizarDespesasDTO;
 import com.petcemetery.petcemetery.model.Carrinho;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -260,6 +258,7 @@ public class JazigoController {
                 Jazigo jazigo = servico.getJazigo();
                 Pet pet = servico.getPet();
 
+                // TODO terminar os casos de compra, manutencao e personalização. Aluguel precisa ser ajustado pra criar cobranças mensais.
                 switch(servico.getTipoServico()){
                     case COMPRA:
                     case ALUGUEL:
@@ -286,9 +285,13 @@ public class JazigoController {
                         pet.setDataExumacao(servico.getDataServico());
                         pet.setHoraExumacao(servico.getHoraServico());
                         petRepository.save(pet);
-                        
                         break;
 
+                    case MANUTENCAO:
+                        break;
+                        
+                    case PERSONALIZACAO:
+                        break;
                 }
             }
 

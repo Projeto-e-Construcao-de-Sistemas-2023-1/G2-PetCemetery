@@ -1,6 +1,5 @@
 package com.petcemetery.petcemetery.DTO;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.petcemetery.petcemetery.model.Servico;
 
 import lombok.Data;

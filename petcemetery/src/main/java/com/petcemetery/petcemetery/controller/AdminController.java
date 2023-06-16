@@ -1,15 +1,13 @@
 package com.petcemetery.petcemetery.controller;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.petcemetery.petcemetery.DTO.ExibirServicoDTO;
@@ -58,36 +56,23 @@ public class AdminController {
     }
 
     @PostMapping("/servicos/alterar")
-    public ResponseEntity<?> alterarServicos(@RequestBody Map<String, Double> servicos) {
-        for (Map.Entry<String, Double> entry : servicos.entrySet()) {
-            String nomeServico = entry.getKey().toUpperCase();
-            Double novoValor = entry.getValue();
-    
-            System.out.println("cheguei aqui");
-            System.out.println(nomeServico + " " + novoValor);
-            System.out.println(nomeServico == "GOLD");
-
-            // Atualiza o valor do plano com base no seu nome
-            if(nomeServico.equals("BASIC") || nomeServico.equals("SILVER") || nomeServico.equals("GOLD")) {
-
-                System.out.println("isso é um plano");
-                PlanoEnum planoEnum = PlanoEnum.valueOf(nomeServico);
-                if(planoEnum != null) {
-                    planoEnum.setPreco(novoValor);
-                }
-
-            } else {
-
-                System.out.println("isso é um servico");
-
-                // Atualiza o valor do serviço com base no seu nome
-                ServicoEnum servicoEnum = ServicoEnum.valueOf(nomeServico);
-                if (servicoEnum != null) {
-                    servicoEnum.setPreco(novoValor);
-                }
+    public ResponseEntity<?> alterarServicos(@RequestParam String servico, @RequestParam double valor) {
+        // Atualiza o valor do plano com base no seu nome
+        if(servico.equals("BASIC") || servico.equals("SILVER") || servico.equals("GOLD")) {
+            System.out.println("isso é um plano");
+            PlanoEnum planoEnum = PlanoEnum.valueOf(servico);
+            if(planoEnum != null) {
+                planoEnum.setPreco(valor);
+                System.out.println(planoEnum.getPreco());
+            }
+        } else {
+            System.out.println("isso é um servico");
+            // Atualiza o valor do serviço com base no seu nome
+            ServicoEnum servicoEnum = ServicoEnum.valueOf(servico);
+            if (servicoEnum != null) {
+                servicoEnum.setPreco(valor);
             }
         }
-
         return ResponseEntity.ok("OK;servico_alterado;"); // Exibe uma mensagem de servico alterado
     }
     
