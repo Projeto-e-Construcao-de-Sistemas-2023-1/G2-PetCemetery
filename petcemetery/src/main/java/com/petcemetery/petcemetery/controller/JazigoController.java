@@ -70,24 +70,24 @@ public class JazigoController {
     }
 
     // Envia para o front uma lista dos jazigos do proprietário, contendo o nome do pet e a data do enterro, ou "Vazio" e null caso não tenha pet enterrado.
-    @GetMapping("/{cpf_proprietario}/meus_jazigos")
-    public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietario") String cpf_proprietario) {
-        List<Jazigo> listaJazigos = jazigoRepository.findByProprietarioCpf(cpf_proprietario); 
+@GetMapping("/{cpf_proprietario}/meus_jazigos")
+public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietario") String cpf_proprietario) {
+    List<Jazigo> listaJazigos = jazigoRepository.findByProprietarioCpf(cpf_proprietario); 
 
-        List<JazigoDTO> listaJazigosDTO = new ArrayList<>();
+    List<JazigoDTO> listaJazigosDTO = new ArrayList<>();
 
-        for (Jazigo jazigo : listaJazigos) {
-            JazigoDTO jazigoDTO;
-            if(jazigo.getPetEnterrado() == null) {
-                jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco(), jazigo.getIdJazigo());
-            } else {
-                jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo());
-            }
-            listaJazigosDTO.add(jazigoDTO);
+    for (Jazigo jazigo : listaJazigos) {
+        JazigoDTO jazigoDTO;
+        if(jazigo.getPetEnterrado() == null) {
+            jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco(), jazigo.getIdJazigo(), null, "Sem Espécie");
+        } else {
+            jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo(), jazigo.getPetEnterrado().getDataNascimento(), jazigo.getPetEnterrado().getEspecie());
         }
-
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaJazigosDTO);
+        listaJazigosDTO.add(jazigoDTO);
     }
+
+    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaJazigosDTO);
+}
     
     // Envia para o front o endereco do jazigo selecionado, o id dele e o preço de compra, para ser exibido na tela antes da compra do ornamento - FUNCIONANDO
     @GetMapping("/{cpf}/comprar_jazigo/{id}")
