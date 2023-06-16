@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -68,24 +69,24 @@ public class JazigoController {
     }
 
     // Envia para o front uma lista dos jazigos do proprietário, contendo o nome do pet e a data do enterro, ou "Vazio" e null caso não tenha pet enterrado.
-    @GetMapping("/{cpf_proprietario}/meus_jazigos")
-    public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietario") String cpf_proprietario) {
-        List<Jazigo> listaJazigos = jazigoRepository.findByProprietarioCpf(cpf_proprietario); 
+@GetMapping("/{cpf_proprietario}/meus_jazigos")
+public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietario") String cpf_proprietario) {
+    List<Jazigo> listaJazigos = jazigoRepository.findByProprietarioCpf(cpf_proprietario); 
 
-        List<JazigoDTO> listaJazigosDTO = new ArrayList<>();
+    List<JazigoDTO> listaJazigosDTO = new ArrayList<>();
 
-        for (Jazigo jazigo : listaJazigos) {
-            JazigoDTO jazigoDTO;
-            if(jazigo.getPetEnterrado() == null) {
-                jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco());
-            } else {
-                jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco());
-            }
-            listaJazigosDTO.add(jazigoDTO);
+    for (Jazigo jazigo : listaJazigos) {
+        JazigoDTO jazigoDTO;
+        if(jazigo.getPetEnterrado() == null) {
+            jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco(), jazigo.getIdJazigo(), null, "Sem Espécie");
+        } else {
+            jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo(), jazigo.getPetEnterrado().getDataNascimento(), jazigo.getPetEnterrado().getEspecie());
         }
-
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaJazigosDTO);
+        listaJazigosDTO.add(jazigoDTO);
     }
+
+    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaJazigosDTO);
+}
     
     // Envia para o front o endereco do jazigo selecionado, o id dele e o preço de compra, para ser exibido na tela antes da compra do ornamento - FUNCIONANDO
     @GetMapping("/{cpf}/comprar_jazigo/{id}")
@@ -124,6 +125,7 @@ public class JazigoController {
         
         Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
         if (optionalJazigo.isPresent()) {
+        
             // Pegando o plano selecionado 
             PlanoEnum plano = PlanoEnum.valueOf(planoSelecionado.toUpperCase());
             Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
@@ -131,11 +133,19 @@ public class JazigoController {
             Cliente cliente = clienteRepository.findByCpf(cpf);
 
             //criando o servico
-            Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, LocalDate.now(), LocalTime.now(), LocalDate.now());
+            Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, null, null);
 
             System.out.println(servico.toString());
 
-
+            jazigo.setDisponivel(false);
+                        jazigo.setPlano(servico.getPlano());
+                        jazigo.setProprietario(cliente);
+                        jazigo.setStatus(StatusEnum.DISPONIVEL);
+                        jazigoRepository.save(jazigo);
+                        cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
+                        clienteRepository.save(cliente);
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
             carrinho.adicionarServico(servico);
@@ -160,8 +170,17 @@ public class JazigoController {
             Cliente cliente = clienteRepository.findByCpf(cpf);
 
             //criando o servico
-            Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null, LocalDate.now(), LocalTime.now(), LocalDate.now());
-
+            Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null, null ,null);
+jazigo.setDisponivel(false);
+                        jazigo.setPlano(servico.getPlano());
+                        jazigo.setProprietario(cliente);
+                        jazigo.setStatus(StatusEnum.DISPONIVEL);
+                        jazigoRepository.save(jazigo);
+                        cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
+                        clienteRepository.save(cliente);
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
+                        
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
             carrinho.adicionarServico(servico);
@@ -269,6 +288,8 @@ public class JazigoController {
                         jazigoRepository.save(jazigo);
                         cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
                         clienteRepository.save(cliente);
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
                         break;
                     
                     case ENTERRO:
@@ -279,19 +300,30 @@ public class JazigoController {
                         pet.setDataEnterro(servico.getDataServico());
                         pet.setHoraEnterro(servico.getHoraServico());
                         petRepository.save(pet);
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
                         break;
                     
                     case EXUMACAO:
                         pet.setDataExumacao(servico.getDataServico());
                         pet.setHoraExumacao(servico.getHoraServico());
                         petRepository.save(pet);
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
+                        break;
+
+                    case PERSONALIZACAO:
+                        jazigo.setPlano(servico.getPlano());
+                        jazigoRepository.save(jazigo);
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
                         break;
 
                     case MANUTENCAO:
-                        break;
-                        
-                    case PERSONALIZACAO:
-                        break;
+                        servico.setPrimeiroPagamento(LocalDate.now());
+                        servicoRepository.save(servico);
+                    break;
+
                 }
             }
 
@@ -343,7 +375,7 @@ public class JazigoController {
 
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
 
-        Servico enterroServico = new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora), LocalDate.now());
+        Servico enterroServico = new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora));
         servicoRepository.save(enterroServico);
 
         carrinho.adicionarServico(enterroServico);
@@ -352,28 +384,19 @@ public class JazigoController {
         return ResponseEntity.ok("OK;");
     }
 
-    // Recebe os parâmetros data (yyyy-mm-dd) e hora (hh-mm) da exumacao, no formato correto, e salva no banco
-    // Não estamos utilizando o cpf pra nada :D - utiliza sim, p saber se o jazigo é do kra ou nao
-    @PostMapping("/{cpf}/meus_jazigos/{id}/agendar_exumacao")
-    public ResponseEntity<?> agendarExumacao(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("data") String data, @RequestParam("hora") String hora) {
-        Jazigo jazigo = jazigoRepository.findById(id).get();
-        Pet pet = jazigo.getPetEnterrado();
-        Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+   
+@PostMapping("/pets/exumacao")
+    public ResponseEntity<Void> agendarExumacao(@RequestBody Pet pet) {
+        // Aqui supomos que o objeto Pet enviado na solicitação já possui os campos dataExumacao e horaExumacao preenchidos.
+        // Se esses campos estiverem nulos ou não preenchidos corretamente, você deverá tratar esses casos no seu serviço ou controlador.
 
-        if (!jazigo.getProprietario().equals(clienteRepository.findByCpf(cpf)) ) {
-            return ResponseEntity.ok("ERR;jazigo_nao_pertence_ao_cliente");
-        }
-        if(pet == null) {
-            return ResponseEntity.ok("ERR;jazigo_nao_tem_pet");
-        }
+        // Chama o método save do serviço, que deve salvar o Pet no banco de dados.
+        petRepository.save(pet);
 
-        Servico exumacao = new Servico(ServicoEnum.EXUMACAO, ServicoEnum.EXUMACAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora), LocalDate.now());
-        servicoRepository.save(exumacao);
-
-        carrinho.adicionarServico(exumacao);
-        carrinhoRepository.save(carrinho);
-        return ResponseEntity.ok("OK;");
+        // Retorna o status 200 (OK)
+        return ResponseEntity.ok().build();
     }
+
 
     // Retorna o valor atual do preço de enterro para ser exibido na tela de pagamento
     @GetMapping("/{cpf}/meus_jazigos/{id}/agendar_enterro/preco")
@@ -400,7 +423,32 @@ public class JazigoController {
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(detalharJazigoDTO);
     }
+    @GetMapping("/{cpf}/meus_jazigos/{id}/agendar_manutencao/preco")
+    public ResponseEntity<?> precoManutencao() {
+        return ResponseEntity.ok("OK;" + Servico.ServicoEnum.MANUTENCAO.getPreco());
+    }
 
+    @PostMapping("/{cpf}/meus_jazigos/{id}/agendar_manutencao")
+    public ResponseEntity<?> agendarManutencao(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("data") String data) {
+
+        Jazigo jazigo = jazigoRepository.findById(id).get();
+        Pet pet = jazigo.getPetEnterrado();
+
+        if (!jazigo.getProprietario().equals(clienteRepository.findByCpf(cpf)) ) {
+            return ResponseEntity.ok("ERR;jazigo_nao_pertence_ao_cliente");
+        }
+
+        Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+
+        Servico manutencaoServico = new Servico(ServicoEnum.MANUTENCAO, ServicoEnum.MANUTENCAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), null);
+        servicoRepository.save(manutencaoServico);
+
+        carrinho.adicionarServico(manutencaoServico);
+        carrinhoRepository.save(carrinho);
+
+        return ResponseEntity.ok("OK;manutencao_agendada");
+    }
+    
     //retorna as informaçoes necessárias para visualizar as despesas de cada cpf na tela visualizar despesas
     //talvez seja melhor mover para o cliente contorller e modificar a url prefixada??
     @GetMapping("/{cpf}/visualizar_despesas")

@@ -141,7 +141,7 @@ public class Servico {
 
     public Servico(){}
     
-    public Servico(ServicoEnum tipoServico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano, Pet pet, LocalDate dataServico, LocalTime horaServico, LocalDate primeiroPagamento) {
+    public Servico(ServicoEnum tipoServico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano, Pet pet, LocalDate dataServico, LocalTime horaServico) {
         this.tipoServico = tipoServico;
         if(plano != null){
             this.valor = valor + plano.getPreco(); //* O valor do servico vai englobar o valor do jazigo + o valor do seu plano (caso seja compra ou aluguel, senão esses valores serão null) */
@@ -154,6 +154,6 @@ public class Servico {
         this.pet = pet;
         this.dataServico = dataServico;
         this.horaServico = horaServico;
-        this.primeiroPagamento = primeiroPagamento;
+        
     }
 }
