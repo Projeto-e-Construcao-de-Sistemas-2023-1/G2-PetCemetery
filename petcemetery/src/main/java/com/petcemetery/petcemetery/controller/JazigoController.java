@@ -376,7 +376,7 @@ jazigo.setDisponivel(false);
         Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
 
         Servico enterroServico = new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora));
-        servicoRepository.save(enterroServico);
+        //servicoRepository.save(enterroServico);
 
         carrinho.adicionarServico(enterroServico);
         carrinhoRepository.save(carrinho);
