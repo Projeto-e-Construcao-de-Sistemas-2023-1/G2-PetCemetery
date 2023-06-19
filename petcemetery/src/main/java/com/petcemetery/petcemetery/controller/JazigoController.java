@@ -78,15 +78,16 @@ public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietar
     for (Jazigo jazigo : listaJazigos) {
         JazigoDTO jazigoDTO;
         if(jazigo.getPetEnterrado() == null) {
-            jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco(), jazigo.getIdJazigo(), null, "Sem Espécie");
+            jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco(), jazigo.getIdJazigo(), null, "Sem Espécie", jazigo.getMensagem());
         } else {
-            jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo(), jazigo.getPetEnterrado().getDataNascimento(), jazigo.getPetEnterrado().getEspecie());
+            jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo(), jazigo.getPetEnterrado().getDataNascimento(), jazigo.getPetEnterrado().getEspecie(), jazigo.getMensagem());
         }
         listaJazigosDTO.add(jazigoDTO);
     }
 
     return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaJazigosDTO);
 }
+
     
     // Envia para o front o endereco do jazigo selecionado, o id dele e o preço de compra, para ser exibido na tela antes da compra do ornamento - FUNCIONANDO
     @GetMapping("/{cpf}/comprar_jazigo/{id}")
@@ -214,32 +215,30 @@ jazigo.setDisponivel(false);
 
     //todo falta implementar no front - FUNCIONANDO
     //edita só a mensagem do jazigo, nao sei a situação da foto ainda
-    @PostMapping("/{cpf}/informacoes_jazigo/{id}/editar_jazigo")
-    public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("mensagem") String mensagem, @RequestParam("urlFoto") String urlFoto) {
-        
-        if (mensagem.length() > 80) {
-            return ResponseEntity.ok("ERR;mensagem_maior_que_80_caracteres");
-        }
+  @PostMapping("/{cpf}/informacoes_jazigo/{id}/editar_jazigo")
+public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestBody String mensagem) {
+    if (mensagem.length() > 80) {
+        return ResponseEntity.ok("ERR;mensagem_maior_que_80_caracteres");
+    }
 
-        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
-        
-        if (optionalJazigo.isPresent()) {
-            Jazigo jazigo = optionalJazigo.get();
+    Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
 
-            if(jazigo.getProprietario().equals(clienteRepository.findByCpf(cpf))){
-                
-                jazigo.setFoto(urlFoto);
-                jazigo.setMensagem(mensagem);
-                jazigoRepository.save(jazigo);
-            } else {
-                return ResponseEntity.ok("ERR;jazigo_nao_pertence_usuario");
-            }
+    if (optionalJazigo.isPresent()) {
+        Jazigo jazigo = optionalJazigo.get();
 
+        if (jazigo.getProprietario().equals(clienteRepository.findByCpf(cpf))) {
+            jazigo.setMensagem(mensagem);
+            jazigoRepository.save(jazigo);
             return ResponseEntity.ok("OK;Mensagem_editada");
         } else {
-            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
+            return ResponseEntity.ok("ERR;jazigo_nao_pertence_usuario");
         }
+    } else {
+        return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
     }
+}
+
+
 
     //Retorna array de servicos em json do cliente passado - FUNCIONANDO
     @GetMapping("/{cpf}/informacoes_carrinho")
