@@ -385,17 +385,29 @@ jazigo.setDisponivel(false);
     }
 
    
-@PostMapping("/pets/exumacao")
-    public ResponseEntity<Void> agendarExumacao(@RequestBody Pet pet) {
-        // Aqui supomos que o objeto Pet enviado na solicitação já possui os campos dataExumacao e horaExumacao preenchidos.
-        // Se esses campos estiverem nulos ou não preenchidos corretamente, você deverá tratar esses casos no seu serviço ou controlador.
+    // Recebe os parâmetros data (yyyy-mm-dd) e hora (hh-mm) da exumacao, no formato correto, e salva no banco
+    // Não estamos utilizando o cpf pra nada :D - utiliza sim, p saber se o jazigo é do kra ou nao
+    @PostMapping("/{cpf}/meus_jazigos/{id}/agendar_exumacao")
+    public ResponseEntity<?> agendarExumacao(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("data") String data, @RequestParam("hora") String hora) {
+        Jazigo jazigo = jazigoRepository.findById(id).get();
+        Pet pet = jazigo.getPetEnterrado();
+        Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
 
-        // Chama o método save do serviço, que deve salvar o Pet no banco de dados.
-        petRepository.save(pet);
+        if (!jazigo.getProprietario().equals(clienteRepository.findByCpf(cpf)) ) {
+            return ResponseEntity.ok("ERR;jazigo_nao_pertence_ao_cliente");
+        }
+        if(pet == null) {
+            return ResponseEntity.ok("ERR;jazigo_nao_tem_pet");
+        }
 
-        // Retorna o status 200 (OK)
-        return ResponseEntity.ok().build();
+        Servico exumacao = new Servico(ServicoEnum.EXUMACAO, ServicoEnum.EXUMACAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora));
+        servicoRepository.save(exumacao);
+
+        carrinho.adicionarServico(exumacao);
+        carrinhoRepository.save(carrinho);
+        return ResponseEntity.ok("OK;");
     }
+
 
 
     // Retorna o valor atual do preço de enterro para ser exibido na tela de pagamento
