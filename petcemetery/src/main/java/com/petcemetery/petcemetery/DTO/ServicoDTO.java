@@ -12,13 +12,11 @@ public class ServicoDTO {
     ServicoEnum tipoServico;
     String enderecoJazigo;
     PlanoEnum plano;
-    Long idServico;
 
-    public ServicoDTO(double valor, ServicoEnum tipoServico, String enderecoJazigo, PlanoEnum plano, Long idServico) {
+    public ServicoDTO(double valor, ServicoEnum tipoServico, String enderecoJazigo, PlanoEnum plano) {
         this.valor = valor;
         this.tipoServico = tipoServico;
         this.enderecoJazigo = enderecoJazigo;
         this.plano = plano;
-        this.idServico = idServico;
     }
 }
