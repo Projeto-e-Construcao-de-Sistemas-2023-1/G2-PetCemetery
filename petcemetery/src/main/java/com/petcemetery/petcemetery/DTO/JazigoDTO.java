@@ -12,13 +12,14 @@ public class JazigoDTO {
     private Long idJazigo;
     LocalDate dataNascimento;
     String especie;
-
-    public JazigoDTO(String nomePet, LocalDate dataEnterro, String endereco, Long idJazigo, LocalDate dataNascimento, String especie) {
+    String mensagem;
+    public JazigoDTO(String nomePet, LocalDate dataEnterro, String endereco, Long idJazigo, LocalDate dataNascimento, String especie, String mensagem) {
         this.nomePet = nomePet;
         this.dataEnterro = dataEnterro;
         this.endereco = endereco;
         this.idJazigo = idJazigo;
         this.dataNascimento = dataNascimento;
         this.especie = especie;
+        this.mensagem = mensagem;
     }
 }

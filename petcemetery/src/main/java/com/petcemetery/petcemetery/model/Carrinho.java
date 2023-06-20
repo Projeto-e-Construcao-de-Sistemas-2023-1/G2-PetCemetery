@@ -1,71 +1,43 @@
 package com.petcemetery.petcemetery.model;
 
+import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
+import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
-
+@Data
 @Entity(name = "carrinho")
 @Table(name = "carrinho")
 public class Carrinho {
-
 
     @Id
     @Column(name = "cpf_cliente")
     private String cpfCliente;
 
-    @OneToMany
-    @JoinColumn(name = "carrinho_cpf_cliente")
-    private List<Servico> servicos;
+    @ManyToOne
+    @JoinColumn(name = "id_jazigo")
+    private Jazigo jazigo;
 
-    @Column(name = "total_carrinho")
-    private double totalCarrinho;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "servico")
+    private ServicoEnum servico;
 
-    public Carrinho() {}
+    @Enumerated(EnumType.STRING)
+    @Column(name = "plano")
+    private PlanoEnum plano;
 
-    // Construtor de carrinho que deve ser chamado na criação de um cliente.
-    public Carrinho(String cpfCliente) {
+    public Carrinho(String cpfCliente, Jazigo jazigo, ServicoEnum servico, PlanoEnum plano) {
         this.cpfCliente = cpfCliente;
-        this.servicos = new ArrayList<>();
-        this.totalCarrinho = 0.0;
-    }
-
-    public void adicionarServico(Servico servico) {
-        this.servicos.add(servico);
-        this.totalCarrinho += servico.getValor();
-    }
-
-    public void removerServico(Servico servico) {
-        this.servicos.remove(servico);
-        this.totalCarrinho -= servico.getValor();
-    }
-
-    public void limparCarrinho() {
-        this.servicos.clear();
-        this.totalCarrinho -= this.totalCarrinho; 
-        assert totalCarrinho >= 0;
-    }
-
-    public double getTotalCarrinho() {
-        return totalCarrinho;
-    }
-
-    public String getCpfCliente() {
-        return cpfCliente;
-    }
-
-    public List<Servico> getServicos() {
-        return servicos;
-    }
-
-    public void setTotalCarrinho(double valor) {
-        this.totalCarrinho = valor;
+        this.jazigo = jazigo;
+        this.servico = servico;
+        this.plano = plano;
     }
 }
