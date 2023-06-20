@@ -90,63 +90,51 @@ public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietar
 
     
     // Envia para o front o endereco do jazigo selecionado, o id dele e o preço de compra, para ser exibido na tela antes da compra do ornamento - FUNCIONANDO
-    @GetMapping("/{cpf}/comprar_jazigo/{id}")
-    public ResponseEntity<?> comprarJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
+    @GetMapping("/{cpf}/adquirir_jazigo/{id}")
+    public ResponseEntity<?> comprarJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("tipo") String tipo) {
         Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
 
-        return ResponseEntity.ok("OK;" + jazigo.getEndereco() + ";" + String.valueOf(Jazigo.precoJazigo)); // Retorna o cpf do cliente, endereco do jazigo, id do jazigo e o seu preço
-    }
+        if(tipo.equals("compra")){
+            return ResponseEntity.ok("OK;" + jazigo.getEndereco() + ";" + String.valueOf(Jazigo.precoJazigo)); // Retorna o cpf do cliente, endereco do jazigo, id do jazigo e o seu preço
+        }
+        
+        return ResponseEntity.ok("OK;" + jazigo.getEndereco() + ";" + String.valueOf(Jazigo.aluguelJazigo));
 
-    //todo Envia para o front o endereco do jazigo selecionado, o id dele e o preço de aluguel, para ser exibido na tela antes da compra do ornamento - TESTAR!
-    @GetMapping("/{cpf}/alugar_jazigo/{id}")
-    public ResponseEntity<?> alugarJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
-        Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
-
-        return ResponseEntity.ok("OK;" + jazigo.getEndereco() + ";" + String.valueOf(Jazigo.aluguelJazigo)); // Retorna o cpf do cliente, endereco do jazigo, id do jazigo e o seu preço de aluguel
     }
 
     // Envia para o front os precos dos planos atuais do sistema, para ser exibido na tela de seleção de planos - FUNCIONANDO
-    @GetMapping("/{cpf}/comprar_jazigo/{id}/listar_planos")
+    @GetMapping("/{cpf}/adquirir_jazigo/{id}/listar_planos")
     public ResponseEntity<?> listarPlanos(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
         return ResponseEntity.ok("OK;" + String.valueOf(PlanoEnum.BASIC) + ";" + PlanoEnum.BASIC.getPreco() + ";" 
                                        + String.valueOf(PlanoEnum.SILVER) + ";" + PlanoEnum.SILVER.getPreco() + ";"
                                        + String.valueOf(PlanoEnum.GOLD) + ";" + PlanoEnum.GOLD.getPreco());
     }
 
-    // Envia para o front os precos dos planos atuais do sistema, para ser exibido na tela de seleção de planos para o jazigo alugado - FUNCIONANDO
-     @GetMapping("/{cpf}/alugar_jazigo/{id}/listar_planos")
-     public ResponseEntity<?> listarPlanosAlugar(@PathVariable("cpf") String cpf, @PathVariable("id") Long id) {
-        return ResponseEntity.ok("OK;" + String.valueOf(PlanoEnum.BASIC) + ";" + PlanoEnum.BASIC.getPreco() + ";" 
-                                       + String.valueOf(PlanoEnum.SILVER) + ";" + PlanoEnum.SILVER.getPreco() + ";"
-                                       + String.valueOf(PlanoEnum.GOLD) + ";" + PlanoEnum.GOLD.getPreco());
-     }
-
-    @PostMapping("/{cpf}/comprar_jazigo/{id}/listar_planos/plano")
-    public ResponseEntity<?> finalizarCompra(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado) {
+    @PostMapping("/{cpf}/adquirir_jazigo/{id}/listar_planos/plano")
+    public ResponseEntity<?> finalizarCompra(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado, @RequestParam("tipo") String tipo) {
         
         Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
         if (optionalJazigo.isPresent()) {
-        
+            
             // Pegando o plano selecionado 
             PlanoEnum plano = PlanoEnum.valueOf(planoSelecionado.toUpperCase());
             Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
             Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
             Cliente cliente = clienteRepository.findByCpf(cpf);
+            Servico servico;
 
-            //criando o servico
-            Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, null, null);
+            if(tipo.equals("compra")){
+                servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, null, null);
+            } else {
+                servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null, null ,null);
+            }
+            
+            for(Servico servicos : carrinho.getServicos()) {
+                if(servicos.getJazigo().getIdJazigo() == id) {
+                    return ResponseEntity.ok("ERR;jazigo_ja_adicionado");
+                }
+            }
 
-            System.out.println(servico.toString());
-
-            jazigo.setDisponivel(false);
-                        jazigo.setPlano(servico.getPlano());
-                        jazigo.setProprietario(cliente);
-                        jazigo.setStatus(StatusEnum.DISPONIVEL);
-                        jazigoRepository.save(jazigo);
-                        cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
-                        clienteRepository.save(cliente);
-                        servico.setPrimeiroPagamento(LocalDate.now());
-                        servicoRepository.save(servico);
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
             carrinho.adicionarServico(servico);
@@ -156,42 +144,6 @@ public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietar
         } else {
             return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
         }
-    }
-
-    //todo Recebe os valores do plano que o cliente selecionou, e então adiciona tanto o jazigo quanto o plano ao carrinho e salva no banco - TESTAR!
-    @PostMapping("/{cpf}/alugar_jazigo/{id}/listar_planos/plano")
-    public ResponseEntity<?> finalizarAluguel(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado) {
-
-        Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
-        if (optionalJazigo.isPresent()) {
-            // Pegando o plano selecionado 
-            PlanoEnum plano = PlanoEnum.valueOf(planoSelecionado.toUpperCase());
-            Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
-            Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
-            Cliente cliente = clienteRepository.findByCpf(cpf);
-
-            //criando o servico
-            Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null, null ,null);
-jazigo.setDisponivel(false);
-                        jazigo.setPlano(servico.getPlano());
-                        jazigo.setProprietario(cliente);
-                        jazigo.setStatus(StatusEnum.DISPONIVEL);
-                        jazigoRepository.save(jazigo);
-                        cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
-                        clienteRepository.save(cliente);
-                        servico.setPrimeiroPagamento(LocalDate.now());
-                        servicoRepository.save(servico);
-                        
-            //adiciona e seta no carrinho do cliente o servico
-            servicoRepository.save(servico);
-            carrinho.adicionarServico(servico);
-            carrinhoRepository.save(carrinho);
-
-            return ResponseEntity.ok("OK;");
-        } else {
-            return ResponseEntity.ok("ERR;jazigo_nao_encontrado");
-        }
-
     }
     
     // Retorna a mensagem e a foto atual para serem exibidas no front quando o usuário quiser alterar as informações do jazigo
@@ -330,8 +282,6 @@ public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cp
             carrinhoRepository.save(carrinho);
 
             //TODO daqui deve levar pros métodos de pagamento onde é criado e setado o pagamento no banco
-
-
 
             return ResponseEntity.ok("OK;");
         } else {
