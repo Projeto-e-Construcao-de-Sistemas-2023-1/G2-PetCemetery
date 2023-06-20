@@ -120,6 +120,17 @@ public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietar
                                        + String.valueOf(PlanoEnum.GOLD) + ";" + PlanoEnum.GOLD.getPreco());
      }
 
+    /*@PostMapping("/{cpf}/comprar_jazigo/{id}/listar_planos/plano")
+    public ResponseEntity<?> finalizarCompra(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado) {
+        Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
+
+        //criando o servico
+        Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, null, null);
+
+        carrinho.adicionarServico(servico);
+        carrinhoRepository.save(carrinho);
+    }*/
+
     @PostMapping("/{cpf}/comprar_jazigo/{id}/listar_planos/plano")
     public ResponseEntity<?> finalizarCompra(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado) {
         
@@ -135,17 +146,12 @@ public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietar
             //criando o servico
             Servico servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, null, null);
 
-            System.out.println(servico.toString());
+            for(Servico servicos : carrinho.getServicos()) {
+                if(servicos.getJazigo().getIdJazigo() == id) {
+                    return ResponseEntity.ok("ERR;jazigo_ja_adicionado");
+                }
+            }
 
-            jazigo.setDisponivel(false);
-                        jazigo.setPlano(servico.getPlano());
-                        jazigo.setProprietario(cliente);
-                        jazigo.setStatus(StatusEnum.DISPONIVEL);
-                        jazigoRepository.save(jazigo);
-                        cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
-                        clienteRepository.save(cliente);
-                        servico.setPrimeiroPagamento(LocalDate.now());
-                        servicoRepository.save(servico);
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
             carrinho.adicionarServico(servico);
@@ -171,15 +177,12 @@ public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietar
 
             //criando o servico
             Servico servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null, null ,null);
-jazigo.setDisponivel(false);
-                        jazigo.setPlano(servico.getPlano());
-                        jazigo.setProprietario(cliente);
-                        jazigo.setStatus(StatusEnum.DISPONIVEL);
-                        jazigoRepository.save(jazigo);
-                        cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
-                        clienteRepository.save(cliente);
-                        servico.setPrimeiroPagamento(LocalDate.now());
-                        servicoRepository.save(servico);
+
+            for(Servico servicos : carrinho.getServicos()) {
+                if(servicos.getJazigo().getIdJazigo() == id) {
+                    return ResponseEntity.ok("ERR;jazigo_ja_adicionado");
+                }
+            }
                         
             //adiciona e seta no carrinho do cliente o servico
             servicoRepository.save(servico);
@@ -278,7 +281,7 @@ jazigo.setDisponivel(false);
                 Pet pet = servico.getPet();
 
                 // TODO terminar os casos de compra, manutencao e personalização. Aluguel precisa ser ajustado pra criar cobranças mensais.
-                switch(servico.getTipoServico()){
+                switch(servico.getTipoServico()) {
                     case COMPRA:
                     case ALUGUEL:
                         jazigo.setDisponivel(false);
