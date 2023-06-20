@@ -5,12 +5,10 @@ import com.petcemetery.petcemetery.DTO.JazigoDTO;
 import com.petcemetery.petcemetery.DTO.ServicoDTO;
 import com.petcemetery.petcemetery.DTO.VisualizarDespesasDTO;
 import com.petcemetery.petcemetery.model.Carrinho;
-import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.model.Jazigo;
 import com.petcemetery.petcemetery.model.Pet;
 import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
-import com.petcemetery.petcemetery.model.Jazigo.StatusEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.CarrinhoRepository;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
@@ -110,7 +108,7 @@ public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietar
                                        + String.valueOf(PlanoEnum.GOLD) + ";" + PlanoEnum.GOLD.getPreco());
     }
 
-    @PostMapping("/{cpf}/adquirir_jazigo/{id}/listar_planos/plano") //tipo ==
+    @PostMapping("/{cpf}/adquirir_jazigo/{id}/listar_planos/plano") //tipo == COMPRA ou ALUGUEL
     public ResponseEntity<?> finalizarCompra(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("planoSelecionado") String planoSelecionado, @RequestParam("tipo") String tipo) {
         
         Optional<Jazigo> optionalJazigo = jazigoRepository.findById(id);
@@ -118,16 +116,7 @@ public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietar
             
             // Pegando o plano selecionado 
             PlanoEnum plano = PlanoEnum.valueOf(planoSelecionado.toUpperCase());
-            Carrinho carrinho = carrinhoRepository.findByCpfCliente(cpf);
             Jazigo jazigo = jazigoRepository.findByIdJazigo(id);
-            Cliente cliente = clienteRepository.findByCpf(cpf);
-            Servico servico;
-
-            if(tipo.equals("compra")){
-                servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, plano, null, null, null);
-            } else {
-                servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, plano, null, null ,null);
-            }
             
             for(Carrinho carrinhos : carrinhoRepository.findAllByCpfCliente(cpf)) { 
                 if(carrinhos.getJazigo().getIdJazigo() == id) {
@@ -136,8 +125,7 @@ public ResponseEntity<List<JazigoDTO>> jazigosInfo(@PathVariable("cpf_proprietar
             }
 
             //adiciona e seta no carrinho do cliente o servico
-            servicoRepository.save(servico);
-            carrinho.adicionarServico(servico);
+            Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.valueOf(tipo), plano, null, null);
             carrinhoRepository.save(carrinho);
 
             return ResponseEntity.ok("OK;");
@@ -198,8 +186,15 @@ public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cp
         List<ServicoDTO> listaServicosDTO = new ArrayList<>();
 
         for (Carrinho item : carrinhoRepository.findAllByCpfCliente(cpf)) {
+            double valor = item.getPlano().getPreco();
+
+            if (item.getServico() == ServicoEnum.COMPRA) {
+                valor += ServicoEnum.COMPRA.getPreco();
+            } else {
+                valor += ServicoEnum.ALUGUEL.getPreco();
+            }
             
-            ServicoDTO servicoDTO = new ServicoDTO(servico.getValor(), item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), null);
+            ServicoDTO servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano());
 
             listaServicosDTO.add(servicoDTO);
         }
@@ -225,7 +220,7 @@ public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cp
         Servico enterroServico = new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, jazigo.getPlano(), pet, LocalDate.parse(data), LocalTime.parse(hora));
         servicoRepository.save(enterroServico);
 
-        Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.ENTERRO, jazigo.getPlano());
+        Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.ENTERRO, jazigo.getPlano(), LocalDate.parse(data), LocalTime.parse(hora));
         carrinhoRepository.save(carrinho);
 
         return ResponseEntity.ok("OK;");
@@ -242,7 +237,7 @@ public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cp
         Servico exumacao = new Servico(ServicoEnum.EXUMACAO, ServicoEnum.EXUMACAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, jazigo.getPlano(), pet, LocalDate.parse(data), LocalTime.parse(hora));
         servicoRepository.save(exumacao);
 
-        Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.EXUMACAO, jazigo.getPlano());
+        Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.EXUMACAO, jazigo.getPlano(), LocalDate.parse(data), LocalTime.parse(hora));
         carrinhoRepository.save(carrinho);
         return ResponseEntity.ok("OK;");
     }
@@ -286,7 +281,7 @@ public ResponseEntity<?> editarMensagemFotoJazigo(@PathVariable("cpf") String cp
         Servico manutencaoServico = new Servico(ServicoEnum.MANUTENCAO, ServicoEnum.MANUTENCAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, jazigo.getPlano(), null, LocalDate.parse(data), null);
         servicoRepository.save(manutencaoServico);
 
-        Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.MANUTENCAO, jazigo.getPlano());
+        Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.MANUTENCAO, jazigo.getPlano(), LocalDate.parse(data), null);
         carrinhoRepository.save(carrinho);
 
         return ResponseEntity.ok("OK;manutencao_agendada");
