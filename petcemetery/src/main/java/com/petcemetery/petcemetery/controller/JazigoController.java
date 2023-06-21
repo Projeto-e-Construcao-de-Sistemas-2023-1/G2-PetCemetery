@@ -86,6 +86,7 @@ public class JazigoController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaJazigosDTO);
     }
 
+
     // Envia para o front o endereco do jazigo selecionado, o id dele e o preço de compra, para ser exibido na tela antes da compra do ornamento - FUNCIONANDO
     @GetMapping("/{cpf}/adquirir_jazigo/{id}")
     public ResponseEntity<?> comprarJazigo(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("tipo") String tipo) {
@@ -197,6 +198,7 @@ public class JazigoController {
 
         return ResponseEntity.ok("OK;enterro_no_carrinho");
     }
+
 
     // Recebe os parâmetros data (yyyy-mm-dd) e hora (hh-mm) da exumacao, no formato correto, e salva no banco
     // Não estamos utilizando o cpf pra nada :D - utiliza sim, p saber se o jazigo é do kra ou nao
