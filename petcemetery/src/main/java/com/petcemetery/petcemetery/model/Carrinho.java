@@ -1,5 +1,8 @@
 package com.petcemetery.petcemetery.model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 
@@ -34,10 +37,24 @@ public class Carrinho {
     @Column(name = "plano")
     private PlanoEnum plano;
 
-    public Carrinho(String cpfCliente, Jazigo jazigo, ServicoEnum servico, PlanoEnum plano) {
+    @Column(name = "data_agendamento")
+    private LocalDate dataAgendamento;
+
+    @Column(name = "hora_agendamento")
+    private LocalTime horaAgendamento;
+
+    //atributo Pet de tipo Pet
+    @Column(name = "id_pet")
+    private Pet pet;
+
+
+    public Carrinho(String cpfCliente, Jazigo jazigo, ServicoEnum servico, PlanoEnum plano, LocalDate dataAgendamento, LocalTime horaAgendamento, Pet pet) {
         this.cpfCliente = cpfCliente;
         this.jazigo = jazigo;
         this.servico = servico;
         this.plano = plano;
+        this.dataAgendamento = dataAgendamento;
+        this.horaAgendamento = horaAgendamento;
+        this.pet = pet;
     }
 }
