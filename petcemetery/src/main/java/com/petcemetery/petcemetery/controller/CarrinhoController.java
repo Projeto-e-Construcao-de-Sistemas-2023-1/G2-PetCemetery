@@ -29,6 +29,8 @@ import com.petcemetery.petcemetery.repositorio.JazigoRepository;
 import com.petcemetery.petcemetery.repositorio.PetRepository;
 import com.petcemetery.petcemetery.repositorio.ServicoRepository;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 @RequestMapping("/api")
 public class CarrinhoController {
@@ -51,8 +53,9 @@ public class CarrinhoController {
 
     //Ao finalizar e comprar tudo do carrinho, se algum servico for alguel ou compra, seta o jazigo no banco.
     //limpa o carrinho e salva no banco
+    @Transactional
     @PostMapping("/{cpf}/informacoes_carrinho/finalizar")
-    public ResponseEntity<?> realizarPagamento(@PathVariable("cpf") String cpf, @RequestParam("data") LocalDate data, @RequestParam("hora") LocalTime hora) {
+    public ResponseEntity<?> realizarPagamento(@PathVariable("cpf") String cpf) {
         
         List<Carrinho> carrinho = carrinhoRepository.findAllByCpfCliente(cpf);
         Cliente cliente = clienteRepository.findByCpf(cpf);
