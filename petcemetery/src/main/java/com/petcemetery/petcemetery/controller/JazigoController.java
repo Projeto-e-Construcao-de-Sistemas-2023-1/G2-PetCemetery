@@ -126,7 +126,7 @@ public class JazigoController {
             }
 
             //adiciona e seta no carrinho do cliente o servico
-            Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.valueOf(tipo), plano, null, null, null);
+            Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.valueOf(tipo.toUpperCase()), plano, null, null, null);
             carrinhoRepository.save(carrinho);
 
             return ResponseEntity.ok("OK;");

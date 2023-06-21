@@ -16,6 +16,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -47,9 +48,12 @@ public class Carrinho {
     private LocalTime horaAgendamento;
 
     //atributo Pet de tipo Pet
-    @Column(name = "id_pet")
+    @OneToOne
+    //@Column(name = "id_pet")
     private Pet pet;
 
+    public Carrinho() {
+    }
 
     public Carrinho(String cpfCliente, Jazigo jazigo, ServicoEnum servico, PlanoEnum plano, LocalDate dataAgendamento, LocalTime horaAgendamento, Pet pet) {
         this.cpfCliente = cpfCliente;
@@ -60,4 +64,5 @@ public class Carrinho {
         this.horaAgendamento = horaAgendamento;
         this.pet = pet;
     }
+
 }
