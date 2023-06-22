@@ -19,18 +19,24 @@ public class Cliente extends Usuario{
     @Column(name = "desativado")
     private Boolean desativado;
 
-     @OneToMany(mappedBy = "cliente")
-     private List<Pagamento> pagamentos; 
+    
+    @Column(name = "inadimplente")
+    private Boolean inadimplente;
+
+    @OneToMany(mappedBy = "cliente")
+    private List<Pagamento> pagamentos; 
 
     public Cliente(String email, String telefone, String nome, String cpf, String senha) {
         super(email, telefone, nome, cpf, false, senha);
         this.quantJazigos = 0;
         this.desativado = false;
+        this.inadimplente = false; // Inicialize o novo campo
     }
     public Cliente(String email, String telefone, String nome, String cpf, String cep, String rua, String numero, String complemento, String senha) {
         super(email, telefone, nome, cpf, cep, false, rua, numero, complemento, senha);
         this.quantJazigos = 0;
         this.desativado = false;
+        this.inadimplente = false; // Inicialize o novo campo
     }
 
     public int getQuantJazigos() {
@@ -48,6 +54,16 @@ public class Cliente extends Usuario{
     public void setDesativado(Boolean desativado) {
         this.desativado = desativado;
     }
+
+    // Adicione estes métodos getter e setter:
+    public Boolean getInadimplente() {
+        return this.inadimplente;
+    }
+
+    public void setInadimplente(Boolean inadimplente) {
+        this.inadimplente = inadimplente;
+    }
+
     public List<Pagamento> getPagamentos() {
         return pagamentos;
     }

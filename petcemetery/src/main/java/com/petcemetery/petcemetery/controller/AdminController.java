@@ -15,13 +15,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import com.petcemetery.petcemetery.DTO.ClienteDTO;
 import com.petcemetery.petcemetery.DTO.ExibirServicoDTO;
+import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.DTO.HorarioFuncionamentoDTO;
 import com.petcemetery.petcemetery.model.HorarioFuncionamento;
 import com.petcemetery.petcemetery.model.Jazigo;
 import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
+import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.HorarioFuncionamentoRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
 
@@ -207,4 +212,26 @@ public class AdminController {
         return ResponseEntity.ok(horariosDTO);
     }
     
+   
+
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @GetMapping("/relatorio")
+    public ResponseEntity<List<ClienteDTO>> exibirRelatorio() {
+        List<Cliente> clientesInadimplentes = clienteRepository.findByInadimplenteTrue();
+
+        List<ClienteDTO> clientesDTO = clientesInadimplentes.stream().map(cliente -> new ClienteDTO(
+                cliente.getEmail(),
+                cliente.getTelefone(),
+                cliente.getNome(),
+                cliente.getQuantJazigos(),
+                cliente.getDesativado(),
+                cliente.getInadimplente()
+        )).collect(Collectors.toList());
+
+        return ResponseEntity.ok(clientesDTO);
+    }
 }
+    
+
