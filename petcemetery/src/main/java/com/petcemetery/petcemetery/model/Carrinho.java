@@ -49,10 +49,15 @@ public class Carrinho {
     //@Column(name = "id_pet")
     private Pet pet;
 
+    //Referencia o serviço que precisa ser pago
+    @OneToOne
+    //@Column(name = "id_servico")
+    private Servico id_Servico;
+
     public Carrinho() {
     }
 
-    public Carrinho(String cpfCliente, Jazigo jazigo, ServicoEnum servico, PlanoEnum plano, LocalDate dataAgendamento, LocalTime horaAgendamento, Pet pet) {
+    public Carrinho(String cpfCliente, Jazigo jazigo, ServicoEnum servico, PlanoEnum plano, LocalDate dataAgendamento, LocalTime horaAgendamento, Pet pet, Servico id_Servico) {
         this.cpfCliente = cpfCliente;
         this.jazigo = jazigo;
         this.servico = servico;
@@ -60,6 +65,7 @@ public class Carrinho {
         this.dataAgendamento = dataAgendamento;
         this.horaAgendamento = horaAgendamento;
         this.pet = pet;
+        this.id_Servico = id_Servico;
     }
 
 }

@@ -154,6 +154,5 @@ public class Servico {
         this.pet = pet;
         this.dataServico = dataServico;
         this.horaServico = horaServico;
-        
     }
 }

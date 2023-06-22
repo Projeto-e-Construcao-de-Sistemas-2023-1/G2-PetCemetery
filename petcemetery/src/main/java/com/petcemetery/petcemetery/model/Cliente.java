@@ -13,9 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Cliente extends Usuario{
 
-    @Column(name = "quant_jazigos")
-    private int quantJazigos;
-
     @Column(name = "desativado")
     private Boolean desativado;
 
@@ -28,23 +25,13 @@ public class Cliente extends Usuario{
 
     public Cliente(String email, String telefone, String nome, String cpf, String senha) {
         super(email, telefone, nome, cpf, false, senha);
-        this.quantJazigos = 0;
         this.desativado = false;
         this.inadimplente = false; // Inicialize o novo campo
     }
     public Cliente(String email, String telefone, String nome, String cpf, String cep, String rua, String numero, String complemento, String senha) {
         super(email, telefone, nome, cpf, cep, false, rua, numero, complemento, senha);
-        this.quantJazigos = 0;
         this.desativado = false;
         this.inadimplente = false; // Inicialize o novo campo
-    }
-
-    public int getQuantJazigos() {
-        return quantJazigos;
-    }
-    
-    public void setQuantJazigos(int quantJazigos) {
-        this.quantJazigos = quantJazigos;
     }
 
     public Boolean getDesativado() {

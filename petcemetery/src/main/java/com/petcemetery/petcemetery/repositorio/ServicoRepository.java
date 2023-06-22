@@ -8,7 +8,7 @@ import com.petcemetery.petcemetery.model.Servico;
 
 
 public interface ServicoRepository extends JpaRepository<Servico, Long> {
-    Servico findByIdServico(int idServico);
+    Servico findByIdServico(Long idServico);
     List<Servico> findBycliente_cpf(String cpf);
 
 }

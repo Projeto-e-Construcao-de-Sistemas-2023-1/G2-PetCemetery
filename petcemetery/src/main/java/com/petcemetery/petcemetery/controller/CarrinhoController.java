@@ -65,56 +65,49 @@ public class CarrinhoController {
             for (Carrinho item : carrinhoRepository.findAllByCpfCliente(cpf)) {
 
                 Jazigo jazigo = item.getJazigo();
-                Pet pet = item.getPet();
 
-                // TODO terminar os casos de compra, manutencao e personalização. Aluguel precisa ser ajustado pra criar cobranças mensais.
+                // TODO Aluguel precisa ser ajustado pra criar cobranças mensais.
                 switch(item.getServico()) {
                     case COMPRA:
                     case ALUGUEL:
                         if(item.getServico() == ServicoEnum.COMPRA){
                             servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
+                            servico.setPrimeiroPagamento(LocalDate.now());
                         } else {
                             servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
+                            servico.setPrimeiroPagamento(LocalDate.now());
                         }
                         jazigo.setDisponivel(false);
                         jazigo.setPlano(servico.getPlano());
                         jazigo.setProprietario(cliente);
                         jazigo.setStatus(StatusEnum.DISPONIVEL);
-                        cliente.setQuantJazigos(cliente.getQuantJazigos() + 1);
                         jazigoRepository.save(jazigo);
-                        clienteRepository.save(cliente);
                         servicoRepository.save(servico);
                         break;
                     
-                    case ENTERRO:
-                        servico = new Servico(ServicoEnum.ENTERRO, ServicoEnum.ENTERRO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, item.getPlano(), pet, item.getDataAgendamento(), item.getHoraAgendamento());
-                        jazigo.setPetEnterrado(pet);
-                        jazigo.addPetHistorico(pet);
-                        jazigo.setStatus(StatusEnum.OCUPADO);
-                        pet.setDataEnterro(servico.getDataServico());
-                        pet.setHoraEnterro(servico.getHoraServico());
-                        jazigoRepository.save(jazigo);
-                        petRepository.save(pet);
+                    case ENTERRO: //TODO a data precisa ser verificada(em outro método) para enterrar o Pet apenas na data agendada
+                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico.setPrimeiroPagamento(LocalDate.now());
                         servicoRepository.save(servico);
                         break;
                     
-                    case EXUMACAO:
-                        servico = new Servico(ServicoEnum.EXUMACAO, ServicoEnum.EXUMACAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, jazigo.getPlano(), pet, item.getDataAgendamento(), item.getHoraAgendamento());
-                        pet.setDataExumacao(servico.getDataServico());
-                        pet.setHoraExumacao(servico.getHoraServico());
-                        petRepository.save(pet);
+                    case EXUMACAO: //TODO a data precisa ser verificada(em outro método) para exumar o Pet apenas na data agendada
+                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico.setPrimeiroPagamento(LocalDate.now());
                         servicoRepository.save(servico);
                         break;
 
                     case PERSONALIZACAO: //TODO nao querem trocar o nome desse servico pra "TROCAPLANO"? p n confundir c personalizacao de mensagem/foto?
-                        servico = new Servico(ServicoEnum.PERSONALIZACAO, ServicoEnum.PERSONALIZACAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, jazigo.getPlano(), null, LocalDate.now(), LocalTime.now());
+                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico.setPrimeiroPagamento(LocalDate.now());
                         jazigo.setPlano(servico.getPlano());
                         jazigoRepository.save(jazigo);
                         servicoRepository.save(servico);
                         break;
 
                     case MANUTENCAO:
-                        servico = new Servico(ServicoEnum.MANUTENCAO, ServicoEnum.MANUTENCAO.getPreco(), clienteRepository.findByCpf(cpf), jazigo, jazigo.getPlano(), null, item.getDataAgendamento(), null);
+                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico.setPrimeiroPagamento(LocalDate.now());
                         servicoRepository.save(servico);
                     break;
 
