@@ -3,9 +3,6 @@ package com.petcemetery.petcemetery.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 

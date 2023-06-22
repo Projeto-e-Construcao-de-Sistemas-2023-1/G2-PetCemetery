@@ -2,8 +2,6 @@
 
 import com.petcemetery.petcemetery.DTO.DetalharJazigoDTO;
 import com.petcemetery.petcemetery.DTO.JazigoDTO;
-import com.petcemetery.petcemetery.DTO.ServicoDTO;
-import com.petcemetery.petcemetery.DTO.VisualizarDespesasDTO;
 import com.petcemetery.petcemetery.model.Carrinho;
 import com.petcemetery.petcemetery.model.Jazigo;
 import com.petcemetery.petcemetery.model.Pet;
@@ -42,9 +40,6 @@ public class JazigoController {
 
     @Autowired
     private CarrinhoRepository carrinhoRepository;
-
-    @Autowired
-    private ServicoRepository servicoRepository;
 
     @Autowired
     private ClienteRepository clienteRepository;
