@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -169,5 +170,13 @@ public class CarrinhoController {
         //retorna um json com array de DTO servicos
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaServicosDTO);
 
+    }
+
+    //metodo post que remove um carrinho do banco baseado no id do servico
+    @Transactional
+    @PostMapping("/{cpf}/informacoes_carrinho/remover")
+    public ResponseEntity<?> removerCarrinho(@PathVariable("cpf") String cpf ) {
+    
+        return ResponseEntity.ok("OK;");
     }
 }
