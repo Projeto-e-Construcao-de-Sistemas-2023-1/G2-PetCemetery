@@ -117,6 +117,7 @@ public class JazigoController {
             PlanoEnum plano = PlanoEnum.valueOf(planoSelecionado.toUpperCase());
             Jazigo jazigo = optionalJazigo.get();
             
+            //verifica se o jazigo ja esta no carrinho do cliente
             for(Carrinho carrinhoItem : carrinhoRepository.findAllByCpfCliente(cpf)) { 
                 if(carrinhoItem.getJazigo().getIdJazigo() == id) {
                     return ResponseEntity.ok("ERR;jazigo_ja_adicionado");

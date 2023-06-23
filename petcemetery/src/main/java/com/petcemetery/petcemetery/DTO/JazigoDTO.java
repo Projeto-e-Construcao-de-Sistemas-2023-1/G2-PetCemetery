@@ -27,4 +27,6 @@ public class JazigoDTO {
         this.mensagem = mensagem;
         this.plano = plano;
     }
+
+    public JazigoDTO() {}
 }

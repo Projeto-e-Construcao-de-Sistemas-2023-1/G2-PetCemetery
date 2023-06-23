@@ -11,9 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.petcemetery.petcemetery.DTO.JazigoDTO;
 import com.petcemetery.petcemetery.DTO.ServicoDTO;
 import com.petcemetery.petcemetery.model.Carrinho;
 import com.petcemetery.petcemetery.model.Cliente;
@@ -85,19 +88,19 @@ public class CarrinhoController {
                         break;
                     
                     case ENTERRO: //TODO a data precisa ser verificada(em outro método) para enterrar o Pet apenas na data agendada
-                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
                         servico.setPrimeiroPagamento(LocalDate.now());
                         servicoRepository.save(servico);
                         break;
                     
                     case EXUMACAO: //TODO a data precisa ser verificada(em outro método) para exumar o Pet apenas na data agendada
-                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
                         servico.setPrimeiroPagamento(LocalDate.now());
                         servicoRepository.save(servico);
                         break;
 
                     case PERSONALIZACAO: //TODO nao querem trocar o nome desse servico pra "TROCAPLANO"? p n confundir c personalizacao de mensagem/foto?
-                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
                         servico.setPrimeiroPagamento(LocalDate.now());
                         jazigo.setPlano(servico.getPlano());
                         jazigoRepository.save(jazigo);
@@ -105,7 +108,7 @@ public class CarrinhoController {
                         break;
 
                     case MANUTENCAO:
-                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
                         servico.setPrimeiroPagamento(LocalDate.now());
                         servicoRepository.save(servico);
                     break;
@@ -161,7 +164,7 @@ public class CarrinhoController {
                     break;
             }
             
-            ServicoDTO servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano());
+            ServicoDTO servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo());
 
             listaServicosDTO.add(servicoDTO);
         }
@@ -169,5 +172,14 @@ public class CarrinhoController {
         //retorna um json com array de DTO servicos
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaServicosDTO);
 
+    }
+
+    @Transactional
+    @PostMapping("/{cpf}/informacoes_carrinho/remover_servico")
+    public ResponseEntity<?> removerServico(@PathVariable("cpf") String cpf, @RequestParam("idJazigo") long idJazigo) {
+        Jazigo jazigo = jazigoRepository.findById(idJazigo).get();
+        carrinhoRepository.deleteByJazigo(jazigo);
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("OK;");
     }
 }

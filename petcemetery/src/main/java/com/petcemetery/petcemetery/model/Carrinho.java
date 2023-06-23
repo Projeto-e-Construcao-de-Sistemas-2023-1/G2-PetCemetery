@@ -10,6 +10,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -23,6 +25,10 @@ import lombok.Data;
 public class Carrinho {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Adicionado para permitir auto incremento do id
+    @Column(name = "id_carrinho")
+    private long id;
+
     @Column(name = "cpf_cliente")
     private String cpfCliente;
 
@@ -52,12 +58,12 @@ public class Carrinho {
     //Referencia o serviço que precisa ser pago
     @OneToOne
     //@Column(name = "id_servico")
-    private Servico id_Servico;
+    private Servico idServico;
 
     public Carrinho() {
     }
 
-    public Carrinho(String cpfCliente, Jazigo jazigo, ServicoEnum servico, PlanoEnum plano, LocalDate dataAgendamento, LocalTime horaAgendamento, Pet pet, Servico id_Servico) {
+    public Carrinho(String cpfCliente, Jazigo jazigo, ServicoEnum servico, PlanoEnum plano, LocalDate dataAgendamento, LocalTime horaAgendamento, Pet pet, Servico idServico) {
         this.cpfCliente = cpfCliente;
         this.jazigo = jazigo;
         this.servico = servico;
@@ -65,7 +71,7 @@ public class Carrinho {
         this.dataAgendamento = dataAgendamento;
         this.horaAgendamento = horaAgendamento;
         this.pet = pet;
-        this.id_Servico = id_Servico;
+        this.idServico = idServico;
     }
 
 }
