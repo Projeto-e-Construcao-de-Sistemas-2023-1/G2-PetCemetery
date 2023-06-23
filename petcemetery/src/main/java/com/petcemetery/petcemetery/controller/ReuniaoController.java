@@ -1,5 +1,7 @@
 package com.petcemetery.petcemetery.controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.petcemetery.petcemetery.DTO.ReuniaoDTO;
+import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.model.Reuniao;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.ReuniaoRepository;
+import com.petcemetery.petcemetery.services.EmailService;
 
 
 @RestController
@@ -27,6 +31,9 @@ public class ReuniaoController {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private EmailService emailService;
     
     // Retorna a lista de todas as reunioes do banco de dados, para serem visualizadas pelo admin, de forma crescente pela data
     @GetMapping("/admin/visualizar")
@@ -52,9 +59,15 @@ public class ReuniaoController {
     // A data deve ser no formato yyyy-MM-dd, e o horário no formato hh:mm, e o assunto deve ser uma String. Deve ser enviado no formato JSON.
     @PostMapping("/cliente/{cpf}/agendar")
     public ResponseEntity<?> agendarReuniao(@PathVariable("cpf") String cpf, @RequestBody Reuniao reuniao) {
-        reuniao.setCliente(clienteRepository.findByCpf(cpf));
+        Cliente cliente = clienteRepository.findByCpf(cpf);
+        reuniao.setCliente(cliente);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         reuniaoRepository.save(reuniao);
+
+        String[] to = {cliente.getEmail()};
+        emailService.sendEmail(to, "Agendamento de reunião", "Sua reunião foi agendada com sucesso para o dia " + reuniao.getData().format(formatter) + ", no horário " + reuniao.getHorario() + "!");
 
         return ResponseEntity.ok("OK;"); 
     }
