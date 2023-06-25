@@ -7,6 +7,7 @@ import com.petcemetery.petcemetery.model.Jazigo;
 import com.petcemetery.petcemetery.model.Pet;
 import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
+import com.petcemetery.petcemetery.model.Jazigo.StatusEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.CarrinhoRepository;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
@@ -74,9 +75,9 @@ public class JazigoController {
         for (Jazigo jazigo : listaJazigos) {
             JazigoDTO jazigoDTO;
             if(jazigo.getPetEnterrado() == null) {
-                jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco(), jazigo.getIdJazigo(), null, "Sem Espécie", jazigo.getMensagem(), jazigo.getPlano().toString());
+                jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco(), jazigo.getIdJazigo(), null, "Sem Espécie", jazigo.getMensagem(), jazigo.getPlano().toString(), cpf_proprietario);
             } else {
-                jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo(), jazigo.getPetEnterrado().getDataNascimento(), jazigo.getPetEnterrado().getEspecie(), jazigo.getMensagem(), jazigo.getPlano().toString());
+                jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo(), jazigo.getPetEnterrado().getDataNascimento(), jazigo.getPetEnterrado().getEspecie(), jazigo.getMensagem(), jazigo.getPlano().toString(), cpf_proprietario);
             }
             listaJazigosDTO.add(jazigoDTO);
         }
@@ -117,6 +118,7 @@ public class JazigoController {
             PlanoEnum plano = PlanoEnum.valueOf(planoSelecionado.toUpperCase());
             Jazigo jazigo = optionalJazigo.get();
             
+            //verifica se o jazigo ja esta no carrinho do cliente
             for(Carrinho carrinhoItem : carrinhoRepository.findAllByCpfCliente(cpf)) { 
                 if(carrinhoItem.getJazigo().getIdJazigo() == id) {
                     return ResponseEntity.ok("ERR;jazigo_ja_adicionado");
@@ -183,6 +185,12 @@ public class JazigoController {
     public ResponseEntity<?> agendarEnterro(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("data") String data, @RequestParam("hora") String hora, @RequestParam("nomePet") String nomePet, @RequestParam("especie") String especie, @RequestParam("dataNascimento") String dataNascimento) {
         
         Jazigo jazigo = jazigoRepository.findById(id).get();
+
+        if(jazigo.getStatus() == StatusEnum.OCUPADO) {
+            return ResponseEntity.ok("ERR;jazigo_ocupado");
+        }
+
+        jazigo.setStatus(StatusEnum.OCUPADO);
         
         Pet pet = new Pet(nomePet, LocalDate.parse(data), LocalTime.parse(hora), LocalDate.parse(dataNascimento), especie, clienteRepository.findByCpf(cpf));
         petRepository.save(pet); //! o pet é setado no banco mesmo q o kra nao pague o enterro e n prossiga c nada, vao ter pets setados sem estar no cemiterio
@@ -279,5 +287,55 @@ public class JazigoController {
 
     }
     
-    
+    @GetMapping("/get_jazigos")
+    public ResponseEntity<?> getJazigos(){
+        List<Jazigo> jazigos = jazigoRepository.findAll();
+        List<JazigoDTO> jazigosDTO = new ArrayList<>();
+
+        for (Jazigo jazigo : jazigos) {
+            JazigoDTO jazigoDto;
+
+            if(jazigo.getPetEnterrado() != null) { // Caso tenha pet enterrado
+                jazigoDto = new JazigoDTO(
+                jazigo.getPetEnterrado().getNomePet(),
+                jazigo.getPetEnterrado().getDataEnterro(),
+                jazigo.getEndereco(),
+                jazigo.getIdJazigo(),
+                jazigo.getPetEnterrado().getDataNascimento(),
+                jazigo.getPetEnterrado().getEspecie(),
+                jazigo.getMensagem(),
+                jazigo.getPlano().toString(),
+                jazigo.getProprietario().getCpf()
+                );
+            } else if(jazigo.getProprietario() != null) { // Caso não tenha pet enterrado mas tenha proprietario
+                jazigoDto = new JazigoDTO(
+                null,
+                null,
+                jazigo.getEndereco(),
+                jazigo.getIdJazigo(),
+                null,
+                null,
+                jazigo.getMensagem(),
+                jazigo.getPlano().toString(),
+                jazigo.getProprietario().getCpf()
+                );
+            } else { // Caso não tenha pet enterrado nem proprietario
+                jazigoDto = new JazigoDTO(
+                null,
+                null,
+                jazigo.getEndereco(),
+                jazigo.getIdJazigo(),
+                null,
+                null,
+                jazigo.getMensagem(),
+                null,
+                null
+                );
+            }
+            
+            jazigosDTO.add(jazigoDto);
+        }
+        
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jazigosDTO);
+    }
 }

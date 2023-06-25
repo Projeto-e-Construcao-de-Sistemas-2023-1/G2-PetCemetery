@@ -1,5 +1,6 @@
 package com.petcemetery.petcemetery.controller;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.petcemetery.petcemetery.model.Cliente;
+import com.petcemetery.petcemetery.model.Lembrete;
 import com.petcemetery.petcemetery.outros.EmailValidator;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
+import com.petcemetery.petcemetery.repositorio.LembreteRepository;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -25,6 +29,8 @@ public class ClienteController {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Autowired
+    private LembreteRepository lembreteRepository;
 
     // Recebe as informações que o cliente deseja mudar, em JSON, e altera no banco de dados
     @PostMapping(path = "/editar-perfil", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -119,7 +125,6 @@ public class ClienteController {
         return ResponseEntity.ok("OK;" + cliente.getEmail() + ";" + cliente.getNome() + ";" + cliente.getTelefone() + ";" + cliente.getRua() + ";" + cliente.getNumero() + ";" + cliente.getComplemento() + ";" + cliente.getCep());
     }
 
-
     // Exibe o nome e o email do perfil do Cliente na página EditarPerfil.js
     @GetMapping("/exibir-perfil")
     public ResponseEntity<?> exibirPerfil(@PathVariable("cpf") String cpf) {
@@ -133,5 +138,20 @@ public class ClienteController {
         clienteRepository.save(cliente);
         return ResponseEntity.ok("OK;" + cliente.getNome() + ";" + cliente.getEmail());
     }
-    
+
+    // Recebe uma data no formato YYYY-mm-dd do front quando o cliente adiciona um novo lembrete de visita e adiciona no banco de dados com seu cpf e data.
+    @PostMapping("/adicionar-lembrete")
+    public ResponseEntity<?> adicionarLembrete(@PathVariable("cpf") String cpf, @RequestParam("data") LocalDate data) {
+        if (LocalDate.now().isAfter(data)) {
+            return ResponseEntity.ok("ERR;data_invalida");
+        }
+
+        Cliente cliente = clienteRepository.findByCpf(cpf);
+
+        Lembrete lembrete = new Lembrete(data, cliente);
+
+        lembreteRepository.save(lembrete);
+
+        return ResponseEntity.ok("OK;lembrete_adicionado");
+    }
 }

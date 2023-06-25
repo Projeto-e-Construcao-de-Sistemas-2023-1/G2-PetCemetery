@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.petcemetery.petcemetery.DTO.ServicoDTO;
@@ -19,13 +20,11 @@ import com.petcemetery.petcemetery.model.Carrinho;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.model.Jazigo;
 import com.petcemetery.petcemetery.model.Jazigo.StatusEnum;
-import com.petcemetery.petcemetery.model.Pet;
 import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.CarrinhoRepository;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
-import com.petcemetery.petcemetery.repositorio.PetRepository;
 import com.petcemetery.petcemetery.repositorio.ServicoRepository;
 
 import jakarta.transaction.Transactional;
@@ -45,10 +44,6 @@ public class CarrinhoController {
 
     @Autowired
     private ClienteRepository clienteRepository;
-
-    @Autowired
-    private PetRepository petRepository;
-
 
     //Ao finalizar e comprar tudo do carrinho, se algum servico for alguel ou compra, seta o jazigo no banco.
     //limpa o carrinho e salva no banco
@@ -86,19 +81,19 @@ public class CarrinhoController {
                         break;
                     
                     case ENTERRO: //TODO a data precisa ser verificada(em outro método) para enterrar o Pet apenas na data agendada
-                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
                         servico.setPrimeiroPagamento(LocalDate.now());
                         servicoRepository.save(servico);
                         break;
                     
                     case EXUMACAO: //TODO a data precisa ser verificada(em outro método) para exumar o Pet apenas na data agendada
-                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
                         servico.setPrimeiroPagamento(LocalDate.now());
                         servicoRepository.save(servico);
                         break;
 
                     case PERSONALIZACAO: //TODO nao querem trocar o nome desse servico pra "TROCAPLANO"? p n confundir c personalizacao de mensagem/foto?
-                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
                         servico.setPrimeiroPagamento(LocalDate.now());
                         jazigo.setPlano(servico.getPlano());
                         jazigoRepository.save(jazigo);
@@ -106,7 +101,7 @@ public class CarrinhoController {
                         break;
 
                     case MANUTENCAO:
-                        servico = servicoRepository.findByIdServico(item.getId_Servico().getIdServico());
+                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
                         servico.setPrimeiroPagamento(LocalDate.now());
                         servicoRepository.save(servico);
                     break;
@@ -148,6 +143,7 @@ public class CarrinhoController {
         List<ServicoDTO> listaServicosDTO = new ArrayList<>();
 
         for (Carrinho item : carrinhoRepository.findAllByCpfCliente(cpf)) {
+            ServicoDTO servicoDTO;
             double valor = item.getServico().getPreco();
 
             //adiciona à variavel valor, o valor do plano caso o servico seja compra ou aluguel
@@ -162,7 +158,13 @@ public class CarrinhoController {
                     break;
             }
             
-            ServicoDTO servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano());
+            if(item.getPet() != null){
+                servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getPet().getId(), item.getCpfCliente());
+            } else if(item.getJazigo() != null){
+                servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getCpfCliente());
+            } else {
+                servicoDTO = new ServicoDTO(valor, item.getServico(), item.getPlano(), item.getCpfCliente());
+            }
 
             listaServicosDTO.add(servicoDTO);
         }
@@ -170,5 +172,14 @@ public class CarrinhoController {
         //retorna um json com array de DTO servicos
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaServicosDTO);
 
+    }
+
+    @Transactional
+    @PostMapping("/{cpf}/informacoes_carrinho/remover_servico")
+    public ResponseEntity<?> removerServico(@PathVariable("cpf") String cpf, @RequestParam("idJazigo") long idJazigo) {
+        Jazigo jazigo = jazigoRepository.findById(idJazigo).get();
+        carrinhoRepository.deleteByJazigo(jazigo);
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("OK;");
     }
 }

@@ -21,13 +21,16 @@ import com.petcemetery.petcemetery.DTO.ClienteDTO;
 import com.petcemetery.petcemetery.DTO.ExibirServicoDTO;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.DTO.HorarioFuncionamentoDTO;
+import com.petcemetery.petcemetery.DTO.ServicoDTO;
 import com.petcemetery.petcemetery.model.HorarioFuncionamento;
 import com.petcemetery.petcemetery.model.Jazigo;
+import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.HorarioFuncionamentoRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
+import com.petcemetery.petcemetery.repositorio.ServicoRepository;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -35,6 +38,12 @@ public class AdminController {
 
     @Autowired
     private JazigoRepository jazigoRepository;
+
+    @Autowired
+    private ServicoRepository servicoRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
 
     @Autowired
     private HorarioFuncionamentoRepository horarioFuncionamentoRepository;
@@ -210,11 +219,6 @@ public class AdminController {
         }
         return ResponseEntity.ok(horariosDTO);
     }
-    
-   
-
-    @Autowired
-    private ClienteRepository clienteRepository;
 
     @GetMapping("/relatorio")
     public ResponseEntity<List<ClienteDTO>> exibirRelatorio() {
@@ -229,6 +233,50 @@ public class AdminController {
         )).collect(Collectors.toList());
 
         return ResponseEntity.ok(clientesDTO);
+    }
+
+    @GetMapping("/visualizar_enterros")
+    public ResponseEntity<List<ServicoDTO>> visualizarEnterros() {
+        List<Servico> servicos = servicoRepository.findByTipoServico(ServicoEnum.valueOf("ENTERRO"));
+        List<ServicoDTO> enterros = new ArrayList<>();
+
+        for (Servico servico : servicos) {
+            ServicoDTO servicoDTO = new ServicoDTO(
+                servico.getValor(),
+                servico.getTipoServico(),
+                servico.getJazigo().getEndereco(),
+                servico.getPlano(),
+                servico.getJazigo().getIdJazigo(),
+                servico.getPet().getId(),
+                servico.getCliente().getCpf()
+            );
+
+            enterros.add(servicoDTO);
+        }
+
+        return ResponseEntity.ok(enterros); 
+    }
+
+    @GetMapping("/visualizar_exumacoes")
+    public ResponseEntity<List<ServicoDTO>> visualizarExumacoes() {
+        List<Servico> servicos = servicoRepository.findByTipoServico(ServicoEnum.valueOf("EXUMACAO"));
+        List<ServicoDTO> exumacoes = new ArrayList<>();
+
+        for (Servico servico : servicos) {
+            ServicoDTO servicoDTO = new ServicoDTO(
+                servico.getValor(),
+                servico.getTipoServico(),
+                servico.getJazigo().getEndereco(),
+                servico.getPlano(),
+                servico.getJazigo().getIdJazigo(),
+                servico.getPet().getId(),
+                servico.getCliente().getCpf()
+            );
+
+            exumacoes.add(servicoDTO);
+        }
+
+        return ResponseEntity.ok(exumacoes);
     }
 }
     
