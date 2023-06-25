@@ -157,7 +157,7 @@ public class CarrinhoController {
                     break;
             }
             
-            ServicoDTO servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo());
+            ServicoDTO servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getPet().getId(), item.getCpfCliente());
 
             listaServicosDTO.add(servicoDTO);
         }

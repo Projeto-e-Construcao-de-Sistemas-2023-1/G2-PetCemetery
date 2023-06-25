@@ -75,9 +75,9 @@ public class JazigoController {
         for (Jazigo jazigo : listaJazigos) {
             JazigoDTO jazigoDTO;
             if(jazigo.getPetEnterrado() == null) {
-                jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco(), jazigo.getIdJazigo(), null, "Sem Espécie", jazigo.getMensagem(), jazigo.getPlano().toString());
+                jazigoDTO = new JazigoDTO("Vazio", null, jazigo.getEndereco(), jazigo.getIdJazigo(), null, "Sem Espécie", jazigo.getMensagem(), jazigo.getPlano().toString(), cpf_proprietario);
             } else {
-                jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo(), jazigo.getPetEnterrado().getDataNascimento(), jazigo.getPetEnterrado().getEspecie(), jazigo.getMensagem(), jazigo.getPlano().toString());
+                jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo(), jazigo.getPetEnterrado().getDataNascimento(), jazigo.getPetEnterrado().getEspecie(), jazigo.getMensagem(), jazigo.getPlano().toString(), cpf_proprietario);
             }
             listaJazigosDTO.add(jazigoDTO);
         }
@@ -287,5 +287,55 @@ public class JazigoController {
 
     }
     
-    
+    @GetMapping("/get_jazigos")
+    public ResponseEntity<?> getJazigos(){
+        List<Jazigo> jazigos = jazigoRepository.findAll();
+        List<JazigoDTO> jazigosDTO = new ArrayList<>();
+
+        for (Jazigo jazigo : jazigos) {
+            JazigoDTO jazigoDto;
+
+            if(jazigo.getPetEnterrado() != null) { // Caso tenha pet enterrado
+                jazigoDto = new JazigoDTO(
+                jazigo.getPetEnterrado().getNomePet(),
+                jazigo.getPetEnterrado().getDataEnterro(),
+                jazigo.getEndereco(),
+                jazigo.getIdJazigo(),
+                jazigo.getPetEnterrado().getDataNascimento(),
+                jazigo.getPetEnterrado().getEspecie(),
+                jazigo.getMensagem(),
+                jazigo.getPlano().toString(),
+                jazigo.getProprietario().getCpf()
+                );
+            } else if(jazigo.getProprietario() != null) { // Caso não tenha pet enterrado mas tenha proprietario
+                jazigoDto = new JazigoDTO(
+                null,
+                null,
+                jazigo.getEndereco(),
+                jazigo.getIdJazigo(),
+                null,
+                null,
+                jazigo.getMensagem(),
+                jazigo.getPlano().toString(),
+                jazigo.getProprietario().getCpf()
+                );
+            } else { // Caso não tenha pet enterrado nem proprietario
+                jazigoDto = new JazigoDTO(
+                null,
+                null,
+                jazigo.getEndereco(),
+                jazigo.getIdJazigo(),
+                null,
+                null,
+                jazigo.getMensagem(),
+                null,
+                null
+                );
+            }
+            
+            jazigosDTO.add(jazigoDto);
+        }
+        
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jazigosDTO);
+    }
 }
