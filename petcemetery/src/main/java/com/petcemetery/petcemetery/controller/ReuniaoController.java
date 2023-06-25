@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.petcemetery.petcemetery.DTO.ReuniaoDTO;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.model.Reuniao;
+import com.petcemetery.petcemetery.model.Visita;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.ReuniaoRepository;
+import com.petcemetery.petcemetery.repositorio.VisitaRepository;
 import com.petcemetery.petcemetery.services.EmailService;
 
 
@@ -28,6 +30,9 @@ public class ReuniaoController {
 
     @Autowired
     private ReuniaoRepository reuniaoRepository;
+
+    @Autowired
+    private VisitaRepository visitaRepository;
 
     @Autowired
     private ClienteRepository clienteRepository;
@@ -68,6 +73,40 @@ public class ReuniaoController {
 
         String[] to = {cliente.getEmail()};
         emailService.sendEmail(to, "Agendamento de reunião", "Sua reunião foi agendada com sucesso para o dia " + reuniao.getData().format(formatter) + ", no horário " + reuniao.getHorario() + "!");
+
+        return ResponseEntity.ok("OK;"); 
+    }
+
+
+    //TODO
+    /* 
+    // Retorna a lista de todas os lembretes do banco de dados, para serem visualizadas pelo admin, de forma crescente pela data
+    @GetMapping("/admin/visualizar_lembretes")
+    public ResponseEntity<?> visualizarLembretes() {
+        List<Visita> visitas = visitaRepository.findAll();
+        List<VisitaDTO> visitasDTO = new ArrayList<>();
+
+        for (Visita visita : visitas) {
+            ReuniaoDTO reuniaoDTO = new ReuniaoDTO(
+                visita.getCliente().getCpf(),
+                visita.getData(),
+                visita.getAssunto(),
+                visita.getHorario()
+            );
+
+            visitasDTO.add(reuniaoDTO);
+        }
+
+        return ResponseEntity.ok(visitasDTO); 
+    }
+    */
+
+    @PostMapping("/cliente/{cpf}/agendar_lembrete_visita")
+    public ResponseEntity<?> agendar(@PathVariable("cpf") String cpf, @RequestBody Visita visita) {
+        Cliente cliente = clienteRepository.findByCpf(cpf);
+        visita.setProprietario(cliente);
+
+        visitaRepository.save(visita);
 
         return ResponseEntity.ok("OK;"); 
     }
