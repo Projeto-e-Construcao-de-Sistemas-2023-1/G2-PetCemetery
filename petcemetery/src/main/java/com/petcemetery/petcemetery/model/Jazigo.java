@@ -1,5 +1,7 @@
+
 package com.petcemetery.petcemetery.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import lombok.Data;
 
-@Data
 @Entity(name = "Jazigo")
 @Table(name = "Jazigo")
 public class Jazigo {
@@ -127,6 +127,67 @@ public class Jazigo {
         this.plano = plano;
         this.petEnterrado = petEnterrado;
         this.historicoPets = new ArrayList<>();
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+    public Cliente getProprietario() {
+        return proprietario;
+    }
+    public void setProprietario(Cliente proprietario) {
+        this.proprietario = proprietario;
+    }
+    public long getIdJazigo() {
+        return idJazigo;
+    }
+    public void setIdJazigo(long idJazigo) {
+        this.idJazigo = idJazigo;
+    }
+    public StatusEnum getStatus() {
+        return status;
+    }
+    public void setStatus(StatusEnum status) {
+        this.status = status;
+    }
+    public Boolean getDisponivel() {
+        return disponivel;
+    }
+    public void setDisponivel(Boolean disponivel) {
+        this.disponivel = disponivel;
+    }
+    public String getMensagem() {
+        return mensagem;
+    }
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
+    public String getFoto() {
+        return foto;
+    }
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+    public String getNotas() {
+        return notas;
+    }
+    public void setNotas(String notas) {
+        this.notas = notas;
+    }
+    public Pet getPetEnterrado() {
+        return petEnterrado;
+    }
+    public void setPetEnterrado(Pet petEnterrado) {
+        this.petEnterrado = petEnterrado;
+    }
+    public PlanoEnum getPlano() {
+        return plano;
+    }
+    public void setPlano(PlanoEnum plano) {
+        this.plano = plano;
     }
 
     public List<Pet> getHistoricoPets() {
