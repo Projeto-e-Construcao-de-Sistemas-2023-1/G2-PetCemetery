@@ -16,7 +16,6 @@ public class Cliente extends Usuario{
     @Column(name = "desativado")
     private Boolean desativado;
 
-    
     @Column(name = "inadimplente")
     private Boolean inadimplente;
 

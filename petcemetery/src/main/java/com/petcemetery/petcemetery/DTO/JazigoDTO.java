@@ -2,8 +2,6 @@ package com.petcemetery.petcemetery.DTO;
 
 import java.time.LocalDate;
 
-import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
-
 import lombok.Data;
 
 @Data

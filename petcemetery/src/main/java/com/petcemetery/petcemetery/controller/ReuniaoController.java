@@ -59,6 +59,12 @@ public class ReuniaoController {
     // A data deve ser no formato yyyy-MM-dd, e o horário no formato hh:mm, e o assunto deve ser uma String. Deve ser enviado no formato JSON.
     @PostMapping("/cliente/{cpf}/agendar")
     public ResponseEntity<?> agendarReuniao(@PathVariable("cpf") String cpf, @RequestBody Reuniao reuniao) {
+
+        // Verificando se a reunião está sendo agendada com uma antecedência de dois dias
+        if(reuniao.getData().isBefore(LocalDate.now().minusDays(2))) {
+            return ResponseEntity.ok("ERR;data_invalida");
+        }
+
         Cliente cliente = clienteRepository.findByCpf(cpf);
         reuniao.setCliente(cliente);
 

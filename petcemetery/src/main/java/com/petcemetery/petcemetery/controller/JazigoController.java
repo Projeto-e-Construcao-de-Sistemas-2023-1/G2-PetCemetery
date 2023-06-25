@@ -7,6 +7,7 @@ import com.petcemetery.petcemetery.model.Jazigo;
 import com.petcemetery.petcemetery.model.Pet;
 import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
+import com.petcemetery.petcemetery.model.Jazigo.StatusEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.CarrinhoRepository;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
@@ -184,6 +185,12 @@ public class JazigoController {
     public ResponseEntity<?> agendarEnterro(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("data") String data, @RequestParam("hora") String hora, @RequestParam("nomePet") String nomePet, @RequestParam("especie") String especie, @RequestParam("dataNascimento") String dataNascimento) {
         
         Jazigo jazigo = jazigoRepository.findById(id).get();
+
+        if(jazigo.getStatus() == StatusEnum.OCUPADO) {
+            return ResponseEntity.ok("ERR;jazigo_ocupado");
+        }
+
+        jazigo.setStatus(StatusEnum.OCUPADO);
         
         Pet pet = new Pet(nomePet, LocalDate.parse(data), LocalTime.parse(hora), LocalDate.parse(dataNascimento), especie, clienteRepository.findByCpf(cpf));
         petRepository.save(pet); //! o pet é setado no banco mesmo q o kra nao pague o enterro e n prossiga c nada, vao ter pets setados sem estar no cemiterio
