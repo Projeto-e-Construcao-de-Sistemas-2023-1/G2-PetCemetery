@@ -150,7 +150,6 @@ public class CarrinhoController {
         List<ServicoDTO> listaServicosDTO = new ArrayList<>();
 
         for (Carrinho item : carrinhoRepository.findAllByCpfCliente(cpf)) {
-            ServicoDTO servicoDTO;
             double valor = item.getServico().getPreco();
 
             //adiciona à variavel valor, o valor do plano caso o servico seja compra ou aluguel
@@ -165,14 +164,8 @@ public class CarrinhoController {
                     break;
             }
             
-            if(item.getPet() != null){
-                servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getPet().getId(), item.getCpfCliente());
-            } else if(item.getJazigo() != null){
-                servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getCpfCliente());
-            } else {
-                servicoDTO = new ServicoDTO(valor, item.getServico(), item.getPlano(), item.getCpfCliente());
-            }
-            
+            ServicoDTO servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getPet().getId(), item.getCpfCliente());
+
             listaServicosDTO.add(servicoDTO);
         }
 
