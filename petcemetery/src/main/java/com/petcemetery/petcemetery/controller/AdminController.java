@@ -19,15 +19,17 @@ import java.util.stream.Collectors;
 
 import com.petcemetery.petcemetery.DTO.ClienteDTO;
 import com.petcemetery.petcemetery.DTO.ExibirServicoDTO;
+import com.petcemetery.petcemetery.DTO.HistoricoJazigoDTO;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.DTO.HorarioFuncionamentoDTO;
 import com.petcemetery.petcemetery.DTO.HistoricoServicosDTO;
 import com.petcemetery.petcemetery.model.HorarioFuncionamento;
 import com.petcemetery.petcemetery.model.Jazigo;
+import com.petcemetery.petcemetery.model.Pet;
+import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.model.HistoricoServicos;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.model.Servico.PlanoEnum;
-import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 import com.petcemetery.petcemetery.repositorio.HorarioFuncionamentoRepository;
@@ -53,16 +55,22 @@ public class AdminController {
     @Autowired
     private HorarioFuncionamentoRepository horarioFuncionamentoRepository;
 
-    // Retorna o jazigo em formato JSON com o id passado, ou uma mensagem de erro caso o id seja inválido
-    @GetMapping("/detalhar-jazigo/{id}")
-    public ResponseEntity<?> detalharJazigo(@PathVariable("id") Long id) {
+    // Retorna, em formato JSON, informações sobre todos os pets que já passaram no jazigo passado pelo seu id.
+    @GetMapping("/{id}/visualizar-historico")
+    public ResponseEntity<?> visualizarHistorico(@PathVariable("id") Long id) {
         if(id < 1 || id > 72) {
             return ResponseEntity.ok("ERR;id_invalido;"); // Exibe uma mensagem de id inválido
         }
-        
+
         Jazigo jazigo = jazigoRepository.findById(id).get();
 
-        return ResponseEntity.ok(jazigo); 
+        List<HistoricoJazigoDTO> historicoJazigoDTO = new ArrayList<>();
+
+        for(Pet pet: jazigo.getHistoricoPets()) {
+            historicoJazigoDTO.add(new HistoricoJazigoDTO(id, pet.getNomePet(), pet.getDataNascimento(), pet.getEspecie(), pet.getProprietario().getNome(), pet.getDataEnterro(), pet.getDataExumacao()));
+        }
+        
+        return ResponseEntity.ok(historicoJazigoDTO); 
     }
 
     // Igual ao do cliente, porém o admin não vai conseguir selecionar um jazigo (Isso tem que ser mudado no front?).
