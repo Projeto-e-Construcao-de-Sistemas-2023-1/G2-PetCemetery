@@ -1,12 +1,12 @@
 package com.petcemetery.petcemetery.DTO;
 
-import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
+import com.petcemetery.petcemetery.model.Servico.PlanoEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 
 import lombok.Data;
 
 @Data
-public class ServicoDTO {
+public class HistoricoServicosDTO {
     
     String cpfCliente;
     long idJazigo; // Pode ser nulo!
@@ -17,7 +17,7 @@ public class ServicoDTO {
     PlanoEnum plano; // Teoricamente também deveria poder ser nulo, mas não no momento não pode. kkk
 
     // CONSTRUTOR - Full args
-    public ServicoDTO(double valor, ServicoEnum tipoServico, String enderecoJazigo, PlanoEnum plano, long idJazigo, long idPet, String cpfCliente) {
+    public HistoricoServicosDTO(double valor, ServicoEnum tipoServico, String enderecoJazigo, PlanoEnum plano, long idJazigo, long idPet, String cpfCliente) {
         this.idJazigo = idJazigo;
         this.valor = valor;
         this.tipoServico = tipoServico;
@@ -28,7 +28,7 @@ public class ServicoDTO {
     }
 
     // CONSTRUTOR - Pet nulo
-    public ServicoDTO(double valor, ServicoEnum tipoServico, String enderecoJazigo, PlanoEnum plano, long idJazigo, String cpfCliente) {
+    public HistoricoServicosDTO(double valor, ServicoEnum tipoServico, String enderecoJazigo, PlanoEnum plano, long idJazigo, String cpfCliente) {
         this.idJazigo = idJazigo;
         this.valor = valor;
         this.tipoServico = tipoServico;
@@ -38,7 +38,7 @@ public class ServicoDTO {
     }
 
     // CONSTRUTOR - Pet e Jazigo nulos
-    public ServicoDTO(double valor, ServicoEnum tipoServico, PlanoEnum plano, String cpfCliente) {
+    public HistoricoServicosDTO(double valor, ServicoEnum tipoServico, PlanoEnum plano, String cpfCliente) {
         this.valor = valor;
         this.tipoServico = tipoServico;
         this.plano = plano;

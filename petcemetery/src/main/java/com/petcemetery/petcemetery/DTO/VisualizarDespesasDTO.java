@@ -1,6 +1,6 @@
 package com.petcemetery.petcemetery.DTO;
 
-import com.petcemetery.petcemetery.model.Servico;
+import com.petcemetery.petcemetery.model.HistoricoServicos;
 
 import lombok.Data;
 
@@ -11,9 +11,9 @@ public class VisualizarDespesasDTO {
     String tipoServico;
     double valor;
 
-    public VisualizarDespesasDTO(Servico servico){
-        this.endJazigo = servico.getJazigo().getEndereco();
-        this.tipoServico = servico.getTipoServico().toString();
-        this.valor = servico.getValor();
+    public VisualizarDespesasDTO(HistoricoServicos historicoServicos){
+        this.endJazigo = historicoServicos.getJazigo().getEndereco();
+        this.tipoServico = historicoServicos.getTipoServico().toString();
+        this.valor = historicoServicos.getValor();
     }
 }

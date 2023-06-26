@@ -3,8 +3,8 @@ package com.petcemetery.petcemetery.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
+import com.petcemetery.petcemetery.model.Servico.PlanoEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,12 +58,12 @@ public class Carrinho {
     //Referencia o serviço que precisa ser pago
     @OneToOne
     //@Column(name = "id_servico")
-    private Servico idServico;
+    private HistoricoServicos idServico;
 
     public Carrinho() {
     }
 
-    public Carrinho(String cpfCliente, Jazigo jazigo, ServicoEnum servico, PlanoEnum plano, LocalDate dataAgendamento, LocalTime horaAgendamento, Pet pet, Servico idServico) {
+    public Carrinho(String cpfCliente, Jazigo jazigo, ServicoEnum servico, PlanoEnum plano, LocalDate dataAgendamento, LocalTime horaAgendamento, Pet pet, HistoricoServicos idServico) {
         this.cpfCliente = cpfCliente;
         this.jazigo = jazigo;
         this.servico = servico;

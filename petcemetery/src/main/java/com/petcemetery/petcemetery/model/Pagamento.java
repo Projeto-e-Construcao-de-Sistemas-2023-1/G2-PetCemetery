@@ -45,7 +45,7 @@ public class Pagamento {
     
     @OneToOne
     @JoinColumn(name = "id_servico")
-    private Servico servico;
+    private HistoricoServicos historicoServicos;
 
 
     @Column(name = "metodo_pagamento")
@@ -60,14 +60,13 @@ public class Pagamento {
     
     public Pagamento() {}
 
-    public Pagamento(Cliente cliente, float valor, Date dataPagamento, Date dataVencimento, boolean pago, Servico servico,
-            MetodoEnum metodoPagamento) {
+    public Pagamento(Cliente cliente, float valor, Date dataPagamento, Date dataVencimento, boolean pago, HistoricoServicos historicoServicos, MetodoEnum metodoPagamento) {
         this.cliente = cliente;
         this.valor = valor;
         this.dataPagamento = dataPagamento;
         this.dataVencimento = dataVencimento;
         this.pago = pago;
-        this.servico = servico;
+        this.historicoServicos = historicoServicos;
         this.metodoPagamento = metodoPagamento;
     }
      public Cliente getCliente() {
@@ -100,11 +99,11 @@ public class Pagamento {
     public void setPago(boolean pago) {
         this.pago = pago;
     }
-    public Servico getServico() {
-        return servico;
+    public HistoricoServicos getServico() {
+        return historicoServicos;
     }
-    public void setServico(Servico servico) {
-        this.servico = servico;
+    public void setServico(HistoricoServicos historicoServicos) {
+        this.historicoServicos = historicoServicos;
     }
     public MetodoEnum getMetodoPagamento() {
         return metodoPagamento;

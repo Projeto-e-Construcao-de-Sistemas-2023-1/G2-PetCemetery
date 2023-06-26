@@ -3,6 +3,8 @@ package com.petcemetery.petcemetery.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.petcemetery.petcemetery.model.Servico.PlanoEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +15,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
@@ -35,12 +36,6 @@ public class Jazigo {
     @Id
     @Column(name = "id_jazigo")
     private long idJazigo;
-
-    @Transient
-    public static double precoJazigo = 30000;
-
-    @Transient
-    public static double aluguelJazigo = 555.99;
     
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -65,35 +60,6 @@ public class Jazigo {
     @OneToOne
     @JoinColumn(name = "pet_enterrado_id", referencedColumnName = "id_pet")
     private Pet petEnterrado;
-
-    @Transient
-    public static double precoBasico = 1.0;
-
-    @Transient
-    public static double precoSilver = 50.0;
-
-    @Transient
-    public static double precoGold = 80.0;
-
-    public enum PlanoEnum {
-        BASIC(precoBasico),
-        SILVER(precoSilver),
-        GOLD(precoGold);
-    
-        private double preco;
-    
-        PlanoEnum(double preco) {
-            this.preco = preco;
-        }
-    
-        public double getPreco() {
-            return preco;
-        }
-    
-        public void setPreco(double preco) {
-            this.preco = preco;
-        }
-    }
 
     public enum StatusEnum {
         DISPONIVEL,

@@ -21,13 +21,15 @@ import com.petcemetery.petcemetery.DTO.ClienteDTO;
 import com.petcemetery.petcemetery.DTO.ExibirServicoDTO;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.DTO.HorarioFuncionamentoDTO;
-import com.petcemetery.petcemetery.DTO.ServicoDTO;
+import com.petcemetery.petcemetery.DTO.HistoricoServicosDTO;
 import com.petcemetery.petcemetery.model.HorarioFuncionamento;
 import com.petcemetery.petcemetery.model.Jazigo;
-import com.petcemetery.petcemetery.model.Servico;
-import com.petcemetery.petcemetery.model.Jazigo.PlanoEnum;
+import com.petcemetery.petcemetery.model.HistoricoServicos;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
+import com.petcemetery.petcemetery.model.Servico.PlanoEnum;
+import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
+import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 import com.petcemetery.petcemetery.repositorio.HorarioFuncionamentoRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
 import com.petcemetery.petcemetery.repositorio.ServicoRepository;
@@ -38,6 +40,9 @@ public class AdminController {
 
     @Autowired
     private JazigoRepository jazigoRepository;
+
+    @Autowired
+    private HistoricoServicosRepository historicoServicosRepository;
 
     @Autowired
     private ServicoRepository servicoRepository;
@@ -74,30 +79,31 @@ public class AdminController {
         return ResponseEntity.ok(str);  // Retorne a String de jazigos disponiveis 
     }
 
+    // TODO não acho que seja a melhor forma de se fazer isso não.
     // Retorna o valor de todos os servicos em formato JSON
     @GetMapping("/servicos")
     public ResponseEntity<?> exibirServicos() {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new ExibirServicoDTO()); // redireciona para a página de serviços
     }
 
+    // Atualiza o valor do plano no banco com base no seu nome
     @PostMapping("/servicos/alterar")
-    public ResponseEntity<?> alterarServicos(@RequestParam String servico, @RequestParam double valor) {
-        // Atualiza o valor do plano com base no seu nome
-        if(servico.equals("BASIC") || servico.equals("SILVER") || servico.equals("GOLD")) {
-            System.out.println("isso é um plano");
+    public ResponseEntity<?> alterarServicos(@RequestParam String servico, @RequestParam double valor) { 
+
+        if (servico == "BASIC" || servico == "SILVER" || servico == "GOLD") {
             PlanoEnum planoEnum = PlanoEnum.valueOf(servico);
-            if(planoEnum != null) {
-                planoEnum.setPreco(valor);
-                System.out.println(planoEnum.getPreco());
-            }
+            Servico servicoEntity = servicoRepository.findByTipoServico(ServicoEnum.valueOf(planoEnum.toString()));
+
+            servicoEntity.setValor(valor);
+            servicoRepository.save(servicoEntity);
         } else {
-            System.out.println("isso é um servico");
-            // Atualiza o valor do serviço com base no seu nome
             ServicoEnum servicoEnum = ServicoEnum.valueOf(servico);
-            if (servicoEnum != null) {
-                servicoEnum.setPreco(valor);
-            }
+            Servico servicoEntity = servicoRepository.findByTipoServico(servicoEnum);
+
+            servicoEntity.setValor(valor);
+            servicoRepository.save(servicoEntity);
         }
+
         return ResponseEntity.ok("OK;servico_alterado;"); // Exibe uma mensagem de servico alterado
     }
 
@@ -236,12 +242,12 @@ public class AdminController {
     }
 
     @GetMapping("/visualizar_enterros")
-    public ResponseEntity<List<ServicoDTO>> visualizarEnterros() {
-        List<Servico> servicos = servicoRepository.findByTipoServico(ServicoEnum.valueOf("ENTERRO"));
-        List<ServicoDTO> enterros = new ArrayList<>();
+    public ResponseEntity<List<HistoricoServicosDTO>> visualizarEnterros() {
+        List<HistoricoServicos> historicoServicos = historicoServicosRepository.findByTipoServico(ServicoEnum.valueOf("ENTERRO"));
+        List<HistoricoServicosDTO> enterros = new ArrayList<>();
 
-        for (Servico servico : servicos) {
-            ServicoDTO servicoDTO = new ServicoDTO(
+        for (HistoricoServicos servico : historicoServicos) {
+            HistoricoServicosDTO servicoDTO = new HistoricoServicosDTO(
                 servico.getValor(),
                 servico.getTipoServico(),
                 servico.getJazigo().getEndereco(),
@@ -258,12 +264,12 @@ public class AdminController {
     }
 
     @GetMapping("/visualizar_exumacoes")
-    public ResponseEntity<List<ServicoDTO>> visualizarExumacoes() {
-        List<Servico> servicos = servicoRepository.findByTipoServico(ServicoEnum.valueOf("EXUMACAO"));
-        List<ServicoDTO> exumacoes = new ArrayList<>();
+    public ResponseEntity<List<HistoricoServicosDTO>> visualizarExumacoes() {
+        List<HistoricoServicos> historicoServicos = historicoServicosRepository.findByTipoServico(ServicoEnum.valueOf("EXUMACAO"));
+        List<HistoricoServicosDTO> exumacoes = new ArrayList<>();
 
-        for (Servico servico : servicos) {
-            ServicoDTO servicoDTO = new ServicoDTO(
+        for (HistoricoServicos servico : historicoServicos) {
+            HistoricoServicosDTO servicoDTO = new HistoricoServicosDTO(
                 servico.getValor(),
                 servico.getTipoServico(),
                 servico.getJazigo().getEndereco(),

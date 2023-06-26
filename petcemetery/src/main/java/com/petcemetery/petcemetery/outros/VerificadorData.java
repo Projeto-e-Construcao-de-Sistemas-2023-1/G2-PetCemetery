@@ -8,12 +8,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.petcemetery.petcemetery.model.Jazigo;
 import com.petcemetery.petcemetery.model.Lembrete;
 import com.petcemetery.petcemetery.model.Reuniao;
-import com.petcemetery.petcemetery.model.Servico;
+import com.petcemetery.petcemetery.model.HistoricoServicos;
 import com.petcemetery.petcemetery.model.Jazigo.StatusEnum;
+import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
 import com.petcemetery.petcemetery.repositorio.LembreteRepository;
 import com.petcemetery.petcemetery.repositorio.ReuniaoRepository;
-import com.petcemetery.petcemetery.repositorio.ServicoRepository;
+import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 import com.petcemetery.petcemetery.services.EmailService;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class VerificadorData {
     private EmailService emailService;
 
     @Autowired
-    private ServicoRepository servicoRepository;
+    private HistoricoServicosRepository historicoServicosRepository;
 
     @Autowired
     private JazigoRepository jazigoRepository;
@@ -38,10 +39,10 @@ public class VerificadorData {
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaEnterros() {
         LocalDate dataAtual = LocalDate.now();
-        List<Servico> servicos = servicoRepository.findAll();
+        List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
 
-        for (Servico servico : servicos) {
-            if(servico.getTipoServico() != Servico.ServicoEnum.ENTERRO) {
+        for (HistoricoServicos servico : historicoServicos) {
+            if(servico.getTipoServico() != ServicoEnum.ENTERRO) {
                 continue;
             }
             LocalDate dataEnterro = servico.getDataServico();
@@ -64,10 +65,10 @@ public class VerificadorData {
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaExumacoes() {
         LocalDate dataAtual = LocalDate.now();
-        List<Servico> servicos = servicoRepository.findAll();
+        List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
 
-        for (Servico servico : servicos) {
-            if(servico.getTipoServico() != Servico.ServicoEnum.EXUMACAO) {
+        for (HistoricoServicos servico : historicoServicos) {
+            if(servico.getTipoServico() != ServicoEnum.EXUMACAO) {
                 continue;
             }
             LocalDate dataExumacao = servico.getDataServico();
@@ -111,11 +112,11 @@ public class VerificadorData {
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaPagamentoAluguel() {
         LocalDate dataAtual = LocalDate.now();
-        List<Servico> servicos = servicoRepository.findAll();
+        List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
 
         // Verifica se o serviço é aluguel e se o pagamento está atrasado
-        for (Servico servico : servicos) {
-            if(servico.getTipoServico() != Servico.ServicoEnum.ALUGUEL) {
+        for (HistoricoServicos servico : historicoServicos) {
+            if(servico.getTipoServico() != ServicoEnum.ALUGUEL) {
                 continue;
             }
             LocalDate dataPrimeiroPagamento = servico.getPrimeiroPagamento();
@@ -136,11 +137,11 @@ public class VerificadorData {
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaPagamentoManutencao() {
         LocalDate dataAtual = LocalDate.now();
-        List<Servico> servicos = servicoRepository.findAll();
+        List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
 
         // Verifica se o serviço é manutenção e se o pagamento está atrasado
-        for (Servico servico : servicos) {
-            if(servico.getTipoServico() != Servico.ServicoEnum.MANUTENCAO) {
+        for (HistoricoServicos servico : historicoServicos) {
+            if(servico.getTipoServico() != ServicoEnum.MANUTENCAO) {
                 continue;
             }
             LocalDate dataPrimeiroPagamento = servico.getPrimeiroPagamento();

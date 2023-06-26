@@ -15,17 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.petcemetery.petcemetery.DTO.ServicoDTO;
+import com.petcemetery.petcemetery.DTO.HistoricoServicosDTO;
 import com.petcemetery.petcemetery.model.Carrinho;
 import com.petcemetery.petcemetery.model.Cliente;
+import com.petcemetery.petcemetery.model.HistoricoServicos;
 import com.petcemetery.petcemetery.model.Jazigo;
 import com.petcemetery.petcemetery.model.Jazigo.StatusEnum;
-import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.CarrinhoRepository;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
 import com.petcemetery.petcemetery.repositorio.ServicoRepository;
+import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -38,6 +39,9 @@ public class CarrinhoController {
 
     @Autowired
     private CarrinhoRepository carrinhoRepository;
+
+    @Autowired
+    private HistoricoServicosRepository historicoServicosRepository;
 
     @Autowired
     private ServicoRepository servicoRepository;
@@ -53,7 +57,7 @@ public class CarrinhoController {
         
         List<Carrinho> carrinho = carrinhoRepository.findAllByCpfCliente(cpf);
         Cliente cliente = clienteRepository.findByCpf(cpf);
-        Servico servico;
+        HistoricoServicos historicoServicos;
         
         if (carrinho != null) {
             
@@ -66,44 +70,48 @@ public class CarrinhoController {
                     case COMPRA:
                     case ALUGUEL:
                         if(item.getServico() == ServicoEnum.COMPRA){
-                            servico = new Servico(ServicoEnum.COMPRA, Jazigo.precoJazigo, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
-                            servico.setPrimeiroPagamento(LocalDate.now());
+                            double valor = servicoRepository.findByTipoServico(item.getServico()).getValor();
+                            double valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();
+                            historicoServicos = new HistoricoServicos(ServicoEnum.COMPRA, valor + valorPlano, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
+                            historicoServicos.setPrimeiroPagamento(LocalDate.now());
                         } else {
-                            servico = new Servico(ServicoEnum.ALUGUEL, Jazigo.aluguelJazigo, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
-                            servico.setPrimeiroPagamento(LocalDate.now());
+                            double valor = servicoRepository.findByTipoServico(item.getServico()).getValor();
+                            double valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();
+                            historicoServicos = new HistoricoServicos(ServicoEnum.ALUGUEL, valor + valorPlano, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
+                            historicoServicos.setPrimeiroPagamento(LocalDate.now());
                         }
                         jazigo.setDisponivel(false);
-                        jazigo.setPlano(servico.getPlano());
+                        jazigo.setPlano(historicoServicos.getPlano());
                         jazigo.setProprietario(cliente);
                         jazigo.setStatus(StatusEnum.DISPONIVEL);
                         jazigoRepository.save(jazigo);
-                        servicoRepository.save(servico);
+                        historicoServicosRepository.save(historicoServicos);
                         break;
                     
                     case ENTERRO: //TODO a data precisa ser verificada(em outro método) para enterrar o Pet apenas na data agendada
-                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
-                        servico.setPrimeiroPagamento(LocalDate.now());
-                        servicoRepository.save(servico);
+                        historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
+                        historicoServicos.setPrimeiroPagamento(LocalDate.now());
+                        historicoServicosRepository.save(historicoServicos);
                         break;
                     
                     case EXUMACAO: //TODO a data precisa ser verificada(em outro método) para exumar o Pet apenas na data agendada
-                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
-                        servico.setPrimeiroPagamento(LocalDate.now());
-                        servicoRepository.save(servico);
+                        historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
+                        historicoServicos.setPrimeiroPagamento(LocalDate.now());
+                        historicoServicosRepository.save(historicoServicos);
                         break;
 
                     case PERSONALIZACAO: //TODO nao querem trocar o nome desse servico pra "TROCAPLANO"? p n confundir c personalizacao de mensagem/foto?
-                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
-                        servico.setPrimeiroPagamento(LocalDate.now());
-                        jazigo.setPlano(servico.getPlano());
+                        historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
+                        historicoServicos.setPrimeiroPagamento(LocalDate.now());
+                        jazigo.setPlano(historicoServicos.getPlano());
                         jazigoRepository.save(jazigo);
-                        servicoRepository.save(servico);
+                        historicoServicosRepository.save(historicoServicos);
                         break;
 
                     case MANUTENCAO:
-                        servico = servicoRepository.findByIdServico(item.getIdServico().getIdServico());
-                        servico.setPrimeiroPagamento(LocalDate.now());
-                        servicoRepository.save(servico);
+                        historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
+                        historicoServicos.setPrimeiroPagamento(LocalDate.now());
+                        historicoServicosRepository.save(historicoServicos);
                     break;
 
                     default:
@@ -140,37 +148,40 @@ public class CarrinhoController {
     //Retorna array de servicos em json do cliente passado
     @GetMapping("/{cpf}/informacoes_carrinho")
     public ResponseEntity<?> informacoesCarrinho(@PathVariable("cpf") String cpf) {
-        List<ServicoDTO> listaServicosDTO = new ArrayList<>();
+        List<HistoricoServicosDTO> listaHistoricoServicosDTO = new ArrayList<>();
 
         for (Carrinho item : carrinhoRepository.findAllByCpfCliente(cpf)) {
-            ServicoDTO servicoDTO;
-            double valor = item.getServico().getPreco();
+            HistoricoServicosDTO historicoServicosDTO;
+            double valor = servicoRepository.findByTipoServico(item.getServico()).getValor();
+            double valorPlano;
 
             //adiciona à variavel valor, o valor do plano caso o servico seja compra ou aluguel
             switch (item.getServico()) {
                 case COMPRA:
-                    valor += item.getPlano().getPreco();
+                    valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();
+                    valor += valorPlano;
                     break;
                 case ALUGUEL:
-                    valor += item.getPlano().getPreco();
+                    valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();
+                    valor += valorPlano;
                     break;
                 default:
                     break;
             }
             
             if(item.getPet() != null){
-                servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getPet().getId(), item.getCpfCliente());
+                historicoServicosDTO = new HistoricoServicosDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getPet().getId(), item.getCpfCliente());
             } else if(item.getJazigo() != null){
-                servicoDTO = new ServicoDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getCpfCliente());
+                historicoServicosDTO = new HistoricoServicosDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getCpfCliente());
             } else {
-                servicoDTO = new ServicoDTO(valor, item.getServico(), item.getPlano(), item.getCpfCliente());
+                historicoServicosDTO = new HistoricoServicosDTO(valor, item.getServico(), item.getPlano(), item.getCpfCliente());
             }
 
-            listaServicosDTO.add(servicoDTO);
+            listaHistoricoServicosDTO.add(historicoServicosDTO);
         }
 
         //retorna um json com array de DTO servicos
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaServicosDTO);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(listaHistoricoServicosDTO);
 
     }
 
