@@ -308,7 +308,7 @@ public class JazigoController {
     
     @GetMapping("/get_jazigos")
     public ResponseEntity<?> getJazigos(){
-        List<Jazigo> jazigos = jazigoRepository.findAll();
+        List<Jazigo> jazigos = jazigoRepository.findAllOrderByIdAsc();
         List<JazigoDTO> jazigosDTO = new ArrayList<>();
 
         for (Jazigo jazigo : jazigos) {

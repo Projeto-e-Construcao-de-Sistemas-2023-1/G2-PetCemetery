@@ -1,6 +1,8 @@
 package com.petcemetery.petcemetery.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.petcemetery.petcemetery.DTO.VisualizarDespesasDTO;
 import com.petcemetery.petcemetery.model.Cliente;
+import com.petcemetery.petcemetery.model.HistoricoServicos;
 import com.petcemetery.petcemetery.model.Lembrete;
+import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.outros.EmailValidator;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
+import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 import com.petcemetery.petcemetery.repositorio.LembreteRepository;
+import com.petcemetery.petcemetery.repositorio.ServicoRepository;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -31,6 +38,9 @@ public class ClienteController {
 
     @Autowired
     private LembreteRepository lembreteRepository;
+
+    @Autowired
+    private HistoricoServicosRepository historicoServicosRepository;
 
     // Recebe as informações que o cliente deseja mudar, em JSON, e altera no banco de dados
     @PostMapping(path = "/editar-perfil", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -153,5 +163,18 @@ public class ClienteController {
         lembreteRepository.save(lembrete);
 
         return ResponseEntity.ok("OK;lembrete_adicionado");
+    }
+
+        
+    @GetMapping("/visualizar_despesas")
+    public ResponseEntity<?>visualizarDespesas(@PathVariable("cpf") String cpf){
+        List<HistoricoServicos> servicos = historicoServicosRepository.findAllByClienteCpf(cpf);
+        List <VisualizarDespesasDTO> despesasDTO = new ArrayList<>();
+    
+        for (HistoricoServicos s : servicos){
+            VisualizarDespesasDTO despesaDTO = new VisualizarDespesasDTO(s);
+            despesasDTO.add(despesaDTO);
+        }
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(despesasDTO);
     }
 }

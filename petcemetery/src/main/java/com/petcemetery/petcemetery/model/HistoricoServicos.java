@@ -61,6 +61,9 @@ public class HistoricoServicos {
     @Column(name = "plano")
     private PlanoEnum plano;
 
+    @Column(name = "ultimo_pagamento")
+    private LocalDate ultimoPagamento;
+
     public HistoricoServicos(){}
     
     public HistoricoServicos(ServicoEnum tipoServico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano, Pet pet, LocalDate dataServico, LocalTime horaServico) {

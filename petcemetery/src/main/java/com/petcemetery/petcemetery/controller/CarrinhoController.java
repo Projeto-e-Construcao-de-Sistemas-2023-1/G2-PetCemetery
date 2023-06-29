@@ -73,18 +73,18 @@ public class CarrinhoController {
                             double valor = servicoRepository.findByTipoServico(item.getServico()).getValor();
                             double valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();
                             historicoServicos = new HistoricoServicos(ServicoEnum.COMPRA, valor + valorPlano, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
-                            historicoServicos.setPrimeiroPagamento(LocalDate.now());
                         } else {
                             double valor = servicoRepository.findByTipoServico(item.getServico()).getValor();
                             double valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();
                             historicoServicos = new HistoricoServicos(ServicoEnum.ALUGUEL, valor + valorPlano, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
-                            historicoServicos.setPrimeiroPagamento(LocalDate.now());
+                            historicoServicos.setUltimoPagamento(LocalDate.now());
                         }
                         jazigo.setDisponivel(false);
                         jazigo.setPlano(historicoServicos.getPlano());
                         jazigo.setProprietario(cliente);
                         jazigo.setStatus(StatusEnum.DISPONIVEL);
                         jazigoRepository.save(jazigo);
+                        historicoServicos.setPrimeiroPagamento(LocalDate.now());
                         historicoServicosRepository.save(historicoServicos);
                         break;
                     
@@ -111,6 +111,7 @@ public class CarrinhoController {
                     case MANUTENCAO:
                         historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
                         historicoServicos.setPrimeiroPagamento(LocalDate.now());
+                        historicoServicos.setUltimoPagamento(LocalDate.now());
                         historicoServicosRepository.save(historicoServicos);
                     break;
 
@@ -129,21 +130,6 @@ public class CarrinhoController {
             return ResponseEntity.ok("ERR;carrinho_nao_encontrado");
         }
     }
-
-    //! esse metodo basicamente é o mesmo embaixo dele 
-    //retorna as informaçoes necessárias para visualizar as despesas de cada cpf na tela visualizar despesas
-    //talvez seja melhor mover para o cliente contorller e modificar a url prefixada??
-    // @GetMapping("/{cpf}/visualizar_despesas")
-    // public ResponseEntity<?>visualizarDespesas(@PathVariable("cpf") String cpf){
-    //     List<Servico> servicos = servicoRepository.findBycliente_cpf(cpf);
-    //     List <VisualizarDespesasDTO> despesasDTO = new ArrayList<>();
-    
-    //     for (Servico s : servicos){
-    //         VisualizarDespesasDTO despesaDTO = new VisualizarDespesasDTO(s);
-    //         despesasDTO.add(despesaDTO);
-    //     }
-    //     return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(despesasDTO);
-    // }
 
     //Retorna array de servicos em json do cliente passado
     @GetMapping("/{cpf}/informacoes_carrinho")
