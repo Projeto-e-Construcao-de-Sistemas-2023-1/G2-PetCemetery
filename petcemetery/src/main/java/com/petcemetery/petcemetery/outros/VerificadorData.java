@@ -184,8 +184,8 @@ public class VerificadorData {
         }
     }
 
-
-     @Scheduled(cron = "*/30 * * * * ?") // Executa a cada dois minutos
+    
+    @Scheduled(cron = "*/30 * * * * ?") // Executa a cada 30 segundos
     public void checaNotificacaoRenovacao() {
         LocalDate dataAtual = LocalDate.now();
         List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
@@ -208,8 +208,4 @@ public class VerificadorData {
             }
         }
     }
-        @Scheduled(cron = "*/30 * * * * ?") // Executa a cada dois minutos
-        public void enviaEmail(){
-            emailService.sendEmail(new String[] {"gabrielramiro@edu.unirio.br"}, "teste", "teste");
-        }
 }
