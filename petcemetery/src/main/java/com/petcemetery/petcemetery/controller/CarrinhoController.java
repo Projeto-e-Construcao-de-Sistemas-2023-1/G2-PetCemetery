@@ -78,7 +78,7 @@ public class CarrinhoController {
                         if(item.getServico() == ServicoEnum.COMPRA){
                             double valor = servicoRepository.findByTipoServico(item.getServico()).getValor();
                             double valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();
-                            historicoServicos = new HistoricoServicos(ServicoEnum.COMPRA, valor + valorPlano, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
+                            historicoServicos = new HistoricoServicos(ServicoEnum.COMPRA, valor + valorPlano, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now(), LocalDate.now(), LocalDate.now());
                         } else {
                             double valor = servicoRepository.findByTipoServico(item.getServico()).getValor();
                             double valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();

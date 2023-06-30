@@ -30,7 +30,7 @@ public class VisualizarDespesasDTO {
         // Caso não seja nenhum dos dois acima, a data de vencimento é nula, e não precisa ser exibida. Os outros serviços serão apenas visualizáveis, como um extrato.
         else {
             this.dataVencimento = null;
-            this.ultimoPagamento = null;
+            this.ultimoPagamento = historicoServicos.getUltimoPagamento();
         }
     }
 }

@@ -65,6 +65,20 @@ public class HistoricoServicos {
     private LocalDate ultimoPagamento;
 
     public HistoricoServicos(){}
+
+    // All args constructor
+    public HistoricoServicos(ServicoEnum tipoServico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano, Pet pet, LocalDate dataServico, LocalTime horaServico, LocalDate primeiroPagamento, LocalDate ultimoPagamento) {
+        this.tipoServico = tipoServico;
+        this.valor = valor;
+        this.cliente = cliente;
+        this.jazigo = jazigo;
+        this.plano = plano;
+        this.pet = pet;
+        this.dataServico = dataServico;
+        this.horaServico = horaServico;
+        this.primeiroPagamento = primeiroPagamento;
+        this.ultimoPagamento = ultimoPagamento;
+    }
     
     public HistoricoServicos(ServicoEnum tipoServico, double valor, Cliente cliente, Jazigo jazigo, PlanoEnum plano, Pet pet, LocalDate dataServico, LocalTime horaServico) {
         this.tipoServico = tipoServico;
