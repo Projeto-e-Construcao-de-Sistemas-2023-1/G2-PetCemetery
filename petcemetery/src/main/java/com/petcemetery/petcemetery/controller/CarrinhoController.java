@@ -20,11 +20,14 @@ import com.petcemetery.petcemetery.model.Carrinho;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.model.HistoricoServicos;
 import com.petcemetery.petcemetery.model.Jazigo;
+import com.petcemetery.petcemetery.model.Pagamento;
 import com.petcemetery.petcemetery.model.Jazigo.StatusEnum;
+import com.petcemetery.petcemetery.model.Pagamento.MetodoEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.CarrinhoRepository;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
+import com.petcemetery.petcemetery.repositorio.PagamentoRepository;
 import com.petcemetery.petcemetery.repositorio.ServicoRepository;
 import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 
@@ -48,6 +51,9 @@ public class CarrinhoController {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private PagamentoRepository pagamentoRepository;
 
     //Ao finalizar e comprar tudo do carrinho, se algum servico for alguel ou compra, seta o jazigo no banco.
     //limpa o carrinho e salva no banco
@@ -78,6 +84,8 @@ public class CarrinhoController {
                             double valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();
                             historicoServicos = new HistoricoServicos(ServicoEnum.ALUGUEL, valor + valorPlano, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
                             historicoServicos.setUltimoPagamento(LocalDate.now());
+                            Pagamento pagamento = new Pagamento(cliente, valor, LocalDate.now(), LocalDate.now().plusMonths(1), true, historicoServicos, MetodoEnum.CREDITO);
+                            pagamentoRepository.save(pagamento);
                         }
                         jazigo.setDisponivel(false);
                         jazigo.setPlano(historicoServicos.getPlano());
@@ -113,6 +121,8 @@ public class CarrinhoController {
                         historicoServicos.setPrimeiroPagamento(LocalDate.now());
                         historicoServicos.setUltimoPagamento(LocalDate.now());
                         historicoServicosRepository.save(historicoServicos);
+                        Pagamento pagamento = new Pagamento(cliente, servicoRepository.findByTipoServico(item.getServico()).getValor(), LocalDate.now(), LocalDate.now().plusYears(1), true, historicoServicos, MetodoEnum.CREDITO);
+                        pagamentoRepository.save(pagamento);
                     break;
 
                     default:

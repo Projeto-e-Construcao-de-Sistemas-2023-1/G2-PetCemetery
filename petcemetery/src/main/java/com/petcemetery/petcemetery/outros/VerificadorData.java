@@ -3,21 +3,27 @@ package com.petcemetery.petcemetery.outros;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import com.petcemetery.petcemetery.model.Jazigo;
 import com.petcemetery.petcemetery.model.Lembrete;
+import com.petcemetery.petcemetery.model.Pagamento;
 import com.petcemetery.petcemetery.model.Reuniao;
 import com.petcemetery.petcemetery.model.HistoricoServicos;
 import com.petcemetery.petcemetery.model.Jazigo.StatusEnum;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
 import com.petcemetery.petcemetery.repositorio.LembreteRepository;
+import com.petcemetery.petcemetery.repositorio.PagamentoRepository;
 import com.petcemetery.petcemetery.repositorio.ReuniaoRepository;
 import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 import com.petcemetery.petcemetery.services.EmailService;
 import java.util.List;
 
+@Component
 public class VerificadorData {
 
     @Autowired
@@ -34,6 +40,9 @@ public class VerificadorData {
 
     @Autowired
     private LembreteRepository lembreteRepository;
+
+    @Autowired
+    private PagamentoRepository pagamentoRepository;
     
     // Checa a cada 2 minutos se há algum serviço de enterro para ser realizado, e envia um email pro cliente caso o enterro do pet dele seja hoje
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
@@ -112,22 +121,21 @@ public class VerificadorData {
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaPagamentoAluguel() {
         LocalDate dataAtual = LocalDate.now();
-        List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
+        List<Pagamento> pagamentos = pagamentoRepository.findAll();
 
         // Verifica se o serviço é aluguel e se o pagamento está atrasado
-        for (HistoricoServicos servico : historicoServicos) {
-            if(servico.getTipoServico() != ServicoEnum.ALUGUEL) {
+        for (Pagamento pagamento : pagamentos) {
+            if(pagamento.getServico().getTipoServico() != ServicoEnum.ALUGUEL) {
                 continue;
             }
-            LocalDate dataPrimeiroPagamento = servico.getPrimeiroPagamento();
 
-            if (dataPrimeiroPagamento.plusMonths(1).isBefore(dataAtual)) {
+            if (pagamento.getDataVencimento().isBefore(dataAtual)) {
                 // Enviar o e-mail de aviso
-                String[] email = {servico.getCliente().getEmail()};
+                String[] email = {pagamento.getCliente().getEmail()};
                 String assunto = "Lembrete de Pagamento";
                 String mensagem = "Lembrete: O pagamento do serviço de aluguel do seu jazigo está atrasado. Por favor, entre em contato conosco para regularizar a situação.";
                 emailService.sendEmail(email, assunto, mensagem);
-                servico.getCliente().setInadimplente(true);
+                pagamento.getCliente().setInadimplente(true);
             }
         }
     }
@@ -137,28 +145,27 @@ public class VerificadorData {
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaPagamentoManutencao() {
         LocalDate dataAtual = LocalDate.now();
-        List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
+        List<Pagamento> pagamentos = pagamentoRepository.findAll();
 
         // Verifica se o serviço é manutenção e se o pagamento está atrasado
-        for (HistoricoServicos servico : historicoServicos) {
-            if(servico.getTipoServico() != ServicoEnum.MANUTENCAO) {
+        for (Pagamento pagamento : pagamentos) {
+            if(pagamento.getServico().getTipoServico() != ServicoEnum.MANUTENCAO) {
                 continue;
             }
-            LocalDate dataPrimeiroPagamento = servico.getPrimeiroPagamento();
 
-            if (dataPrimeiroPagamento.plusYears(1).isBefore(dataAtual)) {
+            if (pagamento.getDataVencimento().isBefore(dataAtual)) {
                 // Enviar o e-mail de aviso
-                String[] email = {servico.getCliente().getEmail()};
+                String[] email = {pagamento.getCliente().getEmail()};
                 String assunto = "Lembrete de Pagamento";
                 String mensagem = "Lembrete: O pagamento do serviço de manutenção do seu jazigo está atrasado. Por favor, entre em contato conosco para regularizar a situação.";
                 emailService.sendEmail(email, assunto, mensagem);
-                servico.getCliente().setInadimplente(true);
+                pagamento.getCliente().setInadimplente(true);
             }
         }
     }
 
-    // Checa à meia-noite se há algum lembrete de visita para ser enviado, e envia um email pro cliente caso a visita dele seja hoje
-    @Scheduled(cron = "0 0 0 * * ?") // Executa à meia-noite
+    // Checa a cada 2 minutos se há algum lembrete de visita para ser enviado, e envia um email pro cliente caso a visita dele seja hoje
+    @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaLembretes() {
         LocalDate dataAtual = LocalDate.now();
         // Checa todos os lembretes que ainda não foram enviados
@@ -172,6 +179,8 @@ public class VerificadorData {
                 String mensagem = "Lembrete: Hoje é o dia da sua visita no cemitério.";
                 emailService.sendEmail(email, assunto, mensagem);
             }
+            lembrete.setEnviado(false);
+            lembreteRepository.save(lembrete);
         }
     }
 }
