@@ -232,7 +232,7 @@ public class AdminController {
         }
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(emails);
-        message.setSubject("Pagamento em atraso");
+        message.setSubject("Horário de funcionamento do cemitério alterado");
         message.setText("Olá! Os horários de funcionamento do cemítério essa semana foram alterados. Segue os novos horários:\n" +
                 "Segunda: " + horarioFuncionamentoRepository.findByDiaSemana("segunda").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("segunda").getFechamento() + "\n" +
                 "Terça: " + horarioFuncionamentoRepository.findByDiaSemana("terca").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("terca").getFechamento() + "\n" +
