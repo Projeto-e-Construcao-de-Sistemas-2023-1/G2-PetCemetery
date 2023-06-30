@@ -227,7 +227,7 @@ public class JazigoController {
 
         double valor = servicoRepository.findByTipoServico(ServicoEnum.EXUMACAO).getValor();
 
-        HistoricoServicos exumacao = new HistoricoServicos(ServicoEnum.EXUMACAO, valor, clienteRepository.findByCpf(cpf), jazigo, null, pet, LocalDate.parse(data), LocalTime.parse(hora));
+        HistoricoServicos exumacao = new HistoricoServicos(ServicoEnum.EXUMACAO, valor, clienteRepository.findByCpf(cpf), jazigo, jazigo.getPlano(), pet, LocalDate.parse(data), LocalTime.parse(hora));
         historicoServicosRepository.save(exumacao);
 
         Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.EXUMACAO, jazigo.getPlano(), LocalDate.parse(data), LocalTime.parse(hora), pet, exumacao);
