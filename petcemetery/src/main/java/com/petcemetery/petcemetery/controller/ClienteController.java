@@ -20,12 +20,10 @@ import com.petcemetery.petcemetery.DTO.VisualizarDespesasDTO;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.model.HistoricoServicos;
 import com.petcemetery.petcemetery.model.Lembrete;
-import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.outros.EmailValidator;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 import com.petcemetery.petcemetery.repositorio.LembreteRepository;
-import com.petcemetery.petcemetery.repositorio.ServicoRepository;
 
 import io.micrometer.common.util.StringUtils;
 
