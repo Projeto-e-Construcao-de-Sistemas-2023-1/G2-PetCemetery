@@ -14,9 +14,21 @@ public class HistoricoServicosDTO {
     ServicoEnum tipoServico;
     String enderecoJazigo; // Pode ser nulo!
     long idPet; // Pode ser nulo!
+    String dataServico; 
     PlanoEnum plano; // Teoricamente também deveria poder ser nulo, mas não no momento não pode. kkk
 
     // CONSTRUTOR - Full args
+    public HistoricoServicosDTO(double valor, ServicoEnum tipoServico, String enderecoJazigo, PlanoEnum plano, long idJazigo, long idPet, String dataServico, String cpfCliente) {
+        this.idJazigo = idJazigo;
+        this.valor = valor;
+        this.tipoServico = tipoServico;
+        this.enderecoJazigo = enderecoJazigo;
+        this.plano = plano;
+        this.idPet = idPet;
+        this.dataServico = dataServico;
+        this.cpfCliente = cpfCliente;
+    }
+
     public HistoricoServicosDTO(double valor, ServicoEnum tipoServico, String enderecoJazigo, PlanoEnum plano, long idJazigo, long idPet, String cpfCliente) {
         this.idJazigo = idJazigo;
         this.valor = valor;
