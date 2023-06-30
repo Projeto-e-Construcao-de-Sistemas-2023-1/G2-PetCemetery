@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
 
 import com.petcemetery.petcemetery.DTO.ClienteDTO;
-import com.petcemetery.petcemetery.DTO.ExibirServicoDTO;
 import com.petcemetery.petcemetery.DTO.HistoricoJazigoDTO;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.DTO.HorarioFuncionamentoDTO;
@@ -91,7 +90,8 @@ public class AdminController {
     // Retorna o valor de todos os servicos em formato JSON
     @GetMapping("/servicos")
     public ResponseEntity<?> exibirServicos() {
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new ExibirServicoDTO()); // redireciona para a página de serviços
+        List<Servico> servicos = servicoRepository.findAllByTipoServico();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(servicos); // redireciona para a página de serviços
     }
 
     // Atualiza o valor do plano no banco com base no seu nome
