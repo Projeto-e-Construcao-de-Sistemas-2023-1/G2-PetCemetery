@@ -3,7 +3,10 @@ package com.petcemetery.petcemetery.outros;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import com.petcemetery.petcemetery.model.Jazigo;
 import com.petcemetery.petcemetery.model.Lembrete;
@@ -18,6 +21,7 @@ import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 import com.petcemetery.petcemetery.services.EmailService;
 import java.util.List;
 
+@Component
 public class VerificadorData {
 
     @Autowired
@@ -174,4 +178,33 @@ public class VerificadorData {
             }
         }
     }
+
+
+     @Scheduled(cron = "*/30 * * * * ?") // Executa a cada dois minutos
+    public void checaNotificacaoRenovacao() {
+        LocalDate dataAtual = LocalDate.now();
+        List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
+
+        LocalDate  dataSemanaPassada = dataAtual.minusDays(7);
+
+        // Verifica se o serviço  é aluguel e se a data de renovaçao está em dois dias 
+        for (HistoricoServicos servico : historicoServicos) {
+            if(servico.getTipoServico() != ServicoEnum.ALUGUEL) {
+                continue;
+            }
+            LocalDate dataServico = servico.getDataServico();
+
+            if (dataServico.plusYears(3).isBefore(dataAtual) && dataServico.plusYears(3).isAfter(dataSemanaPassada)){
+                // Enviar o e-mail de notificação
+                String[] email = {servico.getCliente().getEmail()};
+                String assunto = "Notificação de Renovação de Jazigo";
+                String mensagem = "Notificação: O contrato de aluguel do seu Jazigo No PetCemetery está prestes a vencer. Por favor, entre em contato conosco para regularizar a situação.";
+                emailService.sendEmail(email, assunto, mensagem);
+            }
+        }
+    }
+        @Scheduled(cron = "*/30 * * * * ?") // Executa a cada dois minutos
+        public void enviaEmail(){
+            emailService.sendEmail(new String[] {"gabrielramiro@edu.unirio.br"}, "teste", "teste");
+        }
 }
