@@ -35,6 +35,7 @@ import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 import com.petcemetery.petcemetery.repositorio.HorarioFuncionamentoRepository;
 import com.petcemetery.petcemetery.repositorio.JazigoRepository;
 import com.petcemetery.petcemetery.repositorio.ServicoRepository;
+import com.petcemetery.petcemetery.services.EmailService;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -54,6 +55,9 @@ public class AdminController {
 
     @Autowired
     private HorarioFuncionamentoRepository horarioFuncionamentoRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     // Retorna, em formato JSON, informações sobre todos os pets que já passaram no jazigo passado pelo seu id.
     @GetMapping("/{id}/visualizar-historico")
@@ -218,6 +222,7 @@ public class AdminController {
         horarioFer.setFechado(fechadoFeriado);
         horarioFuncionamentoRepository.save(horarioFer);
 
+        System.out.println("Horários alterados com sucesso!");
         notificaClientes();
 
         return ResponseEntity.ok("OK;horario_alterado;"); // Exibe uma mensagem de horario alterado
@@ -225,15 +230,14 @@ public class AdminController {
 
     // Método que é chamado depois que o admin altera o horário de funcionamento do cemitério, e envia para todos os clientes os novos horários.
     public void notificaClientes() {
+        System.out.println("Notificando clientes");
         List<Cliente> clientes = clienteRepository.findAll();
         String[] emails = new String[clientes.size()];
         for(Cliente cliente : clientes) {
             emails[clientes.indexOf(cliente)] = cliente.getEmail();
         }
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(emails);
-        message.setSubject("Horário de funcionamento do cemitério alterado");
-        message.setText("Olá! Os horários de funcionamento do cemítério essa semana foram alterados. Segue os novos horários:\n" +
+        String subject = "Horário de funcionamento do cemitério alterado";
+        String body = "Olá! Os horários de funcionamento do cemítério essa semana foram alterados. Segue os novos horários:\n" +
                 "Segunda: " + horarioFuncionamentoRepository.findByDiaSemana("segunda").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("segunda").getFechamento() + "\n" +
                 "Terça: " + horarioFuncionamentoRepository.findByDiaSemana("terca").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("terca").getFechamento() + "\n" +
                 "Quarta: " + horarioFuncionamentoRepository.findByDiaSemana("quarta").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("quarta").getFechamento() + "\n" +
@@ -242,7 +246,9 @@ public class AdminController {
                 "Sábado: " + horarioFuncionamentoRepository.findByDiaSemana("sabado").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("sabado").getFechamento() + "\n" +
                 "Domingo: " + horarioFuncionamentoRepository.findByDiaSemana("domingo").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("domingo").getFechamento() + "\n" +
                 "Feriado: " + horarioFuncionamentoRepository.findByDiaSemana("feriado").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("feriado").getFechamento() + "\n" +
-                "Atenciosamente, Pet Cemetery.");
+                "Atenciosamente, Pet Cemetery.";
+
+        emailService.sendEmail(emails, subject, body);
     }
 
     // Retorna todos os horários de funcionamento para serem exibidos quando o admin entrar na tela de Alterar Horário de Funcionamento
