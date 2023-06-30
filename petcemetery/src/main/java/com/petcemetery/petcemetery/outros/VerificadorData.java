@@ -183,4 +183,33 @@ public class VerificadorData {
             lembreteRepository.save(lembrete);
         }
     }
+
+
+     @Scheduled(cron = "*/30 * * * * ?") // Executa a cada dois minutos
+    public void checaNotificacaoRenovacao() {
+        LocalDate dataAtual = LocalDate.now();
+        List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
+
+        LocalDate  dataSemanaPassada = dataAtual.minusDays(7);
+
+        // Verifica se o serviço  é aluguel e se a data de renovaçao está em dois dias 
+        for (HistoricoServicos servico : historicoServicos) {
+            if(servico.getTipoServico() != ServicoEnum.ALUGUEL) {
+                continue;
+            }
+            LocalDate dataServico = servico.getDataServico();
+
+            if (dataServico.plusYears(3).isBefore(dataAtual) && dataServico.plusYears(3).isAfter(dataSemanaPassada)){
+                // Enviar o e-mail de notificação
+                String[] email = {servico.getCliente().getEmail()};
+                String assunto = "Notificação de Renovação de Jazigo";
+                String mensagem = "Notificação: O contrato de aluguel do seu Jazigo No PetCemetery está prestes a vencer. Por favor, entre em contato conosco para regularizar a situação.";
+                emailService.sendEmail(email, assunto, mensagem);
+            }
+        }
+    }
+        @Scheduled(cron = "*/30 * * * * ?") // Executa a cada dois minutos
+        public void enviaEmail(){
+            emailService.sendEmail(new String[] {"gabrielramiro@edu.unirio.br"}, "teste", "teste");
+        }
 }
