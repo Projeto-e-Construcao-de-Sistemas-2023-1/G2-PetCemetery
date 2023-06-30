@@ -8,7 +8,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,7 @@ import com.petcemetery.petcemetery.repositorio.JazigoRepository;
 import com.petcemetery.petcemetery.repositorio.ServicoRepository;
 import com.petcemetery.petcemetery.services.EmailService;
 
+@EnableAsync
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
@@ -71,6 +73,8 @@ public class AdminController {
         List<HistoricoJazigoDTO> historicoJazigoDTO = new ArrayList<>();
 
         for(Pet pet: jazigo.getHistoricoPets()) {
+            System.out.println("NOME DO PET QUE PASSOU PELO JAZIGO "+ jazigo.getIdJazigo() + ": " + "  + pet.getNomePet()");
+            System.out.println("DATA DE EXUMACAO DOS PET: " + pet.getDataExumacao());
             historicoJazigoDTO.add(new HistoricoJazigoDTO(id, pet.getNomePet(), pet.getDataNascimento(), pet.getEspecie(), pet.getProprietario().getNome(), pet.getDataEnterro(), pet.getDataExumacao()));
         }
         
@@ -229,6 +233,7 @@ public class AdminController {
     }
 
     // Método que é chamado depois que o admin altera o horário de funcionamento do cemitério, e envia para todos os clientes os novos horários.
+    @Async
     public void notificaClientes() {
         System.out.println("Notificando clientes");
         List<Cliente> clientes = clienteRepository.findAll();
@@ -236,6 +241,7 @@ public class AdminController {
         for(Cliente cliente : clientes) {
             emails[clientes.indexOf(cliente)] = cliente.getEmail();
         }
+        System.out.println("Pegando todos as informacoes do banco");
         String subject = "Horário de funcionamento do cemitério alterado";
         String body = "Olá! Os horários de funcionamento do cemítério essa semana foram alterados. Segue os novos horários:\n" +
                 "Segunda: " + horarioFuncionamentoRepository.findByDiaSemana("segunda").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("segunda").getFechamento() + "\n" +
@@ -248,7 +254,9 @@ public class AdminController {
                 "Feriado: " + horarioFuncionamentoRepository.findByDiaSemana("feriado").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("feriado").getFechamento() + "\n" +
                 "Atenciosamente, Pet Cemetery.";
 
+        System.out.println("Enviando email");
         emailService.sendEmail(emails, subject, body);
+        System.out.println("terminou de enviar");
     }
 
     // Retorna todos os horários de funcionamento para serem exibidos quando o admin entrar na tela de Alterar Horário de Funcionamento

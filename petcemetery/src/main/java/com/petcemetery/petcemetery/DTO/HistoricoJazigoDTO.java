@@ -22,7 +22,11 @@ public class HistoricoJazigoDTO {
         this.especiePet = especiePet;
         this.nomeProprietario = nomeProprietario;
         this.dataEnterro = dataEnterro.toString();
-        this.dataExumacao = dataExumacao.toString();
+        
+        if(dataExumacao != null)
+            this.dataExumacao = dataExumacao.toString();
+        else
+            this.dataExumacao = "";
     }
     
 }

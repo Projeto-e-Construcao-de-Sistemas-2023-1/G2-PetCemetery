@@ -10,6 +10,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -28,7 +29,7 @@ public class Jazigo {
     @JoinColumn(name = "cpf_proprietario", referencedColumnName = "cpf")
     private Cliente proprietario;
 
-    @OneToMany
+    @OneToMany(fetch=FetchType.EAGER)
     @Column(name = "historico_pets")
     private List<Pet> historicoPets;
 

@@ -19,6 +19,7 @@ import com.petcemetery.petcemetery.repositorio.PagamentoRepository;
 import com.petcemetery.petcemetery.repositorio.ReuniaoRepository;
 import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
 import com.petcemetery.petcemetery.services.EmailService;
+
 import java.util.List;
 
 @Component
@@ -43,20 +44,27 @@ public class VerificadorData {
     private PagamentoRepository pagamentoRepository;
     
     // Checa a cada 2 minutos se há algum serviço de enterro para ser realizado, e envia um email pro cliente caso o enterro do pet dele seja hoje
-    @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
+    @Scheduled(cron = "*/30 * * * * ?") // Executa a cada dois minutos
     public void checaEnterros() {
         LocalDate dataAtual = LocalDate.now();
         List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
+
+        System.out.println("TEM PET PRA ENTERRAR");
 
         for (HistoricoServicos servico : historicoServicos) {
             if(servico.getTipoServico() != ServicoEnum.ENTERRO) {
                 continue;
             }
+
             LocalDate dataEnterro = servico.getDataServico();
 
-            if (dataEnterro.equals(dataAtual)) {
+            if (dataEnterro.equals(dataAtual) && servico.getJazigo().getPetEnterrado() == null) {
                 Jazigo jazigo = servico.getJazigo();
                 jazigo.setPetEnterrado(servico.getPet());
+                if(jazigo.getHistoricoPets().contains(servico.getPet())) {
+                    continue;
+                }
+                jazigo.getHistoricoPets().add(servico.getPet());
                 jazigoRepository.save(jazigo);
 
                 // Enviar o e-mail de aviso
@@ -69,10 +77,12 @@ public class VerificadorData {
     }
 
     // Checa a cada 2 minutos se há algum serviço de exumação para ser realizado, e envia um email pro cliente caso a cremação do pet dele seja hoje
-    @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
+    @Scheduled(cron = "*/30 * * * * ?") // Executa a cada dois minutos
     public void checaExumacoes() {
         LocalDate dataAtual = LocalDate.now();
         List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
+
+        System.out.println("TEM PET PRA EXUMAR");
 
         for (HistoricoServicos servico : historicoServicos) {
             if(servico.getTipoServico() != ServicoEnum.EXUMACAO) {
@@ -80,7 +90,7 @@ public class VerificadorData {
             }
             LocalDate dataExumacao = servico.getDataServico();
 
-            if (dataExumacao.equals(dataAtual)) {
+            if (dataExumacao.equals(dataAtual) && servico.getJazigo().getPetEnterrado() != null) {
                 Jazigo jazigo = servico.getJazigo();
                 jazigo.setPetEnterrado(null);
                 jazigo.setStatus(StatusEnum.DISPONIVEL);
