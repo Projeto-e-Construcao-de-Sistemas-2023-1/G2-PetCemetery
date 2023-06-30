@@ -96,13 +96,13 @@ public class CarrinhoController {
                         historicoServicosRepository.save(historicoServicos);
                         break;
                     
-                    case ENTERRO: //TODO a data precisa ser verificada(em outro método) para enterrar o Pet apenas na data agendada
+                    case ENTERRO:
                         historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
                         historicoServicos.setPrimeiroPagamento(LocalDate.now());
                         historicoServicosRepository.save(historicoServicos);
                         break;
                     
-                    case EXUMACAO: //TODO a data precisa ser verificada(em outro método) para exumar o Pet apenas na data agendada
+                    case EXUMACAO:
                         historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
                         historicoServicos.setPrimeiroPagamento(LocalDate.now());
                         historicoServicosRepository.save(historicoServicos);

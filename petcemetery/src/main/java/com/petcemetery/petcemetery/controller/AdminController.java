@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -86,7 +87,6 @@ public class AdminController {
         return ResponseEntity.ok(str);  // Retorne a String de jazigos disponiveis 
     }
 
-    // TODO não acho que seja a melhor forma de se fazer isso não.
     // Retorna o valor de todos os servicos em formato JSON
     @GetMapping("/servicos")
     public ResponseEntity<?> exibirServicos() {
@@ -218,7 +218,31 @@ public class AdminController {
         horarioFer.setFechado(fechadoFeriado);
         horarioFuncionamentoRepository.save(horarioFer);
 
+        notificaClientes();
+
         return ResponseEntity.ok("OK;horario_alterado;"); // Exibe uma mensagem de horario alterado
+    }
+
+    // Método que é chamado depois que o admin altera o horário de funcionamento do cemitério, e envia para todos os clientes os novos horários.
+    public void notificaClientes() {
+        List<Cliente> clientes = clienteRepository.findAll();
+        String[] emails = new String[clientes.size()];
+        for(Cliente cliente : clientes) {
+            emails[clientes.indexOf(cliente)] = cliente.getEmail();
+        }
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(emails);
+        message.setSubject("Pagamento em atraso");
+        message.setText("Olá! Os horários de funcionamento do cemítério essa semana foram alterados. Segue os novos horários:\n" +
+                "Segunda: " + horarioFuncionamentoRepository.findByDiaSemana("segunda").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("segunda").getFechamento() + "\n" +
+                "Terça: " + horarioFuncionamentoRepository.findByDiaSemana("terca").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("terca").getFechamento() + "\n" +
+                "Quarta: " + horarioFuncionamentoRepository.findByDiaSemana("quarta").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("quarta").getFechamento() + "\n" +
+                "Quinta: " + horarioFuncionamentoRepository.findByDiaSemana("quinta").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("quinta").getFechamento() + "\n" +
+                "Sexta: " + horarioFuncionamentoRepository.findByDiaSemana("sexta").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("sexta").getFechamento() + "\n" +
+                "Sábado: " + horarioFuncionamentoRepository.findByDiaSemana("sabado").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("sabado").getFechamento() + "\n" +
+                "Domingo: " + horarioFuncionamentoRepository.findByDiaSemana("domingo").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("domingo").getFechamento() + "\n" +
+                "Feriado: " + horarioFuncionamentoRepository.findByDiaSemana("feriado").getAbertura() + " - " + horarioFuncionamentoRepository.findByDiaSemana("feriado").getFechamento() + "\n" +
+                "Atenciosamente, Pet Cemetery.");
     }
 
     // Retorna todos os horários de funcionamento para serem exibidos quando o admin entrar na tela de Alterar Horário de Funcionamento
