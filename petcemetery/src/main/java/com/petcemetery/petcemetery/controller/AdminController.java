@@ -73,6 +73,8 @@ public class AdminController {
         List<HistoricoJazigoDTO> historicoJazigoDTO = new ArrayList<>();
 
         for(Pet pet: jazigo.getHistoricoPets()) {
+            System.out.println("NOME DO PET QUE PASSOU PELO JAZIGO "+ jazigo.getIdJazigo() + ": " + "  + pet.getNomePet()");
+            System.out.println("DATA DE EXUMACAO DOS PET: " + pet.getDataExumacao());
             historicoJazigoDTO.add(new HistoricoJazigoDTO(id, pet.getNomePet(), pet.getDataNascimento(), pet.getEspecie(), pet.getProprietario().getNome(), pet.getDataEnterro(), pet.getDataExumacao()));
         }
         

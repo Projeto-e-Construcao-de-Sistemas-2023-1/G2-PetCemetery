@@ -222,16 +222,25 @@ public class JazigoController {
     // Não estamos utilizando o cpf pra nada :D - utiliza sim, p saber se o jazigo é do kra ou nao
     @PostMapping("/{cpf}/meus_jazigos/{id}/agendar_exumacao")
     public ResponseEntity<?> agendarExumacao(@PathVariable("cpf") String cpf, @PathVariable("id") Long id, @RequestParam("data") String data, @RequestParam("hora") String hora) {
+        System.out.println("INICIO DE EXUMACAO");
         Jazigo jazigo = jazigoRepository.findById(id).get();
         Pet pet = jazigo.getPetEnterrado();
 
         double valor = servicoRepository.findByTipoServico(ServicoEnum.EXUMACAO).getValor();
+
+        System.out.println("INDO AGENDAR EXUMACAO");
+
+        pet.setDataExumacao(LocalDate.parse(data));
+        pet.setHoraExumacao(LocalTime.parse(hora));
+        petRepository.save(pet);
 
         HistoricoServicos exumacao = new HistoricoServicos(ServicoEnum.EXUMACAO, valor, clienteRepository.findByCpf(cpf), jazigo, jazigo.getPlano(), pet, LocalDate.parse(data), LocalTime.parse(hora));
         historicoServicosRepository.save(exumacao);
 
         Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.EXUMACAO, jazigo.getPlano(), LocalDate.parse(data), LocalTime.parse(hora), pet, exumacao);
         carrinhoRepository.save(carrinho);
+
+        System.out.println("EXUMACAO AGENDADA");
 
         return ResponseEntity.ok("OK;exumacao_no_carrinho");
     }
