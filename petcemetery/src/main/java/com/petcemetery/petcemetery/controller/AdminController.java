@@ -90,7 +90,7 @@ public class AdminController {
     // Retorna o valor de todos os servicos em formato JSON
     @GetMapping("/servicos")
     public ResponseEntity<?> exibirServicos() {
-        List<Servico> servicos = servicoRepository.findAllByTipoServico();
+        List<Servico> servicos = servicoRepository.findAll();
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(servicos); // redireciona para a página de serviços
     }
 
