@@ -1,6 +1,7 @@
 package com.petcemetery.petcemetery.model;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,15 +31,13 @@ public class Pagamento {
     private Cliente cliente; 
 
     @Column(name = "valor")
-    private float valor;
+    private double valor;
 
     @Column(name = "data_pagamento")
-    @Temporal(TemporalType.DATE)
-    private Date dataPagamento;
+    private LocalDate dataPagamento;
 
     @Column(name = "data_vencimento")
-    @Temporal(TemporalType.DATE)
-    private Date dataVencimento;
+    private LocalDate dataVencimento;
 
     @Column(name = "isPago")
     private boolean pago;
@@ -60,7 +59,7 @@ public class Pagamento {
     
     public Pagamento() {}
 
-    public Pagamento(Cliente cliente, float valor, Date dataPagamento, Date dataVencimento, boolean pago, HistoricoServicos historicoServicos, MetodoEnum metodoPagamento) {
+    public Pagamento(Cliente cliente, double valor, LocalDate dataPagamento, LocalDate dataVencimento, boolean pago, HistoricoServicos historicoServicos, MetodoEnum metodoPagamento) {
         this.cliente = cliente;
         this.valor = valor;
         this.dataPagamento = dataPagamento;
@@ -69,28 +68,28 @@ public class Pagamento {
         this.historicoServicos = historicoServicos;
         this.metodoPagamento = metodoPagamento;
     }
-     public Cliente getCliente() {
+    public Cliente getCliente() {
          return cliente;
-     }
-     public void setCliente(Cliente cliente) {
+    }
+    public void setCliente(Cliente cliente) {
          this.cliente = cliente;
-     }
-    public float getValor() {
+    }
+    public double getValor() {
         return valor;
     }
     public void setValor(float valor) {
         this.valor = valor;
     }
-    public Date getDataPagamento() {
+    public LocalDate getDataPagamento() {
         return dataPagamento;
     }
-    public void setDataPagamento(Date dataPagamento) {
+    public void setDataPagamento(LocalDate dataPagamento) {
         this.dataPagamento = dataPagamento;
     }
-    public Date getDataVencimento() {
+    public LocalDate getDataVencimento() {
         return dataVencimento;
     }
-    public void setDataVencimento(Date dataVencimento) {
+    public void setDataVencimento(LocalDate dataVencimento) {
         this.dataVencimento = dataVencimento;
     }
     public boolean isPago() {
@@ -117,7 +116,4 @@ public class Pagamento {
     public void setIdPagamento(Long idPagamento) {
         this.idPagamento = idPagamento;
     }
-
-    
-
 }

@@ -165,7 +165,7 @@ public class ClienteController {
         return ResponseEntity.ok("OK;lembrete_adicionado");
     }
 
-        
+    // Retorna para o front um objeto despesasDTO contendo o tipo de serviço, valor, data do ultimo pagamento e data do vencimento.
     @GetMapping("/visualizar_despesas")
     public ResponseEntity<?>visualizarDespesas(@PathVariable("cpf") String cpf){
         List<HistoricoServicos> servicos = historicoServicosRepository.findAllByClienteCpf(cpf);

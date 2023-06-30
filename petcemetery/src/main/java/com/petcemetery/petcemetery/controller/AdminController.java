@@ -262,7 +262,7 @@ public class AdminController {
                 servico.getPlano(),
                 servico.getJazigo().getIdJazigo(),
                 servico.getPet().getId(),
-                servico.getDataServico().toString(),
+                servico.getPet().getDataEnterro().toString(),
                 servico.getCliente().getCpf()
             );
 
