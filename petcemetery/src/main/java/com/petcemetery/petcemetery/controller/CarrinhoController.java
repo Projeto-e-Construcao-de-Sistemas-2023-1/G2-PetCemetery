@@ -156,7 +156,7 @@ public class CarrinhoController {
             }
             
             if(item.getPet() != null){
-                historicoServicosDTO = new HistoricoServicosDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getPet().getId(), item.getCpfCliente());
+                historicoServicosDTO = new HistoricoServicosDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getPet().getId(), item.getDataAgendamento().toString(), item.getCpfCliente());
             } else if(item.getJazigo() != null){
                 historicoServicosDTO = new HistoricoServicosDTO(valor, item.getServico(), item.getJazigo().getEndereco(), item.getPlano(), item.getJazigo().getIdJazigo(), item.getCpfCliente());
             } else {
