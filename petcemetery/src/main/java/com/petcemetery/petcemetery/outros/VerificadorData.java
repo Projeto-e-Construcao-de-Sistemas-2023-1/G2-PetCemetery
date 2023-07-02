@@ -49,8 +49,6 @@ public class VerificadorData {
         LocalDate dataAtual = LocalDate.now();
         List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
 
-        System.out.println("TEM PET PRA ENTERRAR");
-
         for (HistoricoServicos servico : historicoServicos) {
             if(servico.getTipoServico() != ServicoEnum.ENTERRO) {
                 continue;
@@ -82,7 +80,6 @@ public class VerificadorData {
         LocalDate dataAtual = LocalDate.now();
         List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
 
-        System.out.println("TEM PET PRA EXUMAR");
 
         for (HistoricoServicos servico : historicoServicos) {
             if(servico.getTipoServico() != ServicoEnum.EXUMACAO) {

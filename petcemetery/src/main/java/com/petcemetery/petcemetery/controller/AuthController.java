@@ -39,6 +39,9 @@ public class AuthController {
         System.out.println(loginRequest);
 
         if (cliente != null) {
+            if(cliente.getDesativado()) {
+                return ResponseEntity.ok("ERR;conta_desativada");
+            }
             System.out.println("cliente logado com sucesso");
             return ResponseEntity.ok("OK;cliente;" + cliente.getCpf()); // redireciona para home do cliente
         } else if (admin != null) {
