@@ -42,11 +42,25 @@ public class VerificadorData {
 
     @Autowired
     private PagamentoRepository pagamentoRepository;
+
+    private static LocalDate currentDate = LocalDate.now();
+
+    public static LocalDate getCurrentDate() {
+        return currentDate;
+    }
+
+    public static void setCurrentDate(LocalDate date) {
+        currentDate = date;
+    }
+
+    public void avancarData(LocalDate novaData) {
+        setCurrentDate(novaData);
+    }
     
     // Checa a cada 2 minutos se há algum serviço de enterro para ser realizado, e envia um email pro cliente caso o enterro do pet dele seja hoje
     @Scheduled(cron = "*/30 * * * * ?") // Executa a cada dois minutos
     public void checaEnterros() {
-        LocalDate dataAtual = LocalDate.now();
+        LocalDate dataAtual = VerificadorData.getCurrentDate();
         List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
 
         for (HistoricoServicos servico : historicoServicos) {
@@ -77,7 +91,8 @@ public class VerificadorData {
     // Checa a cada 2 minutos se há algum serviço de exumação para ser realizado, e envia um email pro cliente caso a cremação do pet dele seja hoje
     @Scheduled(cron = "*/30 * * * * ?") // Executa a cada dois minutos
     public void checaExumacoes() {
-        LocalDate dataAtual = LocalDate.now();
+        LocalDate dataAtual = VerificadorData.getCurrentDate();
+        System.out.println(dataAtual.toString());
         List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
 
 
@@ -106,7 +121,7 @@ public class VerificadorData {
     // Checa a cada 2 minutos se há alguma reunião para ser realizada, e envia um email pro cliente caso a reunião dele seja hoje
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaReunioes() {
-        LocalDate dataAtual = LocalDate.now();
+        LocalDate dataAtual = VerificadorData.getCurrentDate();
         List<Reuniao> reunioes = reuniaoRepository.findAll();
 
         for (Reuniao reuniao : reunioes) {
@@ -125,7 +140,7 @@ public class VerificadorData {
     //TODO: Aplicar a classe pagamento aqui quando ela for feita. Por enquanto, está sendo utilizada a classe servico.
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaPagamentoAluguel() {
-        LocalDate dataAtual = LocalDate.now();
+        LocalDate dataAtual = VerificadorData.getCurrentDate();
         List<Pagamento> pagamentos = pagamentoRepository.findAll();
 
         // Verifica se o serviço é aluguel e se o pagamento está atrasado
@@ -149,7 +164,7 @@ public class VerificadorData {
     //TODO: Aplicar a classe pagamento aqui quando ela for feita. Por enquanto, está sendo utilizada a classe servico.
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaPagamentoManutencao() {
-        LocalDate dataAtual = LocalDate.now();
+        LocalDate dataAtual = VerificadorData.getCurrentDate();
         List<Pagamento> pagamentos = pagamentoRepository.findAll();
 
         // Verifica se o serviço é manutenção e se o pagamento está atrasado
@@ -172,7 +187,7 @@ public class VerificadorData {
     // Checa a cada 2 minutos se há algum lembrete de visita para ser enviado, e envia um email pro cliente caso a visita dele seja hoje
     @Scheduled(cron = "0 */2 * * * ?") // Executa a cada dois minutos
     public void checaLembretes() {
-        LocalDate dataAtual = LocalDate.now();
+        LocalDate dataAtual = VerificadorData.getCurrentDate();
         // Checa todos os lembretes que ainda não foram enviados
         List<Lembrete> lembretes = lembreteRepository.findAllByEnviado(false);
 
@@ -192,7 +207,7 @@ public class VerificadorData {
     
     @Scheduled(cron = "*/30 * * * * ?") // Executa a cada 30 segundos
     public void checaNotificacaoRenovacao() {
-        LocalDate dataAtual = LocalDate.now();
+        LocalDate dataAtual = VerificadorData.getCurrentDate();
         List<HistoricoServicos> historicoServicos = historicoServicosRepository.findAll();
 
         LocalDate  dataSemanaPassada = dataAtual.minusDays(7);

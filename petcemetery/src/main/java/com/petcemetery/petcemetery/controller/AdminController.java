@@ -1,5 +1,7 @@
 package com.petcemetery.petcemetery.controller;
 
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ import com.petcemetery.petcemetery.model.Pet;
 import com.petcemetery.petcemetery.model.Servico;
 import com.petcemetery.petcemetery.model.HistoricoServicos;
 import com.petcemetery.petcemetery.model.Servico.ServicoEnum;
+import com.petcemetery.petcemetery.outros.VerificadorData;
 import com.petcemetery.petcemetery.model.Servico.PlanoEnum;
 import com.petcemetery.petcemetery.repositorio.ClienteRepository;
 import com.petcemetery.petcemetery.repositorio.HistoricoServicosRepository;
@@ -331,5 +334,23 @@ public class AdminController {
         }
 
         return ResponseEntity.ok(exumacoes);
+    }
+
+    // Recebe um request parameter "data" no formato "yyyy-MM-dd" e seta a data atual do sistema para a data recebida. Retorna "ERR;data_invalida"
+    // caso o formato da data seja inválido, e "OK" se tudo ocorrer bem.
+    @PostMapping("/time_travel")
+    public ResponseEntity<?> timeTravel(@RequestParam("data") String data) {
+        LocalDate dataAvancada;
+        
+        try {
+            dataAvancada = LocalDate.parse(data);
+        }
+        catch (DateTimeException e){
+            return ResponseEntity.ok("ERR;data_invalida");
+        }
+
+        VerificadorData.setCurrentDate(dataAvancada);
+
+        return ResponseEntity.ok("OK");
     }
 }
