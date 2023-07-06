@@ -1,5 +1,6 @@
 package com.petcemetery.petcemetery.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -21,10 +24,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
 
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.petcemetery.petcemetery.DTO.ClienteDTO;
 import com.petcemetery.petcemetery.DTO.HistoricoJazigoDTO;
 import com.petcemetery.petcemetery.model.Cliente;
 import com.petcemetery.petcemetery.DTO.HorarioFuncionamentoDTO;
+import com.petcemetery.petcemetery.DTO.JazigoDTO;
 import com.petcemetery.petcemetery.DTO.HistoricoServicosDTO;
 import com.petcemetery.petcemetery.model.HorarioFuncionamento;
 import com.petcemetery.petcemetery.model.Jazigo;
@@ -275,6 +289,7 @@ public class AdminController {
         return ResponseEntity.ok(horariosDTO);
     }
 
+    // Visualizar clientes inadimplentes
     @GetMapping("/relatorio")
     public ResponseEntity<List<ClienteDTO>> exibirRelatorio() {
         List<Cliente> clientesInadimplentes = clienteRepository.findByInadimplenteTrue();
@@ -290,6 +305,7 @@ public class AdminController {
         return ResponseEntity.ok(clientesDTO);
     }
 
+    // Relatório de enterros
     @GetMapping("/visualizar_enterros")
     public ResponseEntity<List<HistoricoServicosDTO>> visualizarEnterros() {
         List<HistoricoServicos> historicoServicos = historicoServicosRepository.findByTipoServico(ServicoEnum.valueOf("ENTERRO"));
@@ -313,6 +329,54 @@ public class AdminController {
         return ResponseEntity.ok(enterros); 
     }
 
+    // Gerar PDF de enterros
+    @GetMapping("/gerar_pdf_enterros")
+    public ResponseEntity<byte[]> gerarPDFEnterros() {
+    // Pega o retorno do método acima
+    List<HistoricoServicosDTO> enterros = visualizarEnterros().getBody(); 
+
+    if(enterros == null) {
+        return ResponseEntity.notFound().build();
+    }
+
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+        Document document = new Document();
+        PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+        document.open();
+
+        // Adicionando o título ao PDF
+        Paragraph paragraph = new Paragraph("Relatório de Enterros", FontFactory.getFont(FontFactory.HELVETICA, 30, Font.BOLD));
+        paragraph.setAlignment(Element.ALIGN_CENTER);
+        document.add(paragraph);
+
+        // Adicionar espaços em branco
+        Chunk chunk = new Chunk("\n");
+        document.add(chunk);
+
+        document.add(new Paragraph("        VALOR                    JAZIGO                    CPF                                     DATA ", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD)));
+        // Adicionando o conteúdo de cada objeto ao PDF
+        for (HistoricoServicosDTO enterro : enterros) {
+            document.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------------------"));
+            document.add(new Paragraph("         " + String.valueOf(enterro.getValor()) + "                         " + enterro.getEnderecoJazigo() + "                    " + enterro.getCpfCliente() + "                       " + enterro.getDataServico()));
+        }
+        document.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------------------"));
+        document.close();
+        writer.close();
+
+        byte[] pdfBytes = outputStream.toByteArray();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("filename", "relatorio_enterros.pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+}
+
+
+    // Relatório de exumações
     @GetMapping("/visualizar_exumacoes")
     public ResponseEntity<List<HistoricoServicosDTO>> visualizarExumacoes() {
         List<HistoricoServicos> historicoServicos = historicoServicosRepository.findByTipoServico(ServicoEnum.valueOf("EXUMACAO"));
@@ -334,6 +398,178 @@ public class AdminController {
         }
 
         return ResponseEntity.ok(exumacoes);
+    }
+
+    // Gerar PDF de exumações
+    @GetMapping("/gerar_pdf_exumacoes")
+    public ResponseEntity<byte[]> gerarPDFExumacoes() {
+        // Pega o retorno do método acima
+        List<HistoricoServicosDTO> exumacoes = visualizarExumacoes().getBody();
+
+        if(exumacoes == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+            document.open();
+
+            // Adicionando o título ao PDF
+            Paragraph paragraph = new Paragraph("Relatório de Exumações", FontFactory.getFont(FontFactory.HELVETICA, 30, Font.BOLD));
+            paragraph.setAlignment(Element.ALIGN_CENTER);
+            document.add(paragraph);
+
+            // Adicionar espaços em branco
+            Chunk chunk = new Chunk("\n");
+            document.add(chunk);
+
+            document.add(new Paragraph("     VALOR                    JAZIGO                    CPF                                     DATA ", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD)));
+            // Adicionando o conteúdo de cada objeto ao PDF
+            for (HistoricoServicosDTO exumacao : exumacoes) {
+                document.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------------------"));
+                document.add(new Paragraph("      " + String.valueOf(exumacao.getValor()) + "                         " + exumacao.getEnderecoJazigo() + "                    " + exumacao.getCpfCliente() + "                       " + exumacao.getDataServico()));
+            }
+            document.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------------------"));
+            document.close();
+            writer.close();
+
+            byte[] pdfBytes = outputStream.toByteArray();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("filename", "relatorio_exumacoes.pdf");
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    
+    }
+
+    // Relatório de jazigos
+    @GetMapping("/get_jazigos")
+    public ResponseEntity<?> getJazigos(){
+        List<Jazigo> jazigos = jazigoRepository.findAllOrderByIdAsc();
+        List<JazigoDTO> jazigosDTO = new ArrayList<>();
+
+        for (Jazigo jazigo : jazigos) {
+            JazigoDTO jazigoDto;
+
+            if(jazigo.getPetEnterrado() != null) { // Caso tenha pet enterrado
+                jazigoDto = new JazigoDTO(
+                jazigo.getPetEnterrado().getNomePet(),
+                jazigo.getPetEnterrado().getDataEnterro(),
+                jazigo.getEndereco(),
+                jazigo.getIdJazigo(),
+                jazigo.getPetEnterrado().getDataNascimento(),
+                jazigo.getPetEnterrado().getEspecie(),
+                jazigo.getMensagem(),
+                jazigo.getPlano().toString(),
+                jazigo.getProprietario().getCpf()
+                );
+            } else if(jazigo.getProprietario() != null) { // Caso não tenha pet enterrado mas tenha proprietario
+                jazigoDto = new JazigoDTO(
+                null,
+                null,
+                jazigo.getEndereco(),
+                jazigo.getIdJazigo(),
+                null,
+                null,
+                jazigo.getMensagem(),
+                jazigo.getPlano().toString(),
+                jazigo.getProprietario().getCpf()
+                );
+            } else { // Caso não tenha pet enterrado nem proprietario
+                jazigoDto = new JazigoDTO(
+                null,
+                null,
+                jazigo.getEndereco(),
+                jazigo.getIdJazigo(),
+                null,
+                null,
+                jazigo.getMensagem(),
+                null,
+                null
+                );
+            }
+            
+            jazigosDTO.add(jazigoDto);
+        }
+        
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jazigosDTO);
+    }
+
+    // gerar PDF de jazigos
+    @GetMapping("/gerar_pdf_jazigos")
+    public ResponseEntity<byte[]> gerarPDFJazigos() {
+    List<JazigoDTO> jazigos = (List<JazigoDTO>) getJazigos().getBody();
+
+    if (jazigos == null) {
+        return ResponseEntity.notFound().build();
+    }
+
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+        Document document = new Document();
+        PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+        document.open();
+
+        Paragraph title = new Paragraph("Relatório de Jazigos", FontFactory.getFont(FontFactory.HELVETICA, 30, Font.BOLD));
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+
+        Chunk space = new Chunk("\n");
+        document.add(space);
+
+        PdfPTable table = new PdfPTable(8);
+        table.setWidthPercentage(100f);
+        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
+
+        table.addCell(new PdfPCell(new Phrase("PET", font)));
+        table.addCell(new PdfPCell(new Phrase("DATA ENTERRO", font)));
+        table.addCell(new PdfPCell(new Phrase("ENDEREÇO", font)));
+        table.addCell(new PdfPCell(new Phrase("ID JAZIGO", font)));
+        table.addCell(new PdfPCell(new Phrase("DATA NASC.", font)));
+        table.addCell(new PdfPCell(new Phrase("ESPÉCIE", font)));
+        table.addCell(new PdfPCell(new Phrase("PLANO", font)));
+        table.addCell(new PdfPCell(new Phrase("CPF CLIENTE", font)));
+
+        for (JazigoDTO jazigo : jazigos) {
+            table.addCell(jazigo.getNomePet());
+            if(jazigo.getDataEnterro() == null) {
+                table.addCell("");
+            } else {
+                table.addCell(jazigo.getDataEnterro().toString());
+            }
+            table.addCell(jazigo.getEndereco());
+            table.addCell(jazigo.getIdJazigo().toString());
+            if(jazigo.getDataNascimento() == null) {
+                table.addCell("");
+            } else {
+                table.addCell(jazigo.getDataNascimento().toString());
+            }
+            table.addCell(jazigo.getEspecie());
+            table.addCell(jazigo.getPlano());
+            table.addCell(new PdfPCell(new Phrase(jazigo.getCpfCliente(), font)));
+        }
+
+        document.add(table);
+
+        document.close();
+        writer.close();
+
+        byte[] pdfBytes = outputStream.toByteArray();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("filename", "relatorio_jazigos.pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    } catch (Exception e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // Recebe um request parameter "data" no formato "yyyy-MM-dd" e seta a data atual do sistema para a data recebida. Retorna "ERR;data_invalida"
