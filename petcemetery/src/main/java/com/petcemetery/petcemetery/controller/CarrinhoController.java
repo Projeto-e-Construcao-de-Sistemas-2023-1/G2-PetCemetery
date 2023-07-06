@@ -66,6 +66,8 @@ public class CarrinhoController {
         HistoricoServicos historicoServicos;
         
         if (carrinho != null) {
+            LocalDate data = LocalDate.now();
+            LocalTime horario = LocalTime.now();
             
             for (Carrinho item : carrinhoRepository.findAllByCpfCliente(cpf)) {
 
@@ -78,13 +80,13 @@ public class CarrinhoController {
                         if(item.getServico() == ServicoEnum.COMPRA){
                             double valor = servicoRepository.findByTipoServico(item.getServico()).getValor();
                             double valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();
-                            historicoServicos = new HistoricoServicos(ServicoEnum.COMPRA, valor + valorPlano, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now(), LocalDate.now(), LocalDate.now());
+                            historicoServicos = new HistoricoServicos(ServicoEnum.COMPRA, valor + valorPlano, cliente, jazigo, item.getPlano(), null, data, horario, data, data);
                         } else {
                             double valor = servicoRepository.findByTipoServico(item.getServico()).getValor();
                             double valorPlano = servicoRepository.findByTipoServico(ServicoEnum.valueOf(item.getPlano().toString())).getValor();
-                            historicoServicos = new HistoricoServicos(ServicoEnum.ALUGUEL, valor + valorPlano, cliente, jazigo, item.getPlano(), null, LocalDate.now(), LocalTime.now());
-                            historicoServicos.setUltimoPagamento(LocalDate.now());
-                            Pagamento pagamento = new Pagamento(cliente, valor, LocalDate.now(), LocalDate.now().plusMonths(1), true, historicoServicos, MetodoEnum.CREDITO);
+                            historicoServicos = new HistoricoServicos(ServicoEnum.ALUGUEL, valor + valorPlano, cliente, jazigo, item.getPlano(), null, data, horario);
+                            historicoServicos.setUltimoPagamento(data);
+                            Pagamento pagamento = new Pagamento(cliente, valor, data, data.plusMonths(1), true, historicoServicos, MetodoEnum.CREDITO);
                             pagamentoRepository.save(pagamento);
                         }
                         jazigo.setDisponivel(false);
@@ -92,25 +94,28 @@ public class CarrinhoController {
                         jazigo.setProprietario(cliente);
                         jazigo.setStatus(StatusEnum.DISPONIVEL);
                         jazigoRepository.save(jazigo);
-                        historicoServicos.setPrimeiroPagamento(LocalDate.now());
+                        historicoServicos.setPrimeiroPagamento(data);
                         historicoServicosRepository.save(historicoServicos);
                         break;
                     
                     case ENTERRO:
                         historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
-                        historicoServicos.setPrimeiroPagamento(LocalDate.now());
+                        historicoServicos.setPrimeiroPagamento(data);
+                        historicoServicos.setUltimoPagamento(data);
                         historicoServicosRepository.save(historicoServicos);
                         break;
                     
                     case EXUMACAO:
                         historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
-                        historicoServicos.setPrimeiroPagamento(LocalDate.now());
+                        historicoServicos.setPrimeiroPagamento(data);
+                        historicoServicos.setUltimoPagamento(data);
                         historicoServicosRepository.save(historicoServicos);
                         break;
 
                     case PERSONALIZACAO: //TODO nao querem trocar o nome desse servico pra "TROCAPLANO"? p n confundir c personalizacao de mensagem/foto?
                         historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
-                        historicoServicos.setPrimeiroPagamento(LocalDate.now());
+                        historicoServicos.setPrimeiroPagamento(data);
+                        historicoServicos.setUltimoPagamento(data);
                         jazigo.setPlano(historicoServicos.getPlano());
                         jazigoRepository.save(jazigo);
                         historicoServicosRepository.save(historicoServicos);
@@ -118,8 +123,8 @@ public class CarrinhoController {
 
                     case MANUTENCAO:
                         historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
-                        historicoServicos.setPrimeiroPagamento(LocalDate.now());
-                        historicoServicos.setUltimoPagamento(LocalDate.now());
+                        historicoServicos.setPrimeiroPagamento(data);
+                        historicoServicos.setUltimoPagamento(data);
                         historicoServicosRepository.save(historicoServicos);
                         Pagamento pagamento = new Pagamento(cliente, servicoRepository.findByTipoServico(item.getServico()).getValor(), LocalDate.now(), LocalDate.now().plusYears(1), true, historicoServicos, MetodoEnum.CREDITO);
                         pagamentoRepository.save(pagamento);
