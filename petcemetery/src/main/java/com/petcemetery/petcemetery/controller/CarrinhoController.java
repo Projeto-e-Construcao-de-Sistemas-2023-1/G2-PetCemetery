@@ -112,7 +112,10 @@ public class CarrinhoController {
                         historicoServicosRepository.save(historicoServicos);
                         break;
 
-                    case PERSONALIZACAO: //TODO nao querem trocar o nome desse servico pra "TROCAPLANO"? p n confundir c personalizacao de mensagem/foto?
+                    case BASIC:
+                    case SILVER: 
+                    case GOLD: 
+                    case PERSONALIZACAO:
                         historicoServicos = historicoServicosRepository.findByIdServico(item.getIdServico().getIdServico());
                         historicoServicos.setPrimeiroPagamento(data);
                         historicoServicos.setUltimoPagamento(data);

@@ -156,7 +156,7 @@ public class JazigoController {
         if (optionalJazigo.isPresent()) {
             Jazigo jazigo = optionalJazigo.get();
             if(jazigo.getProprietario().equals(clienteRepository.findByCpf(cpf))){
-                return ResponseEntity.ok("OK;" + jazigo.getMensagem() + ";" + jazigo.getFoto());
+                return ResponseEntity.ok("OK;" + jazigo.getMensagem() + ";" + jazigo.getFoto() + ";" + jazigo.getPlano());
             } else {
                 return ResponseEntity.ok("ERR;cliente_nao_proprietario");
             }
@@ -178,9 +178,18 @@ public class JazigoController {
     if (optionalJazigo.isPresent()) {
         Jazigo jazigo = optionalJazigo.get();
 
+        double valor = servicoRepository.findByTipoServico(ServicoEnum.PERSONALIZACAO).getValor();
+
         if (jazigo.getProprietario().equals(clienteRepository.findByCpf(cpf))) {
             jazigo.setMensagem(mensagem);
             jazigoRepository.save(jazigo);
+            
+            HistoricoServicos personalizacaoServico = new HistoricoServicos(ServicoEnum.PERSONALIZACAO, valor, clienteRepository.findByCpf(cpf), jazigo, jazigo.getPlano(), null, LocalDate.now(), LocalTime.now(), null, null);
+            historicoServicosRepository.save(personalizacaoServico);
+
+            Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.PERSONALIZACAO, jazigo.getPlano(), null, null, null, personalizacaoServico);
+            carrinhoRepository.save(carrinho);
+
             return ResponseEntity.ok("OK;Mensagem_editada");
         } else {
             return ResponseEntity.ok("ERR;jazigo_nao_pertence_usuario");
@@ -307,7 +316,7 @@ public class JazigoController {
             HistoricoServicos historicoServicos = new HistoricoServicos(ServicoEnum.PERSONALIZACAO, 0, clienteRepository.findByCpf(cpf), jazigo, PlanoEnum.valueOf(tipo), null, LocalDate.now(), LocalTime.now()); // O valor do servico é 0 pois será somado com o valor do plano selecionado no construtor do Serviço
             historicoServicosRepository.save(historicoServicos);
 
-            Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.PERSONALIZACAO, PlanoEnum.valueOf(tipo), LocalDate.now(), LocalTime.now(), null, historicoServicos);
+            Carrinho carrinho = new Carrinho(cpf, jazigo, ServicoEnum.valueOf(tipo), PlanoEnum.valueOf(tipo), LocalDate.now(), LocalTime.now(), null, historicoServicos);
             carrinhoRepository.save(carrinho);
 
             return ResponseEntity.ok("OK;troca_de_plano_no_carrinho");
