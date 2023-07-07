@@ -80,7 +80,7 @@ public class JazigoController {
         for (Jazigo jazigo : listaJazigos) {
             JazigoDTO jazigoDTO;
             if(jazigo.getPetEnterrado() == null) {
-                jazigoDTO = new JazigoDTO("", null, jazigo.getEndereco(), jazigo.getIdJazigo(), null, "Sem Espécie", jazigo.getMensagem(), jazigo.getPlano().toString(), cpf_proprietario);
+                jazigoDTO = new JazigoDTO("", null, jazigo.getEndereco(), jazigo.getIdJazigo(), null, "", jazigo.getMensagem(), jazigo.getPlano().toString(), cpf_proprietario);
             } else {
                 jazigoDTO = new JazigoDTO(jazigo.getPetEnterrado().getNomePet(), jazigo.getPetEnterrado().getDataEnterro(), jazigo.getEndereco(), jazigo.getIdJazigo(), jazigo.getPetEnterrado().getDataNascimento(), jazigo.getPetEnterrado().getEspecie(), jazigo.getMensagem(), jazigo.getPlano().toString(), cpf_proprietario);
             }
